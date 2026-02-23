@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>公開コンテンツ一覧</title>
+<title>もりもり gitPages 公開コンテンツ</title>
 
 <style>
   body {
@@ -10,10 +10,10 @@
     padding: 0;
     font-family: "Arial", sans-serif;
     background: #f0f8ff;
-    background-image: url("images/header.png"); /* ←ここを実際の画像パスに変更 */
+    background-image: url("images/header.png"); /* ←画像パスを変更してください */
     background-size: cover;
     background-position: center;
-    background-attachment: fixed;
+    /* 背景をスクロールさせるために fixed を削除 */
   }
 
   /* 半透明の背景レイヤー */
@@ -23,17 +23,22 @@
     padding: 40px 20px;
   }
 
+  /* ミクっぽい見出し */
   h1 {
-    background: linear-gradient(to right, #39C5BB, #FFC778);
+    background: linear-gradient(to right, #39C5BB, #7FE7D6, #FFC778);
     color: white;
-    font-size: 1.8em;
+    font-size: 2em;
     text-align: center;
-    padding: 15px;
-    border-radius: 10px;
+    padding: 18px;
+    border-radius: 12px;
     margin-bottom: 40px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-shadow: 0 0 8px rgba(57, 197, 187, 0.8);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
   }
 
+  /* メニューカード */
   .menu {
     max-width: 600px;
     margin: 0 auto;
