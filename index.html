@@ -3,14 +3,86 @@
 <head>
 <meta charset="UTF-8">
 <title>公開コンテンツ一覧</title>
+
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: "Arial", sans-serif;
+    background: #f0f8ff;
+    background-image: url("images/header.png"); /* ←ここを実際の画像パスに変更 */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+  }
+
+  /* 半透明の背景レイヤー */
+  .overlay {
+    background: rgba(255, 255, 255, 0.75);
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  h1 {
+    background: linear-gradient(to right, #39C5BB, #FFC778);
+    color: white;
+    font-size: 1.8em;
+    text-align: center;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 40px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+
+  .menu {
+    max-width: 600px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .menu ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .menu li {
+    margin: 15px 0;
+  }
+
+  .menu a {
+    display: block;
+    padding: 12px 18px;
+    background: #e8f6ff;
+    border-left: 6px solid #39C5BB;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    transition: 0.2s;
+  }
+
+  .menu a:hover {
+    background: #dff0ff;
+    transform: translateX(5px);
+  }
+</style>
 </head>
+
 <body>
+<div class="overlay">
 
 <h1>公開コンテンツ一覧</h1>
-<ul>
-  <li><a href="psLib/psLib.md">プレイステーションソフトライブラリ(マークダウン)</a></li>
-  <li><a href="psLib/psLib.html">プレイステーションソフトライブラリ(HTML)</a></li>
-</ul>
 
+<div class="menu">
+  <ul>
+    <li><a href="psLib/psLib.md">プレイステーションソフトライブラリ（Markdown）</a></li>
+    <li><a href="psLib/psLib.html">プレイステーションソフトライブラリ（HTML）</a></li>
+  </ul>
+</div>
+
+</div>
 </body>
 </html>
