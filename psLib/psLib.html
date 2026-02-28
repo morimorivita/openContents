@@ -83,15 +83,24 @@
             font-size: 0.75rem;
             letter-spacing: 0.12em;
             border-bottom: 2px solid var(--ps-blue) !important;
-            position: sticky;
-            top: 0;
-            z-index: 10;
         }
         
         .table-container {
             position: relative;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+        }
+
+        /* DataTables scrollY wrapper styling */
+        .dataTables_scrollHead {
+            background: var(--ps-header-bg) !important;
+            overflow: hidden !important;
+        }
+        .dataTables_scrollBody {
+            -webkit-overflow-scrolling: touch;
+        }
+        .dataTables_scroll {
+            width: 100%;
         }
         
         table.dataTable tbody tr {
@@ -4374,7 +4383,8 @@
                 lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "全件"]],
                 pageLength: 50,
                 scrollX: true,
-                fixedHeader: true,
+                scrollY: '65vh',
+                scrollCollapse: true,
                 columnDefs: [
                     { targets: [0], orderable: false },
                     { targets: [11], width: '300px' }
