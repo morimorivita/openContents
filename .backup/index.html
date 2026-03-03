@@ -141,14 +141,11 @@
     border: 1.5px solid rgba(57,197,187,0.25);
     border-radius: 12px;
     text-decoration: none;
-    color: #c8faf7;
+    color: #0d3633;
     font-weight: 700;
     font-size: clamp(0.82rem, 3.2vw, 0.97rem);
-    text-shadow:
-      0 0 6px  rgba(57,197,187,0.95),
-      0 0 18px rgba(57,197,187,0.65),
-      0 0 40px rgba(57,197,187,0.30);
-    transition: background 0.2s, transform 0.2s, box-shadow 0.2s, border-color 0.2s, text-shadow 0.3s, color 0.2s;
+    text-shadow: 0 1px 4px rgba(255,255,255,0.7);
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s, border-color 0.2s;
     box-shadow: 0 2px 8px rgba(57,197,187,0.08);
   }
 
@@ -157,12 +154,6 @@
     border-color: var(--miku-teal);
     transform: translateX(6px);
     box-shadow: 0 4px 18px rgba(57,197,187,0.22);
-    color: #ffffff;
-    text-shadow:
-      0 0  6px rgba(255,255,255,1.0),
-      0 0 18px rgba(127,231,214,1.0),
-      0 0 45px rgba(57,197,187,0.85),
-      0 0 90px rgba(57,197,187,0.40);
   }
 
   /* アイコンバッジ */
@@ -178,7 +169,7 @@
     flex-shrink: 0;
   }
 
-  .badge-data {
+  .badge-md {
     background: linear-gradient(135deg, #39C5BB, #7FE7D6);
     color: #fff;
   }
@@ -194,23 +185,15 @@
   }
 
   .menu-arrow {
-    color: #7FE7D6;
+    color: var(--miku-teal);
     font-size: 1rem;
-    opacity: 0.8;
-    transition: opacity 0.2s, transform 0.2s, text-shadow 0.3s;
-    text-shadow:
-      0 0 6px  rgba(57,197,187,0.9),
-      0 0 18px rgba(57,197,187,0.5);
+    opacity: 0.6;
+    transition: opacity 0.2s, transform 0.2s;
   }
 
   .menu-list a:hover .menu-arrow {
     opacity: 1;
     transform: translateX(3px);
-    color: #fff;
-    text-shadow:
-      0 0 8px  rgba(255,255,255,1),
-      0 0 22px rgba(127,231,214,1),
-      0 0 50px rgba(57,197,187,0.7);
   }
 
   /* ===== フッター ===== */
@@ -231,16 +214,16 @@
   <div class="card-header">
     <div class="drag-hint"><span></span><span></span></div>
     <h1>公開コンテンツ一覧</h1>
-    <p class="subtitle">もりもり gitPages (メニューは動かせます)</p>
+    <p class="subtitle">もりもり gitPages</p>
   </div>
 
   <div class="card-body">
     <ul class="menu-list">
 
       <li>
-        <a href="psLib/psLib.json">
-          <span class="badge badge-data">JSON</span>
-          <span class="menu-text">プレイステーションソフトライブラリ（データ）</span>
+        <a href="psLib/psLib.md">
+          <span class="badge badge-md">MD</span>
+          <span class="menu-text">プレイステーションソフトライブラリ（Markdown）</span>
           <span class="menu-arrow">›</span>
         </a>
       </li>
@@ -248,7 +231,7 @@
       <li>
         <a href="psLib/psLib.html">
           <span class="badge badge-html">HTML</span>
-          <span class="menu-text">プレイステーションソフトライブラリ（一覧画面）</span>
+          <span class="menu-text">プレイステーションソフトライブラリ（HTML）</span>
           <span class="menu-arrow">›</span>
         </a>
       </li>
