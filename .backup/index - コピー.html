@@ -26,6 +26,8 @@
     overflow: hidden;
   }
 
+  /* ===== ページ全体のぼかしオーバーレイは使わず、カードだけガラス化 ===== */
+
   .card {
     position: absolute;
     width: calc(100% - 32px);
@@ -55,6 +57,7 @@
     to   { opacity: 1; transform: translateY(0);    }
   }
 
+  /* ===== ヘッダー帯 ===== */
   .card-header {
     background: linear-gradient(135deg, var(--miku-teal) 0%, var(--miku-light) 55%, var(--miku-warm) 100%);
     padding: 22px 28px 18px;
@@ -62,17 +65,26 @@
     overflow: hidden;
     cursor: grab;
   }
-  .card-header:active { cursor: grabbing; }
 
+  .card-header:active {
+    cursor: grabbing;
+  }
+
+  /* ドラッグヒントアイコン */
   .drag-hint {
     position: absolute;
-    top: 10px; right: 14px;
-    display: flex; gap: 3px;
+    top: 10px;
+    right: 14px;
+    display: flex;
+    gap: 3px;
     opacity: 0.45;
   }
   .drag-hint span {
-    display: block; width: 3px; height: 3px;
-    border-radius: 50%; background: #fff;
+    display: block;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #fff;
     box-shadow: 0 6px 0 #fff, 0 12px 0 #fff;
   }
 
@@ -87,56 +99,49 @@
 
   .card-header h1 {
     font-size: clamp(1.1rem, 4.5vw, 1.55rem);
-    font-weight: 900; color: #fff;
+    font-weight: 900;
+    color: #fff;
     letter-spacing: 0.06em;
     text-shadow: 0 2px 10px rgba(0,0,0,0.18);
     line-height: 1.3;
   }
+
   .card-header .subtitle {
     font-size: clamp(0.7rem, 2.8vw, 0.82rem);
     color: rgba(255,255,255,0.82);
-    margin-top: 4px; letter-spacing: 0.08em;
+    margin-top: 4px;
+    letter-spacing: 0.08em;
   }
 
-  /* ── 区切り線 ── */
-  .section-divider {
-    display: flex; align-items: center; gap: 10px;
-    margin: 2px 0;
-    animation: fadeUp 0.6s cubic-bezier(.22,1,.36,1) both;
-    animation-delay: 0.28s;
+  /* ===== メニューリスト ===== */
+  .card-body {
+    padding: 20px 24px 24px;
   }
-  .section-divider span {
-    font-size: 0.65rem; font-weight: 700;
-    letter-spacing: 0.12em;
-    color: rgba(127,231,214,0.6);
-    white-space: nowrap;
-  }
-  .section-divider::before,
-  .section-divider::after {
-    content: ""; flex: 1; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(57,197,187,0.25), transparent);
-  }
-
-  .card-body { padding: 20px 24px 24px; }
 
   .menu-list {
     list-style: none;
-    display: flex; flex-direction: column; gap: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
-  .menu-list li { animation: fadeUp 0.6s cubic-bezier(.22,1,.36,1) both; }
+
+  .menu-list li {
+    animation: fadeUp 0.6s cubic-bezier(.22,1,.36,1) both;
+  }
   .menu-list li:nth-child(1) { animation-delay: 0.10s; }
   .menu-list li:nth-child(2) { animation-delay: 0.20s; }
-  .menu-list li.divider      { animation-delay: 0.28s; }
-  .menu-list li:nth-child(4) { animation-delay: 0.36s; }
-  .menu-list li:nth-child(5) { animation-delay: 0.44s; }
+  .menu-list li:nth-child(3) { animation-delay: 0.30s; }
 
   .menu-list a {
-    display: flex; align-items: center; gap: 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
     padding: 14px 18px;
     background: rgba(255,255,255,0.10);
     border: 1.5px solid rgba(57,197,187,0.25);
     border-radius: 12px;
-    text-decoration: none; color: #c8faf7;
+    text-decoration: none;
+    color: #c8faf7;
     font-weight: 700;
     font-size: clamp(0.82rem, 3.2vw, 0.97rem);
     text-shadow:
@@ -146,6 +151,7 @@
     transition: background 0.2s, transform 0.2s, box-shadow 0.2s, border-color 0.2s, text-shadow 0.3s, color 0.2s;
     box-shadow: 0 2px 8px rgba(57,197,187,0.08);
   }
+
   .menu-list a:hover {
     background: rgba(57,197,187,0.10);
     border-color: var(--miku-teal);
@@ -158,50 +164,68 @@
       0 0 45px rgba(57,197,187,0.85),
       0 0 90px rgba(57,197,187,0.40);
   }
-  .menu-list a.link-blog:hover {
-      border-color: #60a5fa;
-      background: rgba(96,165,250,0.10);
-      box-shadow: 0 4px 18px rgba(96,165,250,0.22);
-  }
-  .menu-list a.link-x:hover {
-    border-color: #9ca3af;
-    background: rgba(55,65,81,0.20);
-    box-shadow: 0 4px 18px rgba(55,65,81,0.30);
-  }
 
+  /* アイコンバッジ */
   .badge {
-    display: inline-flex; align-items: center; justify-content: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     min-width: 36px; height: 36px;
     border-radius: 8px;
-    font-size: 0.7rem; font-weight: 900;
-    letter-spacing: 0.03em; flex-shrink: 0;
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.03em;
+    flex-shrink: 0;
   }
-  .badge-data { background: linear-gradient(135deg, #39C5BB, #7FE7D6); color: #fff; }
-  .badge-html { background: linear-gradient(135deg, #FFC778, #ff9f43); color: #fff; }
-  .badge-blog { background: linear-gradient(135deg, #60a5fa, #1d4ed8); color: #fff; font-size: 1.05rem; }
-  .badge-x    { background: linear-gradient(135deg, #374151, #111827); color: #fff; font-size: 0.95rem; font-weight: 900; }
 
-  .menu-text { flex: 1; line-height: 1.35; }
+  .badge-data {
+    background: linear-gradient(135deg, #39C5BB, #7FE7D6);
+    color: #fff;
+  }
+
+  .badge-html {
+    background: linear-gradient(135deg, #FFC778, #ff9f43);
+    color: #fff;
+  }
+
+  .menu-text {
+    flex: 1;
+    line-height: 1.35;
+  }
 
   .menu-arrow {
-    color: #7FE7D6; font-size: 1rem; opacity: 0.8;
+    color: #7FE7D6;
+    font-size: 1rem;
+    opacity: 0.8;
     transition: opacity 0.2s, transform 0.2s, text-shadow 0.3s;
-    text-shadow: 0 0 6px rgba(57,197,187,0.9), 0 0 18px rgba(57,197,187,0.5);
-  }
-  .menu-list a:hover .menu-arrow {
-    opacity: 1; transform: translateX(3px); color: #fff;
-    text-shadow: 0 0 8px rgba(255,255,255,1), 0 0 22px rgba(127,231,214,1), 0 0 50px rgba(57,197,187,0.7);
+    text-shadow:
+      0 0 6px  rgba(57,197,187,0.9),
+      0 0 18px rgba(57,197,187,0.5);
   }
 
+  .menu-list a:hover .menu-arrow {
+    opacity: 1;
+    transform: translateX(3px);
+    color: #fff;
+    text-shadow:
+      0 0 8px  rgba(255,255,255,1),
+      0 0 22px rgba(127,231,214,1),
+      0 0 50px rgba(57,197,187,0.7);
+  }
+
+  /* ===== フッター ===== */
   .card-footer {
     padding: 10px 24px 18px;
-    text-align: right; font-size: 0.7rem;
-    color: rgba(30,80,77,0.55); letter-spacing: 0.06em;
+    text-align: right;
+    font-size: 0.7rem;
+    color: rgba(30,80,77,0.55);
+    letter-spacing: 0.06em;
   }
 </style>
 </head>
 
 <body>
+
 <div class="card">
 
   <div class="card-header">
@@ -229,26 +253,6 @@
         </a>
       </li>
 
-      <li class="divider">
-        <div class="section-divider"><span>SNS &amp; BLOG</span></div>
-      </li>
-
-      <li>
-        <a href="https://morimorigameblogg.blogspot.com/" target="_blank" rel="noopener" class="link-blog">
-          <span class="badge badge-blog">✍</span>
-          <span class="menu-text">もりもりゲームブログ</span>
-          <span class="menu-arrow">›</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="https://x.com/Talk_morimori" target="_blank" rel="noopener" class="link-x">
-          <span class="badge badge-x">𝕏</span>
-          <span class="menu-text">X（Twitter）@Talk_morimori</span>
-          <span class="menu-arrow">›</span>
-        </a>
-      </li>
-
     </ul>
   </div>
 
@@ -260,6 +264,7 @@
   const card   = document.querySelector('.card');
   const handle = document.querySelector('.card-header');
 
+  // 初期位置：画面中央に配置
   function centerCard() {
     const x = (window.innerWidth  - card.offsetWidth)  / 2;
     const y = (window.innerHeight - card.offsetHeight) / 2;
@@ -271,27 +276,40 @@
   let dragging = false, startX, startY, origLeft, origTop;
 
   function onStart(cx, cy) {
-    dragging = true; startX = cx; startY = cy;
+    dragging = true;
+    startX   = cx;
+    startY   = cy;
     origLeft = parseInt(card.style.left) || 0;
     origTop  = parseInt(card.style.top)  || 0;
     card.classList.add('dragging');
   }
+
   function onMove(cx, cy) {
     if (!dragging) return;
-    const dx = cx - startX, dy = cy - startY;
-    card.style.left = Math.max(0, Math.min(window.innerWidth  - card.offsetWidth,  origLeft + dx)) + 'px';
-    card.style.top  = Math.max(0, Math.min(window.innerHeight - card.offsetHeight, origTop  + dy)) + 'px';
+    const dx = cx - startX;
+    const dy = cy - startY;
+    const newLeft = Math.max(0, Math.min(window.innerWidth  - card.offsetWidth,  origLeft + dx));
+    const newTop  = Math.max(0, Math.min(window.innerHeight - card.offsetHeight, origTop  + dy));
+    card.style.left = newLeft + 'px';
+    card.style.top  = newTop  + 'px';
   }
-  function onEnd() { dragging = false; card.classList.remove('dragging'); }
 
+  function onEnd() {
+    dragging = false;
+    card.classList.remove('dragging');
+  }
+
+  // マウス
   handle.addEventListener('mousedown',  e => { e.preventDefault(); onStart(e.clientX, e.clientY); });
   document.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
   document.addEventListener('mouseup',   () => onEnd());
 
+  // タッチ（スマホ）
   handle.addEventListener('touchstart',  e => { const t = e.touches[0]; onStart(t.clientX, t.clientY); }, { passive: true });
   document.addEventListener('touchmove',  e => { if (dragging) { e.preventDefault(); const t = e.touches[0]; onMove(t.clientX, t.clientY); } }, { passive: false });
   document.addEventListener('touchend',   () => onEnd());
 
+  // リサイズ時に画面内に収める
   window.addEventListener('resize', () => {
     const l = parseInt(card.style.left) || 0;
     const t = parseInt(card.style.top)  || 0;
