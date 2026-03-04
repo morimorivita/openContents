@@ -301,8 +301,8 @@
             <thead>
                 <tr>
                     <th>No.</th>
-                    <th>プラットホーム</th>
-                    <th>エンハンスド対応</th>
+                    <th>P.H.</th>
+                    <th>強化</th>
                     <th>ソフトタイトル名</th>
                     <th>収録タイトル数</th>
                     <th>実収録タイトル名(CSV形式)</th>
@@ -395,6 +395,8 @@
                 scrollY: '75vh',
                 scrollCollapse: true,
                 columnDefs: [
+                    { targets: [1], width: '40px' },
+                    { targets: [2], width: '40px' },
                     { targets: [11], width: '300px' }
                 ],
                 order: [[1, 'asc'], [3, 'asc']]
