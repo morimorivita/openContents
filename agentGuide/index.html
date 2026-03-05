@@ -122,7 +122,7 @@
         <div class="folder-card" id="card-antigravity" tabindex="0" role="button" aria-expanded="false"
           aria-label=".antigravityフォルダの詳細を表示">
           <div class="folder-card-header">
-            <div class="folder-icon" style="background: rgba(167,139,250,0.15);">🛡️</div>
+            <div class="folder-icon" style="background: rgba(37,99,235,0.18);">🛡️</div>
             <div>
               <div class="folder-card-name">.antigravity</div>
               <div class="folder-card-path">最優先 / 基本理念</div>
@@ -301,19 +301,19 @@
 
             subgraph LEARN["📚 学習フェーズ（読み込み）"]
             direction TB
-            A1[/"🛡️ instructions.md\n基本理念・ルールを理解"/]
-            A2[/"📖 lesson.md\n集約した知見を理解"/]
-            A3[/"⚙️ skill.md\n付帯作業ルールを理解"/]
-            A4[/"📜 feedback.*.md\n前回の教訓を全て理解"/]
-            A5[/"📋 request.md\n今回の依頼を理解"/]
-            A6[/"📦 .main フォルダ\n全資材を走査・把握"/]
+            A1[/"🛡️ instructions.md<br />基本理念・ルールを理解"/]
+            A2[/"📖 lesson.md<br />集約した知見を理解"/]
+            A3[/"⚙️ skill.md<br />付帯作業ルールを理解"/]
+            A4[/"📜 feedback.*.md<br />前回の教訓を全て理解"/]
+            A5[/"📋 request.md<br />今回の依頼を理解"/]
+            A6[/"📦 .main フォルダ<br />全資材を走査・把握"/]
             A1 --> A2 --> A3 --> A4 --> A5 --> A6
             end
 
             subgraph GEN["✨ 生成フェーズ"]
             direction TB
-            B1{"🔧 スクリプトが\n必要か？"}
-            B2[/"📂 codeLib/\n過去スクリプトを参考"/]
+            B1{"🔧 スクリプトが<br />必要か？"}
+            B2[/"📂 codeLib/<br />過去スクリプトを参考"/]
             B3["💻 新スクリプトを生成・実行"]
             B4["🎯 成果物を生成"]
             B5{"👁️ レビューOK？"}
@@ -330,7 +330,7 @@
             C1 --> C2 --> C3
             end
 
-            FOLLOWUP(["🔁 追加依頼があれば\nコンテキスト維持で継続"]):::startEnd
+            FOLLOWUP(["🔁 追加依頼があれば<br />コンテキスト維持で継続"]):::startEnd
             END(["🏁 完了"]):::startEnd
 
             START --> LEARN
@@ -341,20 +341,20 @@
             FOLLOWUP -->|"追加あり"| GEN
             FOLLOWUP -->|"完了"| END
 
-            classDef startEnd fill:#6366f1,stroke:#6366f1,color:#fff,rx:20
-            classDef default fill:#1e1b4b,stroke:#6366f1,color:#e2e8f0
+            classDef startEnd fill:#2563eb,stroke:#2563eb,color:#fff,rx:20
+            classDef default fill:#0f1e3d,stroke:#2563eb,color:#e2e8f0
           </div>
         </div>
 
         <div class="flow-legend" style="margin-top:20px;">
           <div class="legend-item">
-            <div class="legend-dot" style="background:#6366f1;"></div>開始・終了ノード
+            <div class="legend-dot" style="background:#2563eb;"></div>開始・終了ノード
           </div>
           <div class="legend-item">
             <div class="legend-dot" style="background:#06b6d4;"></div>ファイル・フォルダ（資材）
           </div>
           <div class="legend-item">
-            <div class="legend-dot" style="background:#a78bfa;"></div>判断分岐
+            <div class="legend-dot" style="background:#60a5fa;"></div>判断分岐
           </div>
           <div class="legend-item">
             <div class="legend-dot" style="background:#10b981;"></div>成果物・記録
@@ -367,7 +367,7 @@
         <div class="mermaid-wrapper">
           <div class="mermaid" id="mermaid-seq2">
             flowchart LR
-            P["👤 人間"] -->|"依頼を書く\nrequest.md"| R["📋 .request/"]
+            P["👤 人間"] -->|"依頼を書く / request.md"| R["📋 .request/"]
             R -->|"AIが読む"| AI["🤖 AIエージェント"]
             AI -->|"全資材を走査"| M["📦 .main/"]
             AI -->|"基本ルール参照"| G["🛡️ .antigravity/"]
@@ -376,7 +376,7 @@
             O -->|"人間がレビュー"| P
             F -->|"次回に活用"| AI
 
-            style AI fill:#1e1b4b,stroke:#6366f1,color:#e2e8f0
+            style AI fill:#0f1e3d,stroke:#2563eb,color:#e2e8f0
             style P fill:#0c1a2e,stroke:#06b6d4,color:#e2e8f0
           </div>
         </div>

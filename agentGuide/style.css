@@ -17,13 +17,13 @@
   --color-border: rgba(255, 255, 255, 0.12);
 
   /* アクセントカラー */
-  --color-primary: #6366f1;
-  /* インディゴ */
-  --color-primary-glow: rgba(99, 102, 241, 0.4);
+  --color-primary: #2563eb;
+  /* ブルー */
+  --color-primary-glow: rgba(37, 99, 235, 0.4);
   --color-secondary: #06b6d4;
   /* シアン */
-  --color-accent: #a78bfa;
-  /* バイオレット */
+  --color-accent: #60a5fa;
+  /* ライトブルー */
   --color-success: #10b981;
   /* エメラルド */
   --color-warning: #f59e0b;
@@ -35,9 +35,9 @@
   --color-text-dim: #64748b;
 
   /* グラデーション */
-  --grad-hero: linear-gradient(135deg, #1e1b4b 0%, #0a0e1a 40%, #0c1a2e 100%);
-  --grad-card: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(6, 182, 212, 0.08) 100%);
-  --grad-primary: linear-gradient(135deg, #6366f1, #06b6d4);
+  --grad-hero: linear-gradient(135deg, #0f1e3d 0%, #0a0e1a 40%, #0c1a2e 100%);
+  --grad-card: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(6, 182, 212, 0.08) 100%);
+  --grad-primary: linear-gradient(135deg, #2563eb, #06b6d4);
 
   /* フォント */
   --font-main: 'Inter', 'Noto Sans JP', sans-serif;
@@ -209,9 +209,9 @@ section {
   color: var(--color-primary);
   margin-bottom: 12px;
   padding: 4px 12px;
-  border: 1px solid rgba(99, 102, 241, 0.4);
+  border: 1px solid rgba(37, 99, 235, 0.4);
   border-radius: 999px;
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(37, 99, 235, 0.1);
 }
 
 .section-title {
@@ -265,8 +265,8 @@ section {
   align-items: center;
   gap: 8px;
   padding: 6px 16px;
-  background: rgba(99, 102, 241, 0.15);
-  border: 1px solid rgba(99, 102, 241, 0.4);
+  background: rgba(37, 99, 235, 0.15);
+  border: 1px solid rgba(37, 99, 235, 0.4);
   border-radius: 999px;
   font-size: 0.8rem;
   color: var(--color-accent);
@@ -456,7 +456,7 @@ section {
 .folder-card:hover {
   border-color: var(--color-primary);
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 12px 40px rgba(37, 99, 235, 0.2);
 }
 
 .folder-card:hover::before {
@@ -465,7 +465,7 @@ section {
 
 .folder-card.active {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 1px var(--color-primary), 0 12px 40px rgba(99, 102, 241, 0.25);
+  box-shadow: 0 0 0 1px var(--color-primary), 0 12px 40px rgba(37, 99, 235, 0.25);
 }
 
 .folder-card-header {
@@ -724,7 +724,7 @@ section {
 .phil-card:hover {
   transform: translateY(-6px);
   border-color: var(--color-primary);
-  box-shadow: 0 12px 40px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 12px 40px rgba(37, 99, 235, 0.2);
 }
 
 .phil-kana {
