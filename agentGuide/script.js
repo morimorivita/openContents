@@ -220,4 +220,45 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  /* ----------------------------------------------------------
+     Mermaid図 拡大モーダル
+     ---------------------------------------------------------- */
+  const modal = document.getElementById('image-modal');
+  const modalOverlay = modal?.querySelector('.modal-overlay');
+  const modalClose = modal?.querySelector('.modal-close');
+  const modalBody = document.getElementById('modal-body');
+
+  const openModal = (htmlContent) => {
+    if (!modal || !modalBody) return;
+    modalBody.innerHTML = htmlContent;
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden'; // 背景スクロール防止
+  };
+
+  const closeModal = () => {
+    if (!modal) return;
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(() => { if (modalBody) modalBody.innerHTML = ''; }, 300);
+  };
+
+  modalOverlay?.addEventListener('click', closeModal);
+  modalClose?.addEventListener('click', closeModal);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('open')) {
+      closeModal();
+    }
+  });
+
+  const mermaidWrappers = document.querySelectorAll('.mermaid-wrapper');
+  mermaidWrappers.forEach(wrapper => {
+    wrapper.addEventListener('click', () => {
+      const mermaidNode = wrapper.querySelector('.mermaid');
+      if (mermaidNode && mermaidNode.innerHTML.trim() !== '') {
+        openModal(mermaidNode.innerHTML);
+      }
+    });
+  });
+
 }); // DOMContentLoaded 終了

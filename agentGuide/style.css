@@ -581,6 +581,13 @@ section {
   padding: 32px 24px;
   overflow-x: auto;
   backdrop-filter: blur(8px);
+  cursor: zoom-in;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.mermaid-wrapper:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 8px 32px rgba(37, 99, 235, 0.2);
 }
 
 /* Mermaid 図のカスタムスタイル */
@@ -982,6 +989,80 @@ section {
   .code-content {
     font-size: 0.72rem;
   }
+}
+
+/* ============================================================
+   モーダル (画像拡大表示用)
+   ============================================================ */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition), visibility var(--transition);
+}
+
+.modal.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 14, 26, 0.85);
+  backdrop-filter: blur(8px);
+  cursor: zoom-out;
+}
+
+.modal-content {
+  position: relative;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 40px;
+  width: 90vw;
+  max-width: 1200px;
+  max-height: 90vh;
+  overflow: auto;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 10001;
+  transition: color var(--transition), transform var(--transition);
+}
+
+.modal-close:hover {
+  color: #fff;
+  transform: scale(1.2);
+}
+
+.modal-body {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.modal-body .mermaid svg {
+  max-width: 100%;
+  height: auto;
 }
 
 /* ============================================================
