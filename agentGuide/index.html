@@ -94,6 +94,16 @@
             <span class="name">.feedback/</span>
             <span class="role tag tag-warning">教訓</span>
           </div>
+          <div class="tree-item folder">
+            <span class="icon">📄</span>
+            <span class="name">index.md</span>
+            <span class="role tag tag-info">構造説明</span>
+          </div>
+          <div class="tree-item folder">
+            <span class="icon">📄</span>
+            <span class="name">entryPoint.md</span>
+            <span class="role tag tag-info">開始点</span>
+          </div>                    
           <div class="tree-item file"
             style="margin-top:12px; border-top:1px solid var(--color-border); padding-top:12px;">
             <span class="icon">⚡</span>
@@ -268,6 +278,114 @@
             </ul>
           </div>
         </div>
+
+        <!-- index.md -->
+        <div class="folder-card" id="card-agent" tabindex="0" role="button" aria-expanded="false"
+          aria-label="index.mdファイルの詳細を表示">
+          <div class="folder-card-header">
+            <div class="folder-icon" style="background: rgba(6,182,212,0.12);">📄</div>
+            <div>
+              <div class="folder-card-name">index.md</div>
+              <div class="folder-card-path">プロジェクト構造と役割の説明</div>
+            </div>
+          </div>
+          <div class="folder-card-desc">
+            作業に先立って、AIに当該プロジェクトの構造と役割を理解してもらう内容が書かれたファイル
+          </div>
+          <div class="folder-detail">
+            <ul>
+              <li><strong>構造の理解</strong> — AIにプロジェクトのツリー構造の理解を願う</li>
+              <li><strong>役割の理解</strong> — フォルダやファイルの役割の理解を願う</li>
+              <li><strong>機序の理解</strong> — 構造の優先順位、機序の理解を願う</li>
+            </ul>
+            <pre>
+プロジェクト構造(もりもりテンプレート)
+※構造だけでなく機序もフロー図でAIに理解を願う
+|   .gitattributes
+|   AIエージェントプロジェクト作業フロー.md
+|   AIエージェントプロジェクト作業フロー.png
+|   entryPoint.md
+|   index.md
+|   _プロジェクト構造・役割説明(index.md)
+|   _開始合図(entryPoint)
+|   無料者AIエージェント利用フロー.md
+|   無料者AIエージェント利用フロー.png
+|
++---.agent
+|   +---code
+|   |       _使用するコード
+|   |
+|   +---codeLib
+|   |       extract_titles.py
+|   |       gen_html.py
+|   |       process_lib.py
+|   |       replace_titles.ps1
+|   |       update_lib.py
+|   |       _AI生成されたコード実績
+|   |
+|   \---skills
+|           skill.md
+|           _個別ルール・付帯作業
+|
++---.antigravity
+|       feedback.1.md
+|       instructions.md
+|       lesson.md
+|       _基本理念・基本ルール・知見(最優先)
+|
++---.feedback
+|       feedback.md
+|       _今回の教訓・次回申し送り事項
+|
++---.main
+|       _処理対象の資材
+|
++---.output
+|       outputIndex.md
+|       request_template.md
+|       _成果物
+|
++---.request
+|       request.md
+|       _依頼内容
+|
+\---.requestHistory
+        requestHistory.md
+        _追加の依頼内容・今回の履歴
+            </pre>
+          </div>
+        </div>
+
+        <!-- entryPoint.md -->
+        <div class="folder-card" id="card-agent" tabindex="0" role="button" aria-expanded="false"
+          aria-label="entryPoint.mdファイルの詳細を表示">
+          <div class="folder-card-header">
+            <div class="folder-icon" style="background: rgba(6,182,212,0.12);">📄</div>
+            <div>
+              <div class="folder-card-name">index.md</div>
+              <div class="folder-card-path">作業の開始点</div>
+            </div>
+          </div>
+          <div class="folder-card-desc">
+            (人間が使用)AIエージェントのチャットボックスで送信する、作業の開始となる合図
+          </div>
+          <div class="folder-detail">
+            <ul>
+              <li><strong>構造の理解を依頼</strong> — AIにindex.mdを理解するように依頼</li>
+              <li><strong>今回の依頼内容の理解を依頼</strong> — AIに今回の依頼を読むように依頼</li>
+              <li><strong>作業開始の合図</strong> — 実際に作業を開始するように依頼</li>
+            </ul>
+            <p>
+              # 作業開始の依頼(もりもりの実例)<br/><br/>
+
+-- いつもお世話になっています。大変感謝しております。今回もよろしくお願いいたします。<br/><br/>
+
+1. `#file:index.md`には、当プロジェクトの構造、役割の説明、読み取りの優先順位等の機序を書いています。必ず全て理解して下さい。<br/><br/>
+
+2. `.request/request.md`に依頼内容を記述しましたので、どうか作業を開始して下さい。よろしくお願いいたします。<br/><br/>
+            </p>
+          </div>
+        </div>  
 
       </div><!-- /structure-grid -->
     </div>
@@ -495,7 +613,7 @@
         <span class="section-label">Design Philosophy</span>
         <h2 class="section-title">💡 設計哲学「な・ど・し・り・さ」</h2>
         <p class="section-desc">
-          無い知恵を絞って独自に考案した、プロジェクト設計の五大要素です。
+          無い知恵を絞って💦独自に考案した、プロジェクト設計の五大要素です。
           この標語を意識するだけで、AIと人間の協働がスムーズになるといいな。
         </p>
       </div>
