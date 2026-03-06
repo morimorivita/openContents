@@ -285,6 +285,124 @@
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(255,255,255,0.2);
         }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 10, 26, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-content {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 24px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+        .modal-header {
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 10px;
+        }
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: #fff;
+            text-align: center;
+        }
+        .modal-body {
+            overflow-y: auto;
+            flex-grow: 1;
+            margin-bottom: 20px;
+            padding-right: 10px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .checkbox-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--ps-blue);
+        }
+        .checkbox-item label {
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            user-select: none;
+            flex-grow: 1;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            border-top: 1px solid var(--glass-border);
+            padding-top: 15px;
+        }
+        .btn {
+            padding: 8px 20px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+        .btn-cancel {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--text-muted);
+        }
+        .btn-cancel:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        .btn-apply {
+            background: var(--ps-blue);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 119, 255, 0.4);
+        }
+        .btn-apply:hover {
+            background: #005ce6;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 119, 255, 0.6);
+        }
     </style>
 </head>
 <body>
@@ -294,6 +412,7 @@
         <button class="filter-btn active" data-filter="">全機種</button>
         <button class="filter-btn" data-filter="PS5">PS5</button>
         <button class="filter-btn" data-filter="PS4">PS4</button>
+        <button class="filter-btn" id="btnShowColVis" style="margin-left: 10px; border-color: #0077ff; color: #93c5fd; box-shadow: 0 0 10px rgba(0,119,255,0.3);">表示項目選択</button>
     </div>
 
     <div class="table-container">
@@ -320,6 +439,22 @@
             </thead>
             <tbody id="libraryBody"></tbody>
         </table>
+    </div>
+
+    <!-- Column Visibility Modal -->
+    <div class="modal-overlay" id="colVisModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>表示項目の選択</h2>
+            </div>
+            <div class="modal-body" id="colVisList">
+                <!-- Checkboxes will be dynamically inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" id="btnCancelColVis">キャンセル</button>
+                <button class="btn btn-apply" id="btnApplyColVis">適用</button>
+            </div>
+        </div>
     </div>
 
     <!-- Scripts -->
@@ -403,11 +538,73 @@
             });
 
             // Quick Filters
-            $('.filter-btn').on('click', function() {
-                $('.filter-btn').removeClass('active');
+            $('.filter-btn:not(#btnShowColVis)').on('click', function() {
+                $('.filter-btn:not(#btnShowColVis)').removeClass('active');
                 $(this).addClass('active');
                 var filterValue = $(this).attr('data-filter');
                 table.column(1).search(filterValue).draw();
+            });
+
+            // Column Visibility Modal Logic
+            const modal = document.getElementById('colVisModal');
+            const colVisList = document.getElementById('colVisList');
+            const btnShowColVis = document.getElementById('btnShowColVis');
+            const btnCancelColVis = document.getElementById('btnCancelColVis');
+            const btnApplyColVis = document.getElementById('btnApplyColVis');
+
+            // a-01100: Open modal and populate checkboxes based on current visibility
+            btnShowColVis.addEventListener('click', function() {
+                colVisList.innerHTML = ''; // Clear previous
+                
+                // Get all columns from DataTables
+                table.columns().every(function() {
+                    const col = this;
+                    const idx = col.index();
+                    const title = $(col.header()).text().trim();
+                    const isVisible = col.visible();
+                    
+                    // a-01200: reflect visibility state to checkbox limit
+                    const label = document.createElement('label');
+                    label.className = 'checkbox-item';
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = idx;
+                    checkbox.checked = isVisible;
+                    
+                    const span = document.createElement('span');
+                    span.textContent = title;
+                    
+                    // a-01300, a-01400: Check / uncheck logic applies naturally via standard HTML checkbox
+                    label.appendChild(checkbox);
+                    label.appendChild(span);
+                    colVisList.appendChild(label);
+                });
+                
+                modal.classList.add('active');
+            });
+
+            // Close modal actions
+            function closeModal() {
+                modal.classList.remove('active');
+            }
+
+            btnCancelColVis.addEventListener('click', closeModal);
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) closeModal(); // Close when clicking overlay
+            });
+
+            // a-01500: Apply visibility changes
+            btnApplyColVis.addEventListener('click', function() {
+                const checkboxes = colVisList.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(function(cb) {
+                    const idx = parseInt(cb.value, 10);
+                    const isVisible = cb.checked;
+                    table.column(idx).visible(isVisible, false); // false to not redraw immediately to avoid performance penalty
+                });
+                
+                table.columns.adjust().draw(false); // Redraw once at the end
+                closeModal();
             });
         }
         });
