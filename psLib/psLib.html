@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,17 +8,21 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
     <!-- DataTables & FixedHeader CSS -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css">
-    
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css">
+
     <style>
         :root {
             --ps-blue: #0077ff;
             --ps-blue-deep: #001a33;
             --ps-header-bg: #002244;
-            --ps-row-bg: rgba(0, 102, 255, 0.08); /* Lighter blue row background */
+            --ps-row-bg: rgba(0, 102, 255, 0.08);
+            /* Lighter blue row background */
             --ps-row-hover: rgba(0, 102, 255, 0.15);
             --ps-blue-glow: rgba(0, 119, 255, 0.4);
             --bg-gradient: linear-gradient(135deg, #000a1a 0%, #001a33 50%, #00264d 100%);
@@ -30,7 +35,7 @@
         body {
             font-family: 'Outfit', 'Inter', sans-serif;
             background-color: #001a33;
-            background-image: 
+            background-image:
                 radial-gradient(circle at 10% 10%, rgba(0, 102, 255, 0.15) 0%, transparent 40%),
                 radial-gradient(circle at 90% 90%, rgba(0, 153, 255, 0.15) 0%, transparent 40%),
                 var(--bg-gradient);
@@ -53,7 +58,7 @@
             letter-spacing: -0.01em;
             text-shadow: 0 0 20px rgba(0, 119, 255, 0.5);
         }
-        
+
         /* Glassmorphism Container */
         .table-container {
             width: 100%;
@@ -63,9 +68,9 @@
             padding: 12px 8px;
             border-radius: 14px;
             border: 1px solid var(--glass-border);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
-        
+
         /* DataTable Styling Overrides */
         table.dataTable {
             border-collapse: separate !important;
@@ -74,7 +79,7 @@
             margin: 0 !important;
             background: transparent !important;
         }
-        
+
         table.dataTable thead th {
             background: var(--ps-header-bg) !important;
             color: #ffffff !important;
@@ -85,7 +90,7 @@
             letter-spacing: 0.08em;
             border-bottom: 2px solid var(--ps-blue) !important;
         }
-        
+
         .table-container {
             position: relative;
             overflow-x: auto;
@@ -97,26 +102,28 @@
             background: var(--ps-header-bg) !important;
             overflow: hidden !important;
         }
+
         .dataTables_scrollBody {
             -webkit-overflow-scrolling: touch;
         }
+
         .dataTables_scroll {
             width: 100%;
         }
-        
+
         table.dataTable tbody tr {
             background: var(--ps-row-bg) !important;
             transition: all 0.25s ease;
         }
-        
+
         table.dataTable tbody tr:nth-child(even) {
             background: rgba(0, 102, 255, 0.04) !important;
         }
-        
+
         table.dataTable tbody tr:hover {
             background: var(--ps-row-hover) !important;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
         table.dataTable tbody td {
@@ -136,7 +143,7 @@
             border-right: 1px solid var(--glass-border) !important;
             border-radius: 0 10px 10px 0;
         }
-        
+
         /* Title Highlighting */
         table.dataTable tbody th {
             background: rgba(0, 102, 255, 0.12) !important;
@@ -148,7 +155,7 @@
             font-size: 0.85rem;
             text-shadow: 0 0 10px rgba(0, 119, 255, 0.8), 0 0 20px rgba(0, 119, 255, 0.4);
         }
-        
+
         /* Badges */
         .badge {
             display: inline-flex;
@@ -159,26 +166,52 @@
             font-weight: 700;
             font-size: 0.75rem;
             letter-spacing: 0.05em;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
+
         .badge-ps5 {
             background: #fff;
             color: #000;
             border: 1px solid #ddd;
         }
+
         .badge-ps4 {
             background: var(--ps-blue);
             color: #fff;
-            border: 1px solid rgba(255,255,255,0.2);
-            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
-        
+
+        .badge-vita {
+            background: #00a896;
+            /* Blue-ish Emerald Green */
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .badge-vitap {
+            background: #e6b400;
+            /* Dark Yellow */
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .badge-vitaa {
+            background: #900c3f;
+            /* Wine Red */
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
         .enhanced-mark {
             color: #ff9d00;
             filter: drop-shadow(0 0 5px rgba(255, 157, 0, 0.5));
             font-size: 1.2em;
         }
-        
+
         /* Filters */
         .filter-buttons {
             margin-bottom: 10px;
@@ -187,6 +220,7 @@
             justify-content: center;
             flex-wrap: wrap;
         }
+
         .filter-btn {
             padding: 5px 14px;
             border: 1px solid var(--glass-border);
@@ -200,18 +234,20 @@
             font-family: 'Outfit', sans-serif;
             backdrop-filter: blur(4px);
         }
+
         .filter-btn:hover {
             background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255,255,255,0.3);
-            box-shadow: 0 0 15px rgba(255,255,255,0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
         }
+
         .filter-btn.active {
             background: #0066ff;
             border-color: #0066ff;
-            box-shadow: 0 0 20px rgba(0,102,255,0.5);
+            box-shadow: 0 0 20px rgba(0, 102, 255, 0.5);
             color: #ffffff;
         }
-        
+
         /* DataTables Controls */
         .dataTables_wrapper .dataTables_filter input {
             background: var(--glass-bg) !important;
@@ -223,15 +259,18 @@
             outline: none !important;
             transition: all 0.3s;
         }
+
         .dataTables_wrapper .dataTables_filter input:focus {
             border-color: var(--ps-blue) !important;
             box-shadow: 0 0 10px var(--ps-blue-glow) !important;
         }
+
         .dataTables_wrapper .dataTables_filter label,
         .dataTables_wrapper .dataTables_length label {
             color: var(--text-muted) !important;
             font-size: 0.8rem !important;
         }
+
         .dataTables_wrapper .dataTables_length select {
             background: var(--glass-bg) !important;
             border: 1px solid var(--glass-border) !important;
@@ -240,19 +279,22 @@
             padding: 3px 6px !important;
             font-size: 0.8rem !important;
         }
-        .dataTables_wrapper .dataTables_info, 
+
+        .dataTables_wrapper .dataTables_info,
         .dataTables_wrapper .dataTables_length,
         .dataTables_wrapper .dataTables_paginate {
             color: var(--text-muted) !important;
             font-size: 0.8rem !important;
             margin-top: 8px;
         }
+
         .dataTables_wrapper .dataTables_paginate .paginate_button {
             color: var(--text-muted) !important;
             border-radius: 5px !important;
             padding: 3px 8px !important;
             font-size: 0.8rem !important;
         }
+
         .dataTables_wrapper .dataTables_paginate .paginate_button.current {
             background: var(--ps-blue) !important;
             border: none !important;
@@ -266,24 +308,28 @@
             transition: 0.2s;
             font-weight: 600;
         }
+
         a:hover {
             color: #93c5fd;
             text-decoration: underline;
         }
-        
+
         ::-webkit-scrollbar {
             width: 10px;
             height: 10px;
         }
+
         ::-webkit-scrollbar-track {
             background: var(--midnight-bg);
         }
+
         ::-webkit-scrollbar-thumb {
             background: var(--glass-border);
             border-radius: 5px;
         }
+
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
         }
 
         /* Modal Styles */
@@ -303,10 +349,12 @@
             opacity: 0;
             transition: opacity 0.3s ease;
         }
+
         .modal-overlay.active {
             display: flex;
             opacity: 1;
         }
+
         .modal-content {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
@@ -317,30 +365,35 @@
             max-height: 80vh;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
             transform: translateY(-20px);
             transition: transform 0.3s ease;
         }
+
         .modal-overlay.active .modal-content {
             transform: translateY(0);
         }
+
         .modal-header {
             margin-bottom: 20px;
             border-bottom: 1px solid var(--glass-border);
             padding-bottom: 10px;
         }
+
         .modal-header h2 {
             margin: 0;
             font-size: 1.2rem;
             color: #fff;
             text-align: center;
         }
+
         .modal-body {
             overflow-y: auto;
             flex-grow: 1;
             margin-bottom: 20px;
             padding-right: 10px;
         }
+
         .checkbox-item {
             display: flex;
             align-items: center;
@@ -350,9 +403,11 @@
             border-radius: 8px;
             transition: background 0.2s;
         }
+
         .checkbox-item:hover {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
         }
+
         .checkbox-item input[type="checkbox"] {
             margin-right: 12px;
             width: 18px;
@@ -360,6 +415,7 @@
             cursor: pointer;
             accent-color: var(--ps-blue);
         }
+
         .checkbox-item label {
             cursor: pointer;
             font-size: 0.95rem;
@@ -367,6 +423,7 @@
             user-select: none;
             flex-grow: 1;
         }
+
         .modal-footer {
             display: flex;
             justify-content: flex-end;
@@ -374,6 +431,7 @@
             border-top: 1px solid var(--glass-border);
             padding-top: 15px;
         }
+
         .btn {
             padding: 8px 20px;
             border-radius: 30px;
@@ -384,20 +442,24 @@
             transition: all 0.2s ease;
             font-size: 0.9rem;
         }
+
         .btn-cancel {
             background: transparent;
             color: var(--text-muted);
             border: 1px solid var(--text-muted);
         }
+
         .btn-cancel:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             color: #fff;
         }
+
         .btn-apply {
             background: var(--ps-blue);
             color: #fff;
             box-shadow: 0 4px 15px rgba(0, 119, 255, 0.4);
         }
+
         .btn-apply:hover {
             background: #005ce6;
             transform: translateY(-2px);
@@ -405,30 +467,35 @@
         }
     </style>
 </head>
+
 <body>
     <h1>もりもりPLAYSTATION SOFT</h1>
-    
+
     <div class="filter-buttons">
         <button class="filter-btn active" data-filter="">全機種</button>
         <button class="filter-btn" data-filter="PS5">PS5</button>
         <button class="filter-btn" data-filter="PS4">PS4</button>
-        <button class="filter-btn" id="btnShowColVis" style="margin-left: 10px; border-color: #0077ff; color: #93c5fd; box-shadow: 0 0 10px rgba(0,119,255,0.3);">表示項目選択</button>
+        <button class="filter-btn" data-filter="Vita" style="border-color: #00a896; color: #00a896;">Vita</button>
+        <button class="filter-btn" data-filter="Vita/P" style="border-color: #e6b400; color: #e6b400;">Vita/P</button>
+        <button class="filter-btn" data-filter="Vita/A" style="border-color: #900c3f; color: #900c3f;">Vita/A</button>
+        <button class="filter-btn" id="btnShowColVis"
+            style="margin-left: 10px; border-color: #0077ff; color: #93c5fd; box-shadow: 0 0 10px rgba(0,119,255,0.3);">表示項目選択</button>
     </div>
 
     <div class="table-container">
         <table id="psLibrary" class="display nowrap" style="width:100%">
             <thead>
                 <tr>
-                    <th>No.</th>
+                    <th>親No.</th>
                     <th>P.H.</th>
                     <th>強化</th>
                     <th>ソフトタイトル名</th>
-                    <th>収録数</th>
-                    <th>実収録タイトル名(CSV形式)</th>
+                    <th>子No.</th>
+                    <th>実収録タイトル名</th>
                     <th>パブリッシャー名</th>
                     <th>開発名</th>
                     <th>ジャンル</th>
-                    <th>フルプライス価格</th>
+                    <th>価格</th>
                     <th>発売年月日(曜日)</th>
                     <th>概要</th>
                     <th>公式サイトURL</th>
@@ -461,37 +528,46 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
-    
-    <script>
-        $(document).ready(function() {
-        // JSON ファイルから POST Library データを読み込む
-        fetch('psLib.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(`${data.length} 行のデータを読み込みました`);
-                populateTable(data);
-                initializeDataTable();
-            })
-            .catch(error => {
-                console.error('JSON ロードエラー:', error);
-                alert('データの読み込みに失敗しました。psLib.json ファイルを確認してください。');
-            });
 
-        // JSON データをテーブルにポピュレート
-        function populateTable(data) {
-            const tbody = document.getElementById('libraryBody');
-            tbody.innerHTML = ''; // 既存の行をクリア
-            
-            data.forEach(row => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
+    <script>
+        $(document).ready(function () {
+            // JSON ファイルから POST Library データを読み込む
+            fetch('psLib.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(`${data.length} 行のデータを読み込みました`);
+                    populateTable(data);
+                    initializeDataTable();
+                })
+                .catch(error => {
+                    console.error('JSON ロードエラー:', error);
+                    alert('データの読み込みに失敗しました。psLib.json ファイルを確認してください。');
+                });
+
+            // JSON データをテーブルにポピュレート
+            function populateTable(data) {
+                const tbody = document.getElementById('libraryBody');
+                tbody.innerHTML = ''; // 既存の行をクリア
+
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+
+                    let platformClass = 'ps4';
+                    if (row.platform === 'PS5') platformClass = 'ps5';
+                    else if (row.platform === 'PS4') platformClass = 'ps4';
+                    else if (row.platform === 'Vita') platformClass = 'vita';
+                    else if (row.platform === 'Vita/P') platformClass = 'vitap';
+                    else if (row.platform === 'Vita/A') platformClass = 'vitaa';
+                    else if (row.platform.toLowerCase().includes('vita')) platformClass = 'vita';
+
+                    tr.innerHTML = `
                     <td style="text-align: center; color: var(--text-muted); font-size: 0.8em;">${escapeHtml(row.no)}</td>
-                    <td style="text-align: center;"><span class="badge badge-${row.platform === 'PS5' ? 'ps5' : 'ps4'}">${escapeHtml(row.platform)}</span></td>
+                    <td style="text-align: center;"><span class="badge badge-${platformClass}">${escapeHtml(row.platform)}</span></td>
                     <td style="text-align: center;">${row.enhanced ? '<span class="enhanced-mark">' + escapeHtml(row.enhanced) + '</span>' : ''}</td>
                     <th>${escapeHtml(row.title)}</th>
                     <td>${escapeHtml(row.count)}</td>
@@ -507,107 +583,113 @@
                     <td>${escapeHtml(row.ps_plus)}</td>
                     <td>${escapeHtml(row.package)}</td>
                 `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        // HTML の危険な文字をエスケープ
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // DataTable を初期化（JSON ロード後）
-        function initializeDataTable() {
-            var table = $('#psLibrary').DataTable({
-                language: {
-                    url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/ja.json'
-                },
-                lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "全件"]],
-                pageLength: 50,
-                scrollX: true,
-                scrollY: '75vh',
-                scrollCollapse: true,
-                columnDefs: [
-                    { targets: [1], width: '40px' },
-                    { targets: [2], width: '40px' },
-                    { targets: [11], width: '300px' }
-                ],
-                order: [[1, 'asc'], [3, 'asc']]
-            });
-
-            // Quick Filters
-            $('.filter-btn:not(#btnShowColVis)').on('click', function() {
-                $('.filter-btn:not(#btnShowColVis)').removeClass('active');
-                $(this).addClass('active');
-                var filterValue = $(this).attr('data-filter');
-                table.column(1).search(filterValue).draw();
-            });
-
-            // Column Visibility Modal Logic
-            const modal = document.getElementById('colVisModal');
-            const colVisList = document.getElementById('colVisList');
-            const btnShowColVis = document.getElementById('btnShowColVis');
-            const btnCancelColVis = document.getElementById('btnCancelColVis');
-            const btnApplyColVis = document.getElementById('btnApplyColVis');
-
-            // a-01100: Open modal and populate checkboxes based on current visibility
-            btnShowColVis.addEventListener('click', function() {
-                colVisList.innerHTML = ''; // Clear previous
-                
-                // Get all columns from DataTables
-                table.columns().every(function() {
-                    const col = this;
-                    const idx = col.index();
-                    const title = $(col.header()).text().trim();
-                    const isVisible = col.visible();
-                    
-                    // a-01200: reflect visibility state to checkbox limit
-                    const label = document.createElement('label');
-                    label.className = 'checkbox-item';
-                    
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.value = idx;
-                    checkbox.checked = isVisible;
-                    
-                    const span = document.createElement('span');
-                    span.textContent = title;
-                    
-                    // a-01300, a-01400: Check / uncheck logic applies naturally via standard HTML checkbox
-                    label.appendChild(checkbox);
-                    label.appendChild(span);
-                    colVisList.appendChild(label);
+                    tbody.appendChild(tr);
                 });
-                
-                modal.classList.add('active');
-            });
-
-            // Close modal actions
-            function closeModal() {
-                modal.classList.remove('active');
             }
 
-            btnCancelColVis.addEventListener('click', closeModal);
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) closeModal(); // Close when clicking overlay
-            });
+            // HTML の危険な文字をエスケープ
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
 
-            // a-01500: Apply visibility changes
-            btnApplyColVis.addEventListener('click', function() {
-                const checkboxes = colVisList.querySelectorAll('input[type="checkbox"]');
-                checkboxes.forEach(function(cb) {
-                    const idx = parseInt(cb.value, 10);
-                    const isVisible = cb.checked;
-                    table.column(idx).visible(isVisible, false); // false to not redraw immediately to avoid performance penalty
+            // DataTable を初期化（JSON ロード後）
+            function initializeDataTable() {
+                var table = $('#psLibrary').DataTable({
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/ja.json'
+                    },
+                    lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "全件"]],
+                    pageLength: 50,
+                    scrollX: true,
+                    scrollY: '75vh',
+                    scrollCollapse: true,
+                    columnDefs: [
+                        { targets: [1], width: '40px' },
+                        { targets: [2], width: '40px' },
+                        { targets: [11], width: '300px' }
+                    ],
+                    order: [[1, 'asc'], [3, 'asc']]
                 });
-                
-                table.columns.adjust().draw(false); // Redraw once at the end
-                closeModal();
-            });
-        }
+
+                // Quick Filters
+                $('.filter-btn:not(#btnShowColVis)').on('click', function () {
+                    $('.filter-btn:not(#btnShowColVis)').removeClass('active');
+                    $(this).addClass('active');
+                    var filterValue = $(this).attr('data-filter');
+                    if (filterValue) {
+                        // Use regex for exact match to avoid "Vita" matching "Vita/P" etc.
+                        table.column(1).search('^' + filterValue + '$', true, false).draw();
+                    } else {
+                        table.column(1).search('').draw();
+                    }
+                });
+
+                // Column Visibility Modal Logic
+                const modal = document.getElementById('colVisModal');
+                const colVisList = document.getElementById('colVisList');
+                const btnShowColVis = document.getElementById('btnShowColVis');
+                const btnCancelColVis = document.getElementById('btnCancelColVis');
+                const btnApplyColVis = document.getElementById('btnApplyColVis');
+
+                // a-01100: Open modal and populate checkboxes based on current visibility
+                btnShowColVis.addEventListener('click', function () {
+                    colVisList.innerHTML = ''; // Clear previous
+
+                    // Get all columns from DataTables
+                    table.columns().every(function () {
+                        const col = this;
+                        const idx = col.index();
+                        const title = $(col.header()).text().trim();
+                        const isVisible = col.visible();
+
+                        // a-01200: reflect visibility state to checkbox limit
+                        const label = document.createElement('label');
+                        label.className = 'checkbox-item';
+
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.value = idx;
+                        checkbox.checked = isVisible;
+
+                        const span = document.createElement('span');
+                        span.textContent = title;
+
+                        // a-01300, a-01400: Check / uncheck logic applies naturally via standard HTML checkbox
+                        label.appendChild(checkbox);
+                        label.appendChild(span);
+                        colVisList.appendChild(label);
+                    });
+
+                    modal.classList.add('active');
+                });
+
+                // Close modal actions
+                function closeModal() {
+                    modal.classList.remove('active');
+                }
+
+                btnCancelColVis.addEventListener('click', closeModal);
+                modal.addEventListener('click', function (e) {
+                    if (e.target === modal) closeModal(); // Close when clicking overlay
+                });
+
+                // a-01500: Apply visibility changes
+                btnApplyColVis.addEventListener('click', function () {
+                    const checkboxes = colVisList.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach(function (cb) {
+                        const idx = parseInt(cb.value, 10);
+                        const isVisible = cb.checked;
+                        table.column(idx).visible(isVisible, false); // false to not redraw immediately to avoid performance penalty
+                    });
+
+                    table.columns.adjust().draw(false); // Redraw once at the end
+                    closeModal();
+                });
+            }
         });
     </script>
 </body>
+
 </html>
