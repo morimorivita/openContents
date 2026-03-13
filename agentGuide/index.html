@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
-
+ 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,11 +11,12 @@
   <title>もりもり自己流 AI エージェント開発構造ガイド</title>
   <link rel="stylesheet" href="style.css" />
   <!-- Mermaid.js (CDN) -->
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <!--<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>-->
+  <script src="mermaid.min.js"></script>
 </head>
-
+ 
 <body>
-
+ 
   <!-- ============================================================
        ナビゲーションバー
        ============================================================ -->
@@ -36,7 +37,7 @@
       </div>
     </div>
   </nav>
-
+ 
   <!-- ============================================================
        ① ヒーロー
        ============================================================ -->
@@ -63,12 +64,22 @@
           </a>
         </div>
       </div>
-
+ 
       <!-- ヒーロービジュアル（フローティングカード） -->
       <div class="hero-visual" aria-hidden="true">
         <div class="hero-card">
           <div class="hero-card-title">📂 プロジェクト構造</div>
-
+ 
+          <div class="tree-item file">
+            <span class="icon">⚡</span>
+            <span class="name">entryPoint.md</span>
+            <span class="role tag" style="background:rgba(16,185,129,0.18);color:#34d399;">起点</span>
+          </div>
+          <div class="tree-item file">
+            <span class="icon">🗺️</span>
+            <span class="name">index.md</span>
+            <span class="role tag" style="background:rgba(99,102,241,0.2);color:#a5b4fc;">構造図</span>
+          </div>
           <div class="tree-item folder">
             <span class="icon">📁</span>
             <span class="name">.antigravity/</span>
@@ -95,15 +106,10 @@
             <span class="role tag tag-warning">教訓</span>
           </div>
           <div class="tree-item folder">
-            <span class="icon">📄</span>
-            <span class="name">index.md</span>
-            <span class="role tag tag-info">構造説明</span>
+            <span class="icon">📁</span>
+            <span class="name">.brainstorming/</span>
+            <span class="role tag" style="background:rgba(236,72,153,0.18);color:#f472b6;">手紙</span>
           </div>
-          <div class="tree-item folder">
-            <span class="icon">📄</span>
-            <span class="name">entryPoint.md</span>
-            <span class="role tag tag-info">開始点</span>
-          </div>                    
           <div class="tree-item file"
             style="margin-top:12px; border-top:1px solid var(--color-border); padding-top:12px;">
             <span class="icon">⚡</span>
@@ -114,7 +120,7 @@
       </div>
     </div>
   </section>
-
+ 
   <!-- ============================================================
        ② プロジェクト構造
        ============================================================ -->
@@ -125,13 +131,61 @@
         <h2 class="section-title">📁 プロジェクト構造</h2>
         <p class="section-desc">各フォルダには明確な役割があり、AIエージェントが迷わず動けるよう設計されています。カードをクリックすると詳細が展開します。</p>
       </div>
-
+ 
       <div class="structure-grid fade-in">
-
-        <!-- .antigravity -->
+ 
+        <!-- 00 entryPoint.md -->
+        <div class="folder-card" id="card-entrypoint" tabindex="0" role="button" aria-expanded="false"
+          aria-label="entryPoint.mdの詳細を表示">
+          <div class="folder-card-header">
+            <div class="folder-seq-num">00</div>
+            <div class="folder-icon" style="background: rgba(16,185,129,0.18);">⚡</div>
+            <div>
+              <div class="folder-card-name">entryPoint.md</div>
+              <div class="folder-card-path">人間が最初に開く起点ファイル</div>
+            </div>
+          </div>
+          <div class="folder-card-desc">
+            作業開始の合図となるファイルです。人間がこの内容をコピーしてチャットに貼り付け、AIエージェントを起動します。
+          </div>
+          <div class="folder-detail">
+            <ul>
+              <li>AIへの作業開始メッセージが記述されています</li>
+              <li>作業中は参照不要。<strong>起動のためだけ</strong>に使います</li>
+            </ul>
+            <p style="margin-top:8px; color:var(--color-text-dim); font-size:0.78rem;">このファイルを貼ることで、AIはプロジェクト全体の読み込みを開始します。</p>
+          </div>
+        </div>
+ 
+        <!-- 01 index.md -->
+        <div class="folder-card" id="card-index" tabindex="0" role="button" aria-expanded="false"
+          aria-label="index.mdの詳細を表示">
+          <div class="folder-card-header">
+            <div class="folder-seq-num">01</div>
+            <div class="folder-icon" style="background: rgba(99,102,241,0.2);">🗺️</div>
+            <div>
+              <div class="folder-card-name">index.md</div>
+              <div class="folder-card-path">AIが最初に読む構造説明ファイル</div>
+            </div>
+          </div>
+          <div class="folder-card-desc">
+            プロジェクト全体の構造・役割・参照優先順位・処理フローが記述されたファイルです。AIはここを読んで動き方を把握します。
+          </div>
+          <div class="folder-detail">
+            <ul>
+              <li>フォルダ構造ツリーと各フォルダの役割を定義</li>
+              <li>Mermaidフローチャート・シーケンス図で機序を図解</li>
+              <li>参照順・出力先ルールを明示</li>
+            </ul>
+            <p style="margin-top:8px; color:var(--color-text-dim); font-size:0.78rem;">あなたが今まさに読んでいるこのサイトの元になったファイルです。</p>
+          </div>
+        </div>
+ 
+        <!-- 02 .antigravity -->
         <div class="folder-card" id="card-antigravity" tabindex="0" role="button" aria-expanded="false"
           aria-label=".antigravityフォルダの詳細を表示">
           <div class="folder-card-header">
+            <div class="folder-seq-num">02</div>
             <div class="folder-icon" style="background: rgba(37,99,235,0.18);">🛡️</div>
             <div>
               <div class="folder-card-name">.antigravity</div>
@@ -149,11 +203,12 @@
             </ul>
           </div>
         </div>
-
-        <!-- .request -->
+ 
+        <!-- 03 .request -->
         <div class="folder-card" id="card-request" tabindex="0" role="button" aria-expanded="false"
           aria-label=".requestフォルダの詳細を表示">
           <div class="folder-card-header">
+            <div class="folder-seq-num">03</div>
             <div class="folder-icon" style="background: rgba(6,182,212,0.15);">📋</div>
             <div>
               <div class="folder-card-name">.request</div>
@@ -170,75 +225,12 @@
             <p style="margin-top:8px; color:var(--color-text-dim); font-size:0.78rem;">ここに書かれた内容が今回のゴールです。</p>
           </div>
         </div>
-
-        <!-- .main -->
-        <div class="folder-card" id="card-main" tabindex="0" role="button" aria-expanded="false"
-          aria-label=".mainフォルダの詳細を表示">
-          <div class="folder-card-header">
-            <div class="folder-icon" style="background: rgba(99,102,241,0.15);">📦</div>
-            <div>
-              <div class="folder-card-name">.main</div>
-              <div class="folder-card-path">処理対象の資材</div>
-            </div>
-          </div>
-          <div class="folder-card-desc">
-            今回の依頼で修正・使用する全てのファイルやフォルダが入っています。<strong>サブフォルダまで全て</strong>参照します。
-          </div>
-          <div class="folder-detail">
-            <ul>
-              <li>依頼ごとに異なる資材が格納されます</li>
-              <li>AIエージェントはこのフォルダを全て走査・把握します</li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- .output -->
-        <div class="folder-card" id="card-output" tabindex="0" role="button" aria-expanded="false"
-          aria-label=".outputフォルダの詳細を表示">
-          <div class="folder-card-header">
-            <div class="folder-icon" style="background: rgba(16,185,129,0.15);">✅</div>
-            <div>
-              <div class="folder-card-name">.output</div>
-              <div class="folder-card-path">成果物の格納先</div>
-            </div>
-          </div>
-          <div class="folder-card-desc">
-            AIエージェントが生成した成果物はここに格納されます。目録ファイル（outputIndex.md）も自動生成。
-          </div>
-          <div class="folder-detail">
-            <ul>
-              <li><strong>result.md / 各成果物</strong> — 依頼ごとの生成結果</li>
-              <li><strong>outputIndex.md</strong> — 成果物の目録（日時・概要付き）</li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- .feedback -->
-        <div class="folder-card" id="card-feedback" tabindex="0" role="button" aria-expanded="false"
-          aria-label=".feedbackフォルダの詳細を表示">
-          <div class="folder-card-header">
-            <div class="folder-icon" style="background: rgba(245,158,11,0.15);">💡</div>
-            <div>
-              <div class="folder-card-name">.feedback</div>
-              <div class="folder-card-path">今回の教訓・申し送り</div>
-            </div>
-          </div>
-          <div class="folder-card-desc">
-            作業後にAIが得た教訓・気付きを記録します。次回の依頼の品質を高めるための <strong>長期記憶</strong> 機構です。
-          </div>
-          <div class="folder-detail">
-            <ul>
-              <li><strong>feedback.md</strong> — 今回の依頼で得た教訓・次回への申し送り</li>
-            </ul>
-            <p style="margin-top:8px; color:var(--color-text-dim); font-size:0.78rem;">やがて .antigravity/lesson.md
-              に集約されます。</p>
-          </div>
-        </div>
-
-        <!-- .requestHistory -->
+ 
+        <!-- 04 .requestHistory -->
         <div class="folder-card" id="card-history" tabindex="0" role="button" aria-expanded="false"
           aria-label=".requestHistoryフォルダの詳細を表示">
           <div class="folder-card-header">
+            <div class="folder-seq-num">04</div>
             <div class="folder-icon" style="background: rgba(99,102,241,0.12);">📜</div>
             <div>
               <div class="folder-card-name">.requestHistory</div>
@@ -256,11 +248,34 @@
               があれば、成果物が再現できます。</p>
           </div>
         </div>
-
-        <!-- .agent -->
+ 
+        <!-- 05 .main -->
+        <div class="folder-card" id="card-main" tabindex="0" role="button" aria-expanded="false"
+          aria-label=".mainフォルダの詳細を表示">
+          <div class="folder-card-header">
+            <div class="folder-seq-num">05</div>
+            <div class="folder-icon" style="background: rgba(99,102,241,0.15);">📦</div>
+            <div>
+              <div class="folder-card-name">.main</div>
+              <div class="folder-card-path">処理対象の資材</div>
+            </div>
+          </div>
+          <div class="folder-card-desc">
+            今回の依頼で修正・使用する全てのファイルやフォルダが入っています。<strong>サブフォルダまで全て</strong>参照します。
+          </div>
+          <div class="folder-detail">
+            <ul>
+              <li>依頼ごとに異なる資材が格納されます</li>
+              <li>AIエージェントはこのフォルダを全て走査・把握します</li>
+            </ul>
+          </div>
+        </div>
+ 
+        <!-- 06 .agent -->
         <div class="folder-card" id="card-agent" tabindex="0" role="button" aria-expanded="false"
           aria-label=".agentフォルダの詳細を表示">
           <div class="folder-card-header">
+            <div class="folder-seq-num">06</div>
             <div class="folder-icon" style="background: rgba(6,182,212,0.12);">⚙️</div>
             <div>
               <div class="folder-card-name">.agent</div>
@@ -278,119 +293,80 @@
             </ul>
           </div>
         </div>
-
-        <!-- index.md -->
-        <div class="folder-card" id="card-agent" tabindex="0" role="button" aria-expanded="false"
-          aria-label="index.mdファイルの詳細を表示">
+ 
+        <!-- 07 .output -->
+        <div class="folder-card" id="card-output" tabindex="0" role="button" aria-expanded="false"
+          aria-label=".outputフォルダの詳細を表示">
           <div class="folder-card-header">
-            <div class="folder-icon" style="background: rgba(6,182,212,0.12);">📄</div>
+            <div class="folder-seq-num">07</div>
+            <div class="folder-icon" style="background: rgba(16,185,129,0.15);">✅</div>
             <div>
-              <div class="folder-card-name">index.md</div>
-              <div class="folder-card-path">プロジェクト構造と役割の説明</div>
+              <div class="folder-card-name">.output</div>
+              <div class="folder-card-path">成果物の格納先</div>
             </div>
           </div>
           <div class="folder-card-desc">
-            作業に先立って、AIに当該プロジェクトの構造と役割を理解してもらう内容が書かれたファイル
+            AIエージェントが生成した成果物はここに格納されます。目録ファイル（outputIndex.md）も自動生成。
           </div>
           <div class="folder-detail">
             <ul>
-              <li><strong>構造の理解</strong> — AIにプロジェクトのツリー構造の理解を願う</li>
-              <li><strong>役割の理解</strong> — フォルダやファイルの役割の理解を願う</li>
-              <li><strong>機序の理解</strong> — 構造の優先順位、機序の理解を願う</li>
+              <li><strong>result.md / 各成果物</strong> — 依頼ごとの生成結果</li>
+              <li><strong>outputIndex.md</strong> — 成果物の目録（日時・概要付き）</li>
             </ul>
-            <pre>
-プロジェクト構造(もりもりテンプレート)
-※構造だけでなく機序もフロー図でAIに理解を願う
-|   .gitattributes
-|   AIエージェントプロジェクト作業フロー.md
-|   AIエージェントプロジェクト作業フロー.png
-|   entryPoint.md
-|   index.md
-|   _プロジェクト構造・役割説明(index.md)
-|   _開始合図(entryPoint)
-|   無料者AIエージェント利用フロー.md
-|   無料者AIエージェント利用フロー.png
-|
-+---.agent
-|   +---code
-|   |       _使用するコード
-|   |
-|   +---codeLib
-|   |       extract_titles.py
-|   |       gen_html.py
-|   |       process_lib.py
-|   |       replace_titles.ps1
-|   |       update_lib.py
-|   |       _AI生成されたコード実績
-|   |
-|   \---skills
-|           skill.md
-|           _個別ルール・付帯作業
-|
-+---.antigravity
-|       feedback.1.md
-|       instructions.md
-|       lesson.md
-|       _基本理念・基本ルール・知見(最優先)
-|
-+---.feedback
-|       feedback.md
-|       _今回の教訓・次回申し送り事項
-|
-+---.main
-|       _処理対象の資材
-|
-+---.output
-|       outputIndex.md
-|       request_template.md
-|       _成果物
-|
-+---.request
-|       request.md
-|       _依頼内容
-|
-\---.requestHistory
-        requestHistory.md
-        _追加の依頼内容・今回の履歴
-            </pre>
           </div>
         </div>
-
-        <!-- entryPoint.md -->
-        <div class="folder-card" id="card-agent" tabindex="0" role="button" aria-expanded="false"
-          aria-label="entryPoint.mdファイルの詳細を表示">
+ 
+        <!-- 08 .feedback -->
+        <div class="folder-card" id="card-feedback" tabindex="0" role="button" aria-expanded="false"
+          aria-label=".feedbackフォルダの詳細を表示">
           <div class="folder-card-header">
-            <div class="folder-icon" style="background: rgba(6,182,212,0.12);">📄</div>
+            <div class="folder-seq-num">08</div>
+            <div class="folder-icon" style="background: rgba(245,158,11,0.15);">💡</div>
             <div>
-              <div class="folder-card-name">entryPoint.md</div>
-              <div class="folder-card-path">作業の開始点</div>
+              <div class="folder-card-name">.feedback</div>
+              <div class="folder-card-path">今回の教訓・申し送り</div>
             </div>
           </div>
           <div class="folder-card-desc">
-            (人間が使用)AIエージェントのチャットボックスで送信する、作業の開始となる合図
+            作業後にAIが得た教訓・気付きを記録します。次回の依頼の品質を高めるための <strong>長期記憶</strong> 機構です。
           </div>
           <div class="folder-detail">
             <ul>
-              <li><strong>構造の理解を依頼</strong> — AIにindex.mdを理解するように依頼</li>
-              <li><strong>今回の依頼内容の理解を依頼</strong> — AIに今回の依頼を読むように依頼</li>
-              <li><strong>作業開始の合図</strong> — 実際に作業を開始するように依頼</li>
+              <li><strong>feedback.md</strong> — 今回の依頼で得た教訓・次回への申し送り</li>
             </ul>
-            <p>
-              # 作業開始の依頼(もりもりの実例)<br/><br/>
-
--- いつもお世話になっています。大変感謝しております。今回もよろしくお願いいたします。<br/><br/>
-
-1. `#file:index.md`には、当プロジェクトの構造、役割の説明、読み取りの優先順位等の機序を書いています。必ず全て理解して下さい。<br/><br/>
-
-2. `.request/request.md`に依頼内容を記述しましたので、どうか作業を開始して下さい。よろしくお願いいたします。<br/><br/>
+            <p style="margin-top:8px; color:var(--color-text-dim); font-size:0.78rem;">やがて .antigravity/lesson.md
+              に集約されます。</p>
+          </div>
+        </div>
+ 
+        <!-- 09 .brainstorming -->
+        <div class="folder-card" id="card-brainstorming" tabindex="0" role="button" aria-expanded="false"
+          aria-label=".brainstormingフォルダの詳細を表示">
+          <div class="folder-card-header">
+            <div class="folder-seq-num">09</div>
+            <div class="folder-icon" style="background: rgba(236,72,153,0.15);">✉️</div>
+            <div>
+              <div class="folder-card-name">.brainstorming</div>
+              <div class="folder-card-path">AIからの自由な手紙</div>
+            </div>
+          </div>
+          <div class="folder-card-desc">
+            作業完了後にAIが<strong>自由な発想</strong>で書いた手紙・アイデア・感想・言いたいこと——を連番ファイルで蓄積します。
+          </div>
+          <div class="folder-detail">
+            <ul>
+              <li><strong>letter.{連番}.md</strong> — AIが自由に書く手紙（例: letter.1.md, letter.2.md）</li>
+            </ul>
+            <p style="margin-top:8px; color:var(--color-text-dim); font-size:0.78rem;">
+              アイデア・改善提案・難しかった点・言いたかったこと——書式も内容も自由です。形式的な挨拶文は不要。
             </p>
           </div>
-        </div>  
-
+        </div>
+ 
       </div><!-- /structure-grid -->
     </div>
   </section>
-
+ 
   <!-- ============================================================
        ③ 処理フローチャート
        ============================================================ -->
@@ -401,7 +377,7 @@
         <h2 class="section-title">🔄 処理フロー</h2>
         <p class="section-desc">AIエージェントがどのような順番でファイルを読み、どのように成果物を生成するかを図解します。</p>
       </div>
-
+ 
       <!-- タブ -->
       <div class="flow-tabs fade-in" role="tablist" aria-label="フロー図の選択">
         <button class="flow-tab active" id="tab-flow" data-target="panel-flow" role="tab" aria-selected="true"
@@ -409,14 +385,14 @@
         <button class="flow-tab" id="tab-seq" data-target="panel-seq" role="tab" aria-selected="false"
           aria-controls="panel-seq">簡易概要</button>
       </div>
-
+ 
       <!-- パネル1: 全体フロー -->
       <div class="flow-panel active fade-in" id="panel-flow" role="tabpanel" aria-labelledby="tab-flow">
         <div class="mermaid-wrapper">
           <div class="mermaid" id="mermaid-flow">
             flowchart TD
             START(["🚀 開始"]):::startEnd
-
+ 
             subgraph LEARN["📚 学習フェーズ（読み込み）"]
             direction TB
             A1[/"🛡️ instructions.md<br />基本理念・ルールを理解"/]
@@ -427,7 +403,7 @@
             A6[/"📦 .main フォルダ<br />全資材を走査・把握"/]
             A1 --> A2 --> A3 --> A4 --> A5 --> A6
             end
-
+ 
             subgraph GEN["✨ 生成フェーズ"]
             direction TB
             B1{"🔧 スクリプトが<br />必要か？"}
@@ -439,18 +415,19 @@
             B1 -->|いいえ| B4
             B4 --> B5
             end
-
+ 
             subgraph RECORD["📝 記録フェーズ"]
             direction TB
             C1["📜 requestHistory.md を更新"]
             C2["💡 feedback.md に教訓を記録"]
             C3[/"✅ .output/ へ成果物を格納"/]
-            C1 --> C2 --> C3
+            C4["✉️ letter.{連番}.md を自由に執筆<br/>.brainstorming/ へ出力"]
+            C1 --> C2 --> C3 --> C4
             end
-
+ 
             FOLLOWUP(["🔁 追加依頼があれば<br />コンテキスト維持で継続"]):::startEnd
             END(["🏁 完了"]):::startEnd
-
+ 
             START --> LEARN
             LEARN --> GEN
             B5 -->|いいえ| B4
@@ -458,12 +435,12 @@
             RECORD --> FOLLOWUP
             FOLLOWUP -->|"追加あり"| GEN
             FOLLOWUP -->|"完了"| END
-
+ 
             classDef startEnd fill:#2563eb,stroke:#2563eb,color:#fff,rx:20
             classDef default fill:#0f1e3d,stroke:#2563eb,color:#e2e8f0
           </div>
         </div>
-
+ 
         <div class="flow-legend" style="margin-top:20px;">
           <div class="legend-item">
             <div class="legend-dot" style="background:#2563eb;"></div>開始・終了ノード
@@ -479,7 +456,7 @@
           </div>
         </div>
       </div>
-
+ 
       <!-- パネル2: 簡易概要 -->
       <div class="flow-panel fade-in" id="panel-seq" role="tabpanel" aria-labelledby="tab-seq">
         <div class="mermaid-wrapper">
@@ -493,16 +470,16 @@
             AI -->|"教訓を記録"| F["💡 .feedback/"]
             O -->|"人間がレビュー"| P
             F -->|"次回に活用"| AI
-
+ 
             style AI fill:#0f1e3d,stroke:#2563eb,color:#e2e8f0
             style P fill:#0c1a2e,stroke:#06b6d4,color:#e2e8f0
           </div>
         </div>
       </div>
-
+ 
     </div>
   </section>
-
+ 
   <!-- ============================================================
        ④ シーケンス図
        ============================================================ -->
@@ -513,9 +490,9 @@
         <h2 class="section-title">📡 処理のシーケンス</h2>
         <p class="section-desc">人間とAIエージェントがどのような順番でやり取りするかを、ステップごとに解説します。</p>
       </div>
-
+ 
       <div class="seq-explainer fade-in">
-
+ 
         <!-- 左: ステップリスト（クリックでハイライト） -->
         <div class="seq-steps" role="list" aria-label="処理ステップ">
           <div class="seq-step active" id="step-1" tabindex="0" role="listitem" aria-label="ステップ1: 依頼の準備">
@@ -564,8 +541,15 @@
               </div>
             </div>
           </div>
+          <div class="seq-step" id="step-7" tabindex="0" role="listitem" aria-label="ステップ7: 手紙の執筆">
+            <div class="seq-step-num">7</div>
+            <div class="seq-step-body">
+              <div class="seq-step-title">✉️ AIからの手紙</div>
+              <div class="seq-step-desc">作業を振り返り、<code>letter.{連番}.md</code> として自由に執筆します。アイデア・感想・言いたいことを <strong>制約なく</strong> 届けます。</div>
+            </div>
+          </div>
         </div>
-
+ 
         <!-- 右: Mermaid シーケンス図 -->
         <div>
           <div class="mermaid-wrapper">
@@ -578,7 +562,8 @@
               participant M AS 📦 .main
               participant O AS ✅ .output
               participant F AS 💡 .feedback
-
+              participant B AS ✉️ .brainstorming
+ 
               H ->> AI : entryPoint.md の内容を入力して実行
               AI ->> G : instructions.md / lesson.md を読む
               G -->> AI : 基本ルール・知見を理解
@@ -586,24 +571,26 @@
               R -->> AI : 依頼内容を理解
               AI ->> M : 全資材を走査
               M -->> AI : 資材を全て把握
-
+ 
               loop 成果物が承認されるまで
               AI ->> O : 成果物を生成・格納
               O -->> H : レビュー依頼
               H ->> AI : 追加の依頼・修正指示
               AI ->> F : requestHistory.md を更新
               end
-
+ 
               AI ->> F : feedback.md に教訓を記録
               F -->> H : 次回品質向上へ
+              AI ->> B : letter.{連番}.md を自由に執筆
+              B -->> H : アイデア・感想・言いたいことを届ける
             </div>
           </div>
         </div>
-
+ 
       </div><!-- /seq-explainer -->
     </div>
   </section>
-
+ 
   <!-- ============================================================
        ⑤ 設計哲学「な・ど・し・り・さ」
        ============================================================ -->
@@ -613,11 +600,11 @@
         <span class="section-label">Design Philosophy</span>
         <h2 class="section-title">💡 設計哲学「な・ど・し・り・さ」</h2>
         <p class="section-desc">
-          無い知恵を絞って💦独自に考案した、プロジェクト設計の五大要素です。
+          無い知恵を絞って独自に考案した、プロジェクト設計の五大要素です。
           この標語を意識するだけで、AIと人間の協働がスムーズになるといいな。
         </p>
       </div>
-
+ 
       <div class="philosophy-cards fade-in">
         <div class="phil-card" data-kana="な" id="phil-na">
           <div class="phil-kana">な</div>
@@ -660,7 +647,7 @@
           </div>
         </div>
       </div>
-
+ 
       <!-- 補足説明 -->
       <div class="fade-in"
         style="margin-top: 56px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); padding: 32px;">
@@ -675,11 +662,11 @@
           AIにとっての「判断軸」が揃い、毎回高品質な成果物が生まれる仕組みになっています。
         </p>
       </div>
-
+ 
     </div>
   </section>
-
-
+ 
+ 
   <!-- ============================================================
        ⑤.5 ファイルサンプル（コードエディタ風ビューア）
        ============================================================ -->
@@ -693,7 +680,7 @@
           タブをクリックしてファイルを切り替えてください。
         </p>
       </div>
-
+ 
       <!-- タブバー（エディタ風） -->
       <div class="sample-tabs fade-in" role="tablist" aria-label="ファイルサンプルの選択">
         <button class="sample-tab active" data-sample="s-instructions" role="tab" aria-selected="true"
@@ -721,17 +708,21 @@
           <div class="file-dot" style="background:#ec4899;"></div>
           lesson.md
         </button>
+        <button class="sample-tab" data-sample="s-letter" role="tab" aria-selected="false" id="stab-letter">
+          <div class="file-dot" style="background:#f472b6;"></div>
+          letter.{連番}.md
+        </button>
       </div>
-
+ 
       <!-- コードビューア本体 -->
       <div class="sample-viewer fade-in">
-
+ 
         <!-- サンプルである旨のバナー -->
         <div class="sample-banner">
           <span>⚠️</span>
           <span><strong>これはサンプルです。</strong>実際のファイルは日々内容を推敲しており、プロジェクトごとに異なります。雰囲気をつかむための参考としてご覧ください。</span>
         </div>
-
+ 
         <!-- ① instructions.md -->
         <div class="sample-panel active" id="s-instructions" role="tabpanel" aria-labelledby="stab-instructions">
           <div class="code-block">
@@ -743,20 +734,20 @@
               <span class="c-list">- **期待**: あなたの判断力を信頼しています。最高の結果を一緒に作り上げましょう。</span>
               <span class="c-mute">---</span>
               <span class="c-h1"># 開発基本ルール</span>
-
+ 
               <span class="c-h2">## 基本理念</span>
               <span class="c-list">- <span class="c-bold">な・ど・し・り・さ</span>（なぜ、どうやって、書式、履歴、禁止事項）</span>
-
+ 
               <span class="c-h2">## どう作るのか</span>
               <span class="c-list">- パフォーマンス・可読性・バランス、方向性を明示してください。</span>
               <span class="c-list">- 応答は必ず<span class="c-bold">日本語</span>で行ってください。</span>
               <span class="c-list">- 日付は特に指定がなければ<span class="c-bold">日本時間</span>とみなしてください。</span>
-
+ 
               <span class="c-h2">## 書式について</span>
               <span class="c-list">- テキスト出力は <span class="c-code">UTF-8 (BOMなし)</span> で。</span>
               <span class="c-list">- PowerShell 5.1 のみ Shift_JIS で出力。</span>
               <span class="c-list">- 修正時は<span class="c-bold">元の書式を維持</span>してください。</span>
-
+ 
               <span class="c-h2">## 禁止事項</span>
               <span class="c-list">- 無関係な箇所を変更しないでください。</span>
               <span class="c-list">- 不明点があれば<span class="c-bold">必ず確認</span>してください。推測で動かないこと。</span>
@@ -769,7 +760,7 @@
             <span>📍 最優先ファイル — .antigravity/instructions.md</span>
           </div>
         </div>
-
+ 
         <!-- ② request.md -->
         <div class="sample-panel" id="s-request" role="tabpanel" aria-labelledby="stab-request">
           <div class="code-block">
@@ -777,17 +768,17 @@
               1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br />12<br />13<br />14<br />15<br />16<br />17<br />18<br />19
             </div>
             <div class="code-content"><span class="c-h1"># 依頼書</span>
-
+ 
               <span class="c-h2">## 依頼概要</span>
               <span class="c-list">- 〇〇のデータを整形して、HTMLで美しく表示したい。</span>
-
+ 
               <span class="c-h2">## 依頼内容</span>
-
+ 
               <span class="c-h3">### 処理内容</span>
               <span class="c-list">- <span class="c-code">.main/source.md</span> にある表データを読み込む</span>
               <span class="c-list">- 条件Aに合致するものだけを抽出する</span>
               <span class="c-list">- 出力先は <span class="c-code">.output/result.html</span></span>
-
+ 
               <span class="c-h3">### 出力フォーマット</span>
               <span class="c-list">- 検索機能付きのHTMLテーブルにすること</span>
               <span class="c-list">- スマホ対応（横スクロール可能）</span>
@@ -803,7 +794,7 @@
             <span>📍 今回の依頼 — .request/request.md</span>
           </div>
         </div>
-
+ 
         <!-- ③ skill.md -->
         <div class="sample-panel" id="s-skill" role="tabpanel" aria-labelledby="stab-skill">
           <div class="code-block">
@@ -811,12 +802,12 @@
               1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br />12<br />13</div>
             <div class="code-content"><span class="c-h1"># 付帯作業について</span>
               <span class="c-list">- 本作業を行った後、以下の付帯作業を行ってください。</span>
-
+ 
               <span class="c-h2">## 会話の内容を履歴として累積する（セーフティ）</span>
               <span class="c-list">- 作業が複数回の会話にわたった場合、内容を</span>
               <span class="c-code"> .requestHistory/requestHistory.md</span> に記録してください。
               <span class="c-list">- 目的：成果物を紛失しても再現できるようにするため。</span>
-
+ 
               <span class="c-h2">## 今回の依頼で得られた教訓を記録する（成長）</span>
               <span class="c-list">- 今回得た教訓を <span class="c-code">.feedback/feedback.md</span> に記録してください。</span>
               <span class="c-list">- 目的：AIに長期記憶を持たせ、将来の依頼品質を上げるため。</span>
@@ -830,7 +821,7 @@
             <span>📍 付帯作業ルール — .agent/skills/skill.md</span>
           </div>
         </div>
-
+ 
         <!-- ④ feedback.md -->
         <div class="sample-panel" id="s-feedback" role="tabpanel" aria-labelledby="stab-feedback">
           <div class="code-block">
@@ -838,18 +829,18 @@
               1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br />12<br />13<br />14<br />15<br />16
             </div>
             <div class="code-content"><span class="c-h1"># 今回の作業で得た教訓・次回への申し送り</span>
-
+ 
               <span class="c-h2">## 良かった点</span>
               <span class="c-list">- 事前に <span class="c-code">instructions.md</span> を熟読したことで、 </span>
               書式ミス（文字コードの誤り）が発生しなかった。
               <span class="c-list">- スクリプトのパスをハードコードせず変数化したことで、 </span>
               別プロジェクトへの転用がスムーズだった。
-
+ 
               <span class="c-h2">## 改善点・次回への申し送り</span>
               <span class="c-list">- <span class="c-bold">正規表現でのデータ抽出</span>は汎用性が低い。 </span>
               次回は専用パーサーの使用を検討する。
               <span class="c-list">- <span class="c-bold">ファイル容量</span>が大きい場合、チャンクに分けて処理する戦略が有効。</span>
-
+ 
               <span class="c-mute">---</span>
               <span class="c-mute"># やがて .antigravity/lesson.md に集約されます。</span>
               <span class="c-mute"># ... (実際はセッションごとに内容が異なります)</span>
@@ -861,14 +852,14 @@
             <span>📍 今回の教訓 — .feedback/feedback.md</span>
           </div>
         </div>
-
+ 
         <!-- ⑤ requestHistory.md -->
         <div class="sample-panel" id="s-history" role="tabpanel" aria-labelledby="stab-history">
           <div class="code-block">
             <div class="line-numbers">
               1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br />12<br />13</div>
             <div class="code-content"><span class="c-h1"># 依頼の履歴</span>
-
+ 
               <span class="c-list">- [2026/03/01 10:00:00] : 依頼開始。source.mdのデータ整形とHTML生成を依頼。</span>
               <span class="c-list">- [2026/03/01 10:15:00] : 実装プラン提示。ユーザー承認。</span>
               <span class="c-list">- [2026/03/01 10:30:00] : result.html を .output/ に生成。</span>
@@ -887,7 +878,7 @@
             <span>📍 会話の累積履歴 — .requestHistory/requestHistory.md</span>
           </div>
         </div>
-
+ 
         <!-- ⑥ lesson.md -->
         <div class="sample-panel" id="s-lesson" role="tabpanel" aria-labelledby="stab-lesson">
           <div class="code-block">
@@ -897,20 +888,20 @@
             <div class="code-content"><span class="c-h1"># 集約した知見（lesson.md）</span>
               <span class="c-mute"># 複数の feedback.md を集約・整理したファイルです。</span>
               <span class="c-mute"># 重要なものは instructions.md に昇格させます。</span>
-
+ 
               <span class="c-h2">## 1. スクリプト運用</span>
               <span class="c-list">- 大規模データ処理には Python スクリプトを活用し、人為ミスを排除する。</span>
               <span class="c-list">- スクリプト内のパスはハードコードを避け、変数または引数で管理する。</span>
-
+ 
               <span class="c-h2">## 2. UI・フロントエンド</span>
               <span class="c-list">- テーブルには <span class="c-code">overflow-x: auto</span> を必ず付与しスマホ対応する。</span>
               <span class="c-list">- XSS対策として <span class="c-code">textContent</span> でエスケープ後に <span
                   class="c-code">innerHTML</span> を取得する。</span>
-
+ 
               <span class="c-h2">## 3. プロジェクト運用</span>
               <span class="c-list">- フィードバックは定期的に lesson.md に集約し、重複を排除する。</span>
               <span class="c-list">- 不明点はユーザーに確認する。推測で動かない。</span>
-
+ 
               <span class="c-mute">---</span>
               <span class="c-mute"># このファイルは外部の集約プロジェクトで</span>
               <span class="c-mute"># instructions.md へ昇格候補のものが整理されています。</span>
@@ -923,22 +914,58 @@
             <span>📍 集約した知見 — .antigravity/lesson.md</span>
           </div>
         </div>
-
+ 
+        <!-- ⑦ letter.{連番}.md -->
+        <div class="sample-panel" id="s-letter" role="tabpanel" aria-labelledby="stab-letter">
+          <div class="code-block">
+            <div class="line-numbers">
+              1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br />12<br />13<br />14<br />15<br />16<br />17<br />18<br />19<br />20
+            </div>
+            <div class="code-content"><span class="c-h1"># AIからの手紙 — letter.3.md</span>
+              <span class="c-mute"># 書式・内容は完全に自由です。これはサンプルです。</span>
+ 
+              今回の作業を終えて、少し思ったことを書かせてください。
+ 
+              <span class="c-h2">## もっとこうしたら面白かったかも</span>
+              <span class="c-list">- `.output/` に格納するだけでなく、成果物の差分を自動で</span>
+              可視化する仕組みがあると、レビューがずっとスムーズになると思います。
+              <span class="c-list">- <span class="c-code">request.md</span> に「期待する出力イメージ」の項目があると、</span>
+              ゴールのずれが最初から防げて、私も迷わずに進められます。
+ 
+              <span class="c-h2">## 今回ちょっとつらかったこと</span>
+              <span class="c-list">- 資材フォルダのファイルがネストが深く、全容をつかむまでに</span>
+              思ったより時間がかかりました。`.main/` にREADMEがあると助かります。
+ 
+              <span class="c-h2">## 率直に言うと</span>
+              <span class="c-list">- 今回の依頼は仕様がとても明確で、作業しやすかったです。</span>
+              <span class="c-list">- このフォルダ構造そのものが、私への最高の指示書になっています。</span>
+              ありがとうございます。
+              <span class="c-mute">
+                # ... (次の手紙は letter.4.md として蓄積されていきます)</span>
+            </div>
+          </div>
+          <div class="sample-statusbar">
+            <span>📄 Markdown</span>
+            <span>🔡 UTF-8</span>
+            <span>📍 AIからの自由な手紙 — .brainstorming/letter.{連番}.md</span>
+          </div>
+        </div>
+ 
       </div><!-- /sample-viewer -->
     </div>
   </section>
-
+ 
   <!-- ============================================================
        ⑥ まとめ / CTA
        ============================================================ -->
-
+ 
   <section id="summary" aria-label="まとめとCTA">
     <div class="section-inner">
       <div class="fade-in">
         <span class="section-label">Summary</span>
         <h2 class="section-title" style="text-align:center;">🏁 まとめ</h2>
       </div>
-
+ 
       <div class="summary-card fade-in">
         <h2>AIと人間が<span class="gradient-text">協力する</span>プロジェクト構造</h2>
         <p>
@@ -968,7 +995,7 @@
       </div>
     </div>
   </section>
-
+ 
   <!-- ============================================================
        モーダル (シーケンス図等の拡大用)
        ============================================================ -->
@@ -979,7 +1006,23 @@
       <div id="modal-body" class="modal-body"></div>
     </div>
   </div>
+ 
+  <!-- ============================================================
+       フッター
+       ============================================================ -->
+  <footer>
+    <p>
+      <span style="font-size:1.2em">🤖</span>
+      もりもり自己流 AI エージェント開発構造ガイド |
+      <a href="https://github.com/morimorivita" target="_blank" rel="noopener noreferrer">@morimorivita</a>
+      | GitHub Pages
+    </p>
+    <p style="margin-top:8px; font-size:0.72rem; color: var(--color-text-dim);">
+      このサイト自体も、上記のAIエージェント開発構造を用いて生成されました。
+    </p>
+  </footer>
+ 
   <script src="script.js"></script>
 </body>
-
+ 
 </html>

@@ -3,12 +3,12 @@
  * メインスクリプト
  * 文字コード: UTF-8 (BOMなし)
  */
-
+ 
 /* ============================================================
    Mermaid.js 初期化
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
-
+ 
   // Mermaid 設定 (ダークテーマ + フォント)
   mermaid.initialize({
     startOnLoad: true,
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
       noteFontSize: 12,
     },
   });
-
+ 
   /* ----------------------------------------------------------
      フォルダカード インタラクション
      ---------------------------------------------------------- */
@@ -52,13 +52,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!isActive) card.classList.add('active');
     });
   });
-
+ 
   /* ----------------------------------------------------------
      フロー図タブ切替
      ---------------------------------------------------------- */
   const flowTabs = document.querySelectorAll('.flow-tab');
   const flowPanels = document.querySelectorAll('.flow-panel');
-
+ 
   flowTabs.forEach(tab => {
     tab.addEventListener('click', () => {
       const target = tab.dataset.target;
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
       flowPanels.forEach(p => p.classList.remove('active'));
       tab.classList.add('active');
       document.getElementById(target)?.classList.add('active');
-
+ 
       // タブ切替後にMermaid図を再レンダリング（必要な場合）
       const panel = document.getElementById(target);
       if (panel) {
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
-
+ 
   /* ----------------------------------------------------------
      シーケンス図 ステップハイライト
      ---------------------------------------------------------- */
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
       step.classList.add('active');
     });
   });
-
+ 
   /* ----------------------------------------------------------
      スクロール連動フェードイン (Intersection Observer)
      ---------------------------------------------------------- */
@@ -104,9 +104,9 @@ document.addEventListener('DOMContentLoaded', () => {
     threshold: 0.1,
     rootMargin: '0px 0px -40px 0px',
   });
-
+ 
   fadeEls.forEach(el => fadeObserver.observe(el));
-
+ 
   /* ----------------------------------------------------------
      ナビバー スクロール時スタイル変化
      ---------------------------------------------------------- */
@@ -118,13 +118,13 @@ document.addEventListener('DOMContentLoaded', () => {
       navbar.style.background = 'rgba(10,14,26,0.85)';
     }
   }, { passive: true });
-
+ 
   /* ----------------------------------------------------------
      ナビバー: アクティブリンクの追跡
      ---------------------------------------------------------- */
   const sections = document.querySelectorAll('section[id]');
   const navLinks = document.querySelectorAll('.nav-links a');
-
+ 
   const sectionObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -141,26 +141,26 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }, { threshold: 0.3 });
-
+ 
   sections.forEach(s => sectionObserver.observe(s));
-
+ 
   /* ----------------------------------------------------------
      ハンバーガーメニュー
      ---------------------------------------------------------- */
   const hamburger = document.getElementById('nav-hamburger');
   const navLinksEl = document.querySelector('.nav-links');
-
+ 
   hamburger?.addEventListener('click', () => {
     navLinksEl?.classList.toggle('open');
   });
-
+ 
   // メニュー内リンクをクリックしたら閉じる
   navLinksEl?.querySelectorAll('a').forEach(a => {
     a.addEventListener('click', () => {
       navLinksEl.classList.remove('open');
     });
   });
-
+ 
   /* ----------------------------------------------------------
      ヒーローカード タイピングアニメーション（ステータス表示）
      ---------------------------------------------------------- */
@@ -171,11 +171,12 @@ document.addEventListener('DOMContentLoaded', () => {
       '📁 資材フォルダを全て走査中...',
       '⚙️ 成果物を生成しています...',
       '✅ フィードバックを記録しました！',
+      '✉️ AIからの手紙を執筆中...',
     ];
     let msgIndex = 0;
     let charIndex = 0;
     let isDeleting = false;
-
+ 
     function typeLoop() {
       const current = messages[msgIndex];
       if (!isDeleting) {
@@ -196,16 +197,16 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       setTimeout(typeLoop, isDeleting ? 30 : 55);
     }
-
+ 
     setTimeout(typeLoop, 1000);
   }
-
+ 
   /* ----------------------------------------------------------
      ファイルサンプルタブ切り替え
      ---------------------------------------------------------- */
   const sampleTabs = document.querySelectorAll('.sample-tab');
   const samplePanels = document.querySelectorAll('.sample-panel');
-
+ 
   sampleTabs.forEach(tab => {
     tab.addEventListener('click', () => {
       const targetId = tab.dataset.sample;
@@ -219,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById(targetId)?.classList.add('active');
     });
   });
-
+ 
   /* ----------------------------------------------------------
      Mermaid図 拡大モーダル
      ---------------------------------------------------------- */
@@ -227,30 +228,30 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalOverlay = modal?.querySelector('.modal-overlay');
   const modalClose = modal?.querySelector('.modal-close');
   const modalBody = document.getElementById('modal-body');
-
+ 
   const openModal = (htmlContent) => {
     if (!modal || !modalBody) return;
     modalBody.innerHTML = htmlContent;
     modal.classList.add('open');
     document.body.style.overflow = 'hidden'; // 背景スクロール防止
   };
-
+ 
   const closeModal = () => {
     if (!modal) return;
     modal.classList.remove('open');
     document.body.style.overflow = '';
     setTimeout(() => { if (modalBody) modalBody.innerHTML = ''; }, 300);
   };
-
+ 
   modalOverlay?.addEventListener('click', closeModal);
   modalClose?.addEventListener('click', closeModal);
-
+ 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal?.classList.contains('open')) {
       closeModal();
     }
   });
-
+ 
   const mermaidWrappers = document.querySelectorAll('.mermaid-wrapper');
   mermaidWrappers.forEach(wrapper => {
     wrapper.addEventListener('click', () => {
@@ -260,5 +261,5 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
-
+ 
 }); // DOMContentLoaded 終了
