@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>(BOOK)【nginx】導入・インストール・活用ガイドブック</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #39C5BB;
+      --secondary: #FFC778;
+      --bg: #fdfdfd;
+      --text-main: #2c3e50;
+      --text-muted: #666;
+      --border: #e0e0e0;
+      --highlight: rgba(57, 197, 187, 0.1);
+      --font-main: "Noto Sans JP", sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: var(--font-main);
+      color: var(--text-main);
+      background-color: var(--bg);
+      line-height: 1.8;
+      display: flex;
+    }
+
+    /* --- サイドバー目次 (TOC) --- */
+    .toc-container {
+      width: 300px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      background: #fff;
+      border-right: 1px solid var(--border);
+      padding: 24px 20px;
+      overflow-y: auto;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+      flex-shrink: 0;
+    }
+
+    .toc-title {
+      font-size: 1.1rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toc-list {
+      list-style: none;
+    }
+
+    .toc-list li {
+      margin-bottom: 8px;
+    }
+
+    .toc-link {
+      display: block;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+
+    .toc-link:hover {
+      background: var(--highlight);
+      color: var(--primary);
+    }
+
+    .toc-link.active {
+      background: var(--highlight);
+      color: var(--primary);
+      border-left-color: var(--primary);
+      font-weight: 700;
+    }
+
+    .toc-link.level-h3 {
+      font-size: 0.85rem;
+      padding-left: 24px;
+    }
+
+    /* --- メインコンテンツ --- */
+    .content-container {
+      flex: 1;
+      padding: 60px 40px 100px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .nav-buttons {
+      margin-bottom: 40px;
+    }
+    
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 8px 16px;
+      border: 1.5px solid var(--primary);
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+
+    .btn-back:hover {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(57, 197, 187, 0.3);
+    }
+
+    h1 {
+      scroll-margin-top: 40px;
+      margin-top: 60px;
+      margin-bottom: 24px;
+      line-height: 1.4;
+    }
+    
+    h3 {
+      scroll-margin-top: 40px;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    p {
+      margin-bottom: 20px;
+      font-size: 1.05rem;
+    }
+
+    pre {
+      background: #1e1e1e !important;
+      padding: 20px !important;
+      border-radius: 12px !important;
+      overflow-x: auto;
+      margin: 24px 0 !important;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      border: 1px solid #333;
+    }
+
+    code {
+      font-family: 'Consolas', 'Monaco', monospace;
+      color: #e6e6e6 !important;
+    }
+
+    p code, li code {
+      background: rgba(0,0,0,0.05);
+      padding: 3px 6px;
+      border-radius: 4px;
+      color: #d63384 !important;
+      font-size: 0.95em;
+    }
+
+    blockquote {
+      background: #fff8f0;
+      border-left: 5px solid var(--secondary);
+      padding: 16px 20px;
+      margin: 24px 0;
+      border-radius: 0 8px 8px 0;
+      color: #7a5c2d;
+    }
+
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+      
+      .toc-container {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      }
+
+      .content-container {
+        padding: 40px 20px 80px;
+      }
+      
+      h1 { font-size: 1.3em !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="toc-container">
+    <div class="toc-title">📚 目次</div>
+    <ul class="toc-list" id="toc-list">
+    </ul>
+  </aside>
+
+  <main class="content-container">
+    <div class="nav-buttons">
+      <a href="./" class="btn-back">‹ ブック一覧へ戻る</a>
+    </div>
+
+    <div id="guide-content">
+こんにちは!!もりもりです!!<br/><br/>
+今回は【(BOOK)【nginx】導入・インストール・活用ガイドブック】をお届けします!!<br/><br/>
+<img src="images/nginx_img.png" alt="nginx" style="max-width: 100%; height: auto;"><br/><br/>
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0)); margin: 40px 0;">
+
+<h1 id="book-nginx-導入・インストール・活用ガイドブック" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">(BOOK)【nginx】導入・インストール・活用ガイドブック</h1>
+
+<span style="font-size:1.2em">📚</span> 本ガイドブックは、<strong>nginx</strong> をWindows 11環境で導入し、AIエージェント開発やWebサイト制作におけるCORSエラーの解決、さらには継続的なWebサーバー運用までを網羅的にサポートするために設計されています。開発効率を最大化し、安定したサーバー環境を構築するためのノウハウをご紹介します。<br/><br/>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+
+
+<h1 id="nginxの概要と特性" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">nginxの概要と特性</h1>
+
+<h3 id="概要・説明" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">概要・説明</h3>
+
+nginx（エンジンエックス）は、高速な処理能力とリソース消費の少なさを武器にする,世界で最も利用されている<strong>オープンソースのWebサーバー/リバースプロキシ</strong>です。<br/><br/>
+特に、静的コンテンツ（HTML, CSS, JS, 画像など）の配信能力に優れており、大量の同時接続を効率的に処理できるように設計されています。<br/><br/>
+
+<h3 id="主な特性・特徴" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">主な特性・特徴</h3>
+
+<div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 20px 0; border: 1px solid #e0e0e0;"><table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">特性 / 特徴</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">説明</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>軽量・高速</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">メモリ消費が極めて少なく、大量の静的配信に最適です。</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>リバースプロキシ</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">他のサーバー（Node.js, Tomcat等）の前に立ち、リクエストを配送できます。</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>ロードバランサ</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">負荷分散機能を持っており、システムの可用性を高めます。</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>安定性</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">長時間の稼働でもパフォーマンスが低下しにくい設計です。</td></tr></tbody></table></div>
+
+<h3 id="主な使用用途" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">主な使用用途</h3>
+
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>静的サイトの公開</strong>：ポート80/443で外部にサイトを公開するメインサーバーとして。</li>
+  <li style="margin-bottom: 8px;"><strong>CORSエラーの回避</strong>：プロキシ機能を使って、ドメイン/ポートを統合しブラウザ制限を回避します。</li>
+  <li style="margin-bottom: 8px;"><strong>SSL/TLSの終端</strong>：HTTPS化の処理をnginxで一括管理し、背後のアプリ負荷を軽減します。</li>
+</ul>
+
+<h3 id="serve-パッケージとの使い分け" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;"><code>serve</code> パッケージとの使い分け</h3>
+
+同じくローカルサーバーとして利用できる <code>serve</code>（Node.js）との使い分けは以下のとおりです：<br/><br/>
+
+<div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 20px 0; border: 1px solid #e0e0e0;"><table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">比較項目</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">serve（Node.js）</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">nginx</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>起動の手軽さ</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">コマンド1行で即起動</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ZIPを展開して設定が必要</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>設定の柔軟性</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">限定的</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">非常に豊富（プロキシ、ヘッダー操作等）</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>継続稼働</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">PowerShellを閉じると停止</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">バックグラウンドで稼働し続ける</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>自動起動</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">非対応</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Windows起動時に自動起動が可能</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>リバースプロキシ</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">非対応</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">対応</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>推奨シーン</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">数分間の動作確認</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">継続的な開発・本番運用</td></tr></tbody></table></div>
+
+<blockquote>
+<p style="margin-bottom:0;">注意：一時的にファイルを確認したいだけなら <code>serve</code>、AIバックエンドとの連携や継続的な開発環境には <code>nginx</code> を推奨します。</p>
+</blockquote>
+
+<h3 id="公式情報・リンク" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">公式情報・リンク</h3>
+
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>公式サイト</strong>：https://nginx.org/</li>
+  <li style="margin-bottom: 8px;"><strong>Windows向けドキュメント</strong>：https://nginx.org/en/docs/windows.html</li>
+</ul>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1 id="nginxの入手方法と前提条件" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">nginxの入手方法と前提条件</h1>
+
+<h3 id="入手元・ダウンロード先" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">入手元・ダウンロード先</h3>
+
+Windows版nginxは、インストール版ではなく、実行ファイルを含むZIP形式で提供されます。<br/><br/>
+
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">公式ダウンロードページ（https://nginx.org/en/download.html）へアクセスします。</li>
+  <li style="margin-bottom: 8px;"><strong>"Mainline version"</strong>（最新機能）または <strong>"Stable version"</strong>（安定版）を選択します。通常は最新のMainline版（例：<code>nginx/Windows-1.29.5</code>）を推奨します。</li>
+  <li style="margin-bottom: 8px;"><code>nginx/Windows-x.xx.x</code> というリンクをクリックし、ZIPファイルをダウンロードします。</li>
+</ol>
+
+<h3 id="事前確認事項" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">事前確認事項</h3>
+
+nginxはデフォルトでポート <strong>80</strong> を使用します。起動前に、ポート80が他のアプリケーションで使われていないか確認しましょう。<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# ポート80を使用しているプロセスを確認
+netstat -ano | findstr :80
+
+# 出力例:
+# （何も表示されない場合は空いています）
+</code>
+</pre>
+</div>
+
+右端の数字がPID（プロセスID）です。PIDが <code>4</code> の場合は「System」プロセス（IISなど）の可能性があります。競合が確認された場合は、後述のnginx.confでポートを変更して対処します。<br/><br/>
+
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>OS バージョン</strong>：Windows 11（64bit推奨）</li>
+  <li style="margin-bottom: 8px;"><strong>管理者権限</strong>：インストール（展開）先のフォルダによっては必要です。</li>
+  <li style="margin-bottom: 8px;"><strong>ポートの競合</strong>：デフォルトでポート <strong>80</strong> を使用します。IISやApacheが動作している場合は停止するか設定変更が必要です。</li>
+</ul>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1 id="nginxのインストール・セットアップ手順" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">nginxのインストール・セットアップ手順</h1>
+
+<h3 id="手動インストールと起動" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">手動インストールと起動（推奨）</h3>
+
+<strong>ステップ 1：ファイルの展開</strong><br/><br/>
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">ダウンロードしたZIPファイルを右クリックし、「すべて展開」を選択します。</li>
+  <li style="margin-bottom: 8px;">展開先として <code>C:\nginx</code> などのシンプルなパスを指定することを推奨します。</li>
+</ol>
+
+<blockquote>
+<p style="margin-bottom:0;">注意：パスに日本語・スペースが含まれないようにしてください（例：<code>C:\Users\山田\nginx</code> は不可）。<code>C:\nginx</code> が最もシンプルで推奨です。</p>
+</blockquote>
+
+展開後のフォルダ構成は以下のようになります：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+C:\nginx\
+├── nginx.exe              ← nginxの本体（実行ファイル）
+├── conf\
+│   └── nginx.conf         ← メイン設定ファイル（ここを編集する）
+├── html\
+│   ├── index.html         ← デフォルトのトップページ
+│   └── 50x.html           ← エラーページ
+├── logs\
+│   ├── access.log         ← アクセスログ
+│   └── error.log          ← エラーログ
+└── temp\                  ← 一時ファイル置き場
+</code>
+</pre>
+</div>
+
+<strong>ステップ 2：基本設定の変更</strong><br/><br/>
+ポート80が使用中の場合、<code>C:\nginx\conf\nginx.conf</code> を開き、<code>listen 80;</code> の行を別のポートに変更します。<br/><br/>
+
+<blockquote>
+<p style="margin-bottom:0;">注意：設定ファイル（nginx.conf）を編集する際は、BOMなしUTF-8で保存できるエディタ（VS Codeなど）を推奨します。Windowsのメモ帳（Notepad）だと環境によってBOM付きUTF-8で保存されてしまい、nginxが設定ファイルを読み込めなくなるケースがあります。</p>
+</blockquote>
+
+<strong>ステップ 3：起動と動作確認</strong><br/><br/>
+<strong>PowerShell</strong> を管理者権限で開き、以下のコマンドを実行します。<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# nginxのディレクトリへ移動
+cd C:\nginx
+
+# nginx の設定ファイルに文法エラーがないか確認
+.\nginx -t
+
+# 出力例:
+# nginx: the configuration file C:\nginx/conf/nginx.conf syntax is ok
+# nginx: configuration file C:\nginx/conf/nginx.conf test is successful
+
+# nginx を起動
+start nginx
+</code>
+</pre>
+</div>
+
+<blockquote>
+<p style="margin-bottom:0;">注意：必ず <code>start nginx</code> を使いましょう。直接 <code>.\nginx</code> とだけ打つとPowerShellウィンドウが操作不能になることがあります。</p>
+</blockquote>
+
+<blockquote>
+<p style="margin-bottom:0;">注意2</p>
+</blockquote>
+start nginx：実行した時に以下のエラーが出た場合は、まず「管理者権限」で実行しているか確認し、それでもだめなら、エクスプローラーからnginx.exeのプロバティを確認し、一番下の「セキュリティ:このファイルは他のコンピューターから取得したものです。このコンピューターを保護するため、このファイルへのアクセスはブロックされる可能性があります。」の隣にある「許可する」チェックボックスがOFFの場合はONにして下さい。<br/><br/>
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Red;">
+<code>
+
+start : このコマンドは、次のエラーのため実行できません: この操作はユーザーによって取り消されました。。
+発生場所 行:1 文字:1
++ start nginx
++ ~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [Start-Process]、InvalidOperationException
+    + FullyQualifiedErrorId : InvalidOperationException,Microsoft.PowerShell.Commands.StartProcessCommand
+</code>
+</pre>
+
+<strong>ステップ 4：ブラウザで動作確認</strong><br/><br/>
+ブラウザのアドレスバーに以下を入力します：
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">ポート80の場合：<code>http://localhost/</code></li>
+  <li style="margin-bottom: 8px;">ポート変更後の場合：<code>http://localhost:8080/</code></li>
+</ul>
+
+<strong>ステップ 5：管理コマンド一覧</strong><br/><br/>
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# 設定ファイルの文法チェック
+.\nginx -t
+
+# 設定を反映（再読み込み）
+.\nginx -s reload
+
+# 即時終了
+.\nginx -s stop
+
+# 正常終了
+.\nginx -s quit
+</code>
+</pre>
+</div>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1 id="nginx設定ファイル-nginxconf-の読み方" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">nginx設定ファイル（nginx.conf）の読み方</h1>
+
+<h3 id="設定ファイルの基本構造" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">設定ファイルの基本構造</h3>
+
+nginx.conf は「ブロック」という単位で構成されています。<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# グローバル設定
+worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    server {
+        listen       80;
+        server_name  localhost;
+
+        location / {
+            root   html;
+            index  index.html;
+        }
+    }
+}
+</code>
+</pre>
+</div>
+
+<h3 id="各設定項目の意味" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">各設定項目の意味</h3>
+
+<div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 20px 0; border: 1px solid #e0e0e0;"><table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">設定キー</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">意味</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">変更が必要なシーン</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>listen 80;</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">待ち受けるポート番号</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ポート競合があるとき</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>root html;</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">公開フォルダのパス</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">自プロジェクト公開時</td></tr></tbody></table></div>
+
+<blockquote>
+<p style="margin-bottom:0;">注意：Windowsのパス区切り文字は <code>\</code> ですが、nginx.conf では必ず <code>/</code>（スラッシュ）を使ってください。<code>C:/nginx</code> と書きます。</p>
+</blockquote>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1 id="実践：aiエージェント開発での活用と連携" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">実践：AIエージェント開発での活用と連携</h1>
+
+<h3 id="シーン1：corsエラーを解決する" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">シーン1：JSONデータを読み込むHTMLページのCORSエラーを解決する</h3>
+
+<code>index.html</code> をダブルクリックで開くと発生するCORSエラーは、nginx 経由でアクセスすることで解決できます。<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# nginx.conf の修正
+location / {
+    root   C:/Users/MyUser/Documents/my-project;
+    index  index.html;
+}
+
+# 設定のリロード
+.\nginx -s reload
+</code>
+</pre>
+</div>
+
+<h3 id="シーン3：フロント＋バックエンド連携" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">シーン3：AIエージェント開発環境の構築（フロント＋バックエンド連携）</h3>
+
+<code>/api/</code> へのリクエストをバックエンドAPIに転送するリバースプロキシ設定により、同一オリジンとして通信可能です。<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+location /api/ {
+    proxy_pass         http://localhost:3000/;
+    proxy_set_header   Host $host;
+    proxy_read_timeout 120s;
+}
+</code>
+</pre>
+</div>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1 id="windows起動時の自動起動設定" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">Windows起動時の自動起動設定</h1>
+
+タスクスケジューラを使って、PC起動時に自動で nginx を起動できます。<br/><br/>
+
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>タスクの作成</strong>：名前を「nginx 自動起動」とする。</li>
+  <li style="margin-bottom: 8px;"><strong>全般</strong>：「ユーザーがログオンしているかどうかにかかわらず実行する」を選択。</li>
+  <li style="margin-bottom: 8px;"><strong>トリガー</strong>：新規作成で「スタートアップ時」を選択。</li>
+  <li style="margin-bottom: 8px;"><strong>操作</strong>：「プログラムの開始」で <code>C:\nginx\nginx.exe</code> を指定し、開始オプションに <code>C:\nginx</code> を入力。</li>
+</ol>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1 id="よくある質問とトラブルシューティング" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">よくある質問とトラブルシューティング</h1>
+
+<h3 id="q1-ポート競合エラー" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Q1. ポート競合で起動しない</h3>
+A. <code>nginx.conf</code> で <code>listen 8080;</code> のように空いているポートに変更してください。<br/><br/>
+
+<h3 id="q2-設定が反映されない" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Q2. 設定が反映されない</h3>
+A. <code>.\nginx -t</code> で文法ミスがないか確認し、<code>.\nginx -s reload</code> を実行してください。<br/><br/>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1 id="なぜ-nginx-はインストーラーを用意しないのか" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">なぜ nginx は「インストーラー」を用意しないのか？</h1>
+
+有名なソフトなのに、なぜいまだに <code>ZIP</code> 展開の <code>exe</code> 直叩きという「硬派」なスタイルを貫いているのか。そこにはサーバー向けソフトウェア特有の文化があります。<br/><br/>
+
+<h3 id="理由1-ポータビリティの重視" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">1. 「ポータビリティ（移植性）」の重視</h3>
+
+nginx は、<strong>Windows レジストリを一切汚さない</strong>設計になっています（本ドキュメントのQ7「アンインストール」の項目からもわかるとおり、フォルダを削除するだけで完全にアンインストール完了です）。<br/><br/>
+
+<div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 20px 0; border: 1px solid #e0e0e0;"><table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">方式</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">特徴</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>インストーラー（.msiなど）</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">OSの深い場所に設定を書き込み、アンインストールもOS経由で行う</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>nginx 方式</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">フォルダを移動したり、まるごとコピーしたりするだけで別のサーバーへ引っ越しが可能</td></tr></tbody></table></div>
+
+この「シンプルさ」が、インフラエンジニアには好まれます。<br/><br/>
+
+<h3 id="理由2-サーバー管理の標準的な作法" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">2. 「サーバー管理」の標準的な作法</h3>
+
+サーバー用のミドルウェア（Apache, Redis, PostgreSQL のバイナリ版など）の世界では、特に Linux/Unix 環境において「インストーラーを使わずにバイナリを直接配置する」ことが標準的な作法となっているケースが多いです。<br/><br/>
+
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">複数のバージョンを同じサーバー内で共存させたり、特定のディレクトリ配下だけで動作させたりする制御がしやすいためです。</li>
+  <li style="margin-bottom: 8px;">パッケージマネージャー（<code>apt</code>, <code>yum</code> など）が使えない環境や、バージョンを厳密に固定したい本番環境では、バイナリ直接配置が特に重宝されます。</li>
+</ul>
+
+<h3 id="理由3-windows版はメインではない" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">3. Windows 版は「メインではない」という側面も</h3>
+
+nginx はもともと Linux/Unix 環境で最大のパフォーマンスを発揮するように設計されています。Windows 版の位置付けについては、公式が明示的に認めています。<br/><br/>
+
+<blockquote>
+<p style="margin-bottom:0;">公式 GitHub（nginx/nginx）の記述：</p>
+<p style="margin-bottom:0;">"Note that the current implementation of NGINX for Windows is at the <b>Proof-of-Concept</b> stage and should only be used for <b>development and testing purposes</b>."</p>
+<p style="margin-bottom:0;">（意訳：Windows版の現在の実装は概念実証段階であり、開発・テスト目的のみでの使用が推奨されます）</p>
+</blockquote>
+
+さらに、公式の Windows 向けドキュメント（nginx.org）でも「<b>ベータバージョン</b>」と明記されており、接続処理方式が <code>select()</code> / <code>poll()</code> のみに限定されているため、Linux 版と比較して高いパフォーマンスや拡張性は期待できません。<br/><br/>
+
+このような位置付けから、インストーラーを開発・維持するコストをかけるよりも、軽量なバイナリ（ZIP）提供にとどめているという背景があります。<br/><br/>
+
+<blockquote>
+<p style="margin-bottom:0;"><b>まとめると</b>：nginx の ZIP 配布は「手抜き」ではなく、レジストリを汚さないポータブル設計・サーバー業界の文化・Windows 版の開発用途という3つの理由が重なった、合理的な選択です。</p>
+</blockquote>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1 id="まとめ" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">まとめ</h1>
+
+本ガイドブックでは、<strong>nginx</strong> の導入から活用までを解説しました。Windows環境でのセットアップは非常にシンプルで、強力な開発環境を提供します。<br/><br/>
+
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><span style="font-size:1.2em">⚡</span> <strong>開発効率の向上</strong>：CORSエラーの悩みから解放されます。</li>
+  <li style="margin-bottom: 8px;"><span style="font-size:1.2em">🛡️</span> <strong>安定した環境</strong>：堅牢なサーバー構成が可能です。</li>
+  <li style="margin-bottom: 8px;"><span style="font-size:1.2em">🔄</span> <strong>柔軟な連携</strong>：バックエンドAPIとの統合が容易です。</li>
+</ul>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1 id="参考リンク一覧" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">参考リンク一覧</h1>
+
+<div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 20px 0; border: 1px solid #e0e0e0;"><table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">リンク</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">詳細</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><a href="https://nginx.org/en/download.html">nginx 公式ダウンロード</a></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Windows版のZIP本体</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><a href="https://nginx.org/en/docs/windows.html">nginx Windows版ドキュメント</a></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">公式の使い方案内</td></tr></tbody></table></div>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<strong>更新日時</strong>：2026 年 3 月 14 日<br/><br/>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const content = document.getElementById("guide-content");
+      const tocList = document.getElementById("toc-list");
+      
+      const headings = Array.from(content.querySelectorAll("h1, h3")).filter(h => {
+        return h.textContent.trim() !== "目次" && !h.closest(".toc-container");
+      });
+
+      if (headings.length === 0) return;
+
+      headings.forEach((heading, index) => {
+        if (!heading.id) {
+          heading.id = "heading-" + index;
+        }
+
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = "#" + heading.id;
+        a.textContent = heading.textContent;
+        a.className = "toc-link" + (heading.tagName.toLowerCase() === "h3" ? " level-h3" : "");
+        
+        li.appendChild(a);
+        tocList.appendChild(li);
+
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          heading.scrollIntoView({ behavior: "smooth", block: "start" });
+          history.pushState(null, null, "#" + heading.id);
+        });
+      });
+
+      const tocLinks = document.querySelectorAll('.toc-link');
+      
+      window.addEventListener('scroll', () => {
+        let current = '';
+        
+        headings.forEach(heading => {
+          const headingTop = heading.getBoundingClientRect().top;
+          if (headingTop <= 100) {
+            current = heading.id;
+          }
+        });
+
+        tocLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href').includes(current) && current !== '') {
+            link.classList.add('active');
+          }
+        });
+      }, { passive: true });
+    });
+  </script>
+</body>
+</html>

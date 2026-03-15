@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>もりもり gitPages 公開コンテンツ</title>
+  <title>もりもり ガイドブック</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
 
@@ -27,14 +27,14 @@
     body {
       font-family: "Noto Sans JP", sans-serif;
       min-height: 100vh;
-      background: #a8e0db url("images/header.png") center / cover no-repeat;
+      background: #a8e0db url("../images/header.png") center / cover no-repeat;
       overflow: hidden;
     }
 
     .card {
       position: absolute;
       width: calc(100% - 32px);
-      max-width: 560px;
+      max-width: 600px;
       background: var(--glass-bg);
       backdrop-filter: blur(18px) saturate(160%);
       -webkit-backdrop-filter: blur(18px) saturate(160%);
@@ -124,32 +124,6 @@
       letter-spacing: 0.08em;
     }
 
-    /* ── 区切り線 ── */
-    .section-divider {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 2px 0;
-      animation: fadeUp 0.6s cubic-bezier(.22, 1, .36, 1) both;
-      animation-delay: 0.28s;
-    }
-
-    .section-divider span {
-      font-size: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      color: rgba(127, 231, 214, 0.6);
-      white-space: nowrap;
-    }
-
-    .section-divider::before,
-    .section-divider::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(57, 197, 187, 0.25), transparent);
-    }
-
     .card-body {
       padding: 20px 24px 24px;
     }
@@ -158,148 +132,106 @@
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
 
     .menu-list li {
       animation: fadeUp 0.6s cubic-bezier(.22, 1, .36, 1) both;
     }
 
-    .menu-list li:nth-child(1) {
-      animation-delay: 0.10s;
-    }
+    .menu-list li:nth-child(1) { animation-delay: 0.10s; }
+    .menu-list li:nth-child(2) { animation-delay: 0.18s; }
 
-    .menu-list li:nth-child(2) {
-      animation-delay: 0.18s;
-    }
-
-    .menu-list li:nth-child(3) {
-      animation-delay: 0.26s;
-    }
-
-    .menu-list li.divider {
-      animation-delay: 0.34s;
-    }
-
-    .menu-list li:nth-child(5) {
-      animation-delay: 0.42s;
-    }
-
-    .menu-list li:nth-child(6) {
-      animation-delay: 0.50s;
-    }
-
-    .menu-list a {
+    .book-item {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 14px;
       padding: 12px 18px;
       background: rgba(255, 255, 255, 0.10);
       border: 1.5px solid rgba(57, 197, 187, 0.25);
       border-radius: 12px;
-      text-decoration: none;
+      box-shadow: 0 2px 8px rgba(57, 197, 187, 0.08);
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+    
+    .book-item:hover {
+      background: rgba(57, 197, 187, 0.05);
+      border-color: var(--miku-teal);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 18px rgba(57, 197, 187, 0.22);
+    }
+
+    .book-title {
+      flex: 1;
       color: #c8faf7;
       font-weight: 700;
       font-size: clamp(0.82rem, 3.2vw, 0.97rem);
-      text-shadow:
-        0 0 6px rgba(57, 197, 187, 0.95),
-        0 0 18px rgba(57, 197, 187, 0.65),
-        0 0 40px rgba(57, 197, 187, 0.30);
-      transition: background 0.2s, transform 0.2s, box-shadow 0.2s, border-color 0.2s, text-shadow 0.3s, color 0.2s;
-      box-shadow: 0 2px 8px rgba(57, 197, 187, 0.08);
+      text-shadow: 0 0 6px rgba(57, 197, 187, 0.8);
+      line-height: 1.35;
     }
 
-    .menu-list a:hover {
-      background: rgba(57, 197, 187, 0.10);
-      border-color: var(--miku-teal);
-      transform: translateX(6px);
-      box-shadow: 0 4px 18px rgba(57, 197, 187, 0.22);
-      color: #ffffff;
-      text-shadow:
-        0 0 6px rgba(255, 255, 255, 1.0),
-        0 0 18px rgba(127, 231, 214, 1.0),
-        0 0 45px rgba(57, 197, 187, 0.85),
-        0 0 90px rgba(57, 197, 187, 0.40);
-    }
-
-    .menu-list a.link-blog:hover {
-      border-color: #60a5fa;
-      background: rgba(96, 165, 250, 0.10);
-      box-shadow: 0 4px 18px rgba(96, 165, 250, 0.22);
-    }
-
-    .menu-list a.link-x:hover {
-      border-color: #9ca3af;
-      background: rgba(55, 65, 81, 0.20);
-      box-shadow: 0 4px 18px rgba(55, 65, 81, 0.30);
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      font-size: 0.7rem;
-      font-weight: 900;
-      letter-spacing: 0.03em;
+    .link-group {
+      display: flex;
+      gap: 8px;
       flex-shrink: 0;
     }
 
-    .badge-data {
-      background: linear-gradient(135deg, #39C5BB, #7FE7D6);
+    .badge-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 48px;
+      height: 32px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-decoration: none;
       color: #fff;
+      transition: filter 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+
+    .badge-link:hover {
+      filter: brightness(1.15);
+      transform: scale(1.05);
+    }
+
+    .badge-md {
+      background: linear-gradient(135deg, #374151, #111827);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
 
     .badge-html {
       background: linear-gradient(135deg, #FFC778, #ff9f43);
+      box-shadow: 0 2px 6px rgba(255, 159, 67, 0.3);
+    }
+
+    .back-btn-container {
+      margin-top: 24px;
+      text-align: center;
+      animation: fadeUp 0.6s cubic-bezier(.22, 1, .36, 1) both;
+      animation-delay: 0.3s;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 20px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
       color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.85rem;
+      transition: background 0.2s, box-shadow 0.2s;
     }
 
-    .badge-guide {
-      background: linear-gradient(135deg, #2563eb, #06b6d4);
-      color: #fff;
-      font-size: 1.1rem;
-    }
-
-    .badge-books {
-      background: linear-gradient(135deg, #10b981, #34d399); /* Emerald to light green */
-      color: #fff;
-      font-size: 1.1rem;
-    }
-
-    .badge-blog {
-      background: linear-gradient(135deg, #60a5fa, #1d4ed8);
-      color: #fff;
-      font-size: 1.05rem;
-    }
-
-    .badge-x {
-      background: linear-gradient(135deg, #374151, #111827);
-      color: #fff;
-      font-size: 0.95rem;
-      font-weight: 900;
-    }
-
-    .menu-text {
-      flex: 1;
-      line-height: 1.35;
-    }
-
-    .menu-arrow {
-      color: #7FE7D6;
-      font-size: 1rem;
-      opacity: 0.8;
-      transition: opacity 0.2s, transform 0.2s, text-shadow 0.3s;
-      text-shadow: 0 0 6px rgba(57, 197, 187, 0.9), 0 0 18px rgba(57, 197, 187, 0.5);
-    }
-
-    .menu-list a:hover .menu-arrow {
-      opacity: 1;
-      transform: translateX(3px);
-      color: #fff;
-      text-shadow: 0 0 8px rgba(255, 255, 255, 1), 0 0 22px rgba(127, 231, 214, 1), 0 0 50px rgba(57, 197, 187, 0.7);
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
     }
 
     .card-footer {
@@ -317,66 +249,38 @@
 
     <div class="card-header">
       <div class="drag-hint"><span></span><span></span></div>
-      <h1>公開コンテンツ一覧</h1>
-      <p class="subtitle">もりもり gitPages (メニューは動かせます)</p>
+      <h1>ドキュメント & ガイドブック</h1>
+      <p class="subtitle">もりもり gitPages</p>
     </div>
 
     <div class="card-body">
       <ul class="menu-list">
 
         <li>
-          <a href="psLib/psLib.html" target="newWindow">
-            <span class="badge badge-html">HTML</span>
-            <span class="menu-text">所有プレイステーションソフト一覧(画面)</span>
-            <span class="menu-arrow">›</span>
-          </a>
+          <div class="book-item">
+            <span class="book-title">【nginx】導入・インストール・活用ガイドブック</span>
+            <div class="link-group">
+              <a href="nginx_guide.md" class="badge-link badge-md">MD</a>
+              <a href="nginx_guide.html" class="badge-link badge-html">HTML</a>
+            </div>
+          </div>
         </li>
 
         <li>
-          <a href="psLib/psLib.json" target="newWindow">
-            <span class="badge badge-data">JSON</span>
-            <span class="menu-text">所有プレイステーションソフト一覧(データ)</span>
-            <span class="menu-arrow">›</span>
-          </a>
-        </li>
-
-        <li>
-          <a href="agentGuide/" target="newWindow">
-            <span class="badge badge-guide">🤖</span>
-            <span class="menu-text">自己流AIエージェント開発構造について</span>
-            <span class="menu-arrow">›</span>
-          </a>
-        </li>
-
-        <li>
-          <a href="books/">
-            <span class="badge badge-books">📚</span>
-            <span class="menu-text">ドキュメント & ガイドブック</span>
-            <span class="menu-arrow">›</span>
-          </a>
-        </li>
-
-        <li class="divider">
-          <div class="section-divider"><span>SNS &amp; BLOG</span></div>
-        </li>
-
-        <li>
-          <a href="https://morimorigameblogg.blogspot.com/" target="_blank" rel="noopener" class="link-blog">
-            <span class="badge badge-blog">✍</span>
-            <span class="menu-text">もりもりゲームブログ</span>
-            <span class="menu-arrow">›</span>
-          </a>
-        </li>
-
-        <li>
-          <a href="https://x.com/Talk_morimori" target="_blank" rel="noopener" class="link-x">
-            <span class="badge badge-x">𝕏</span>
-            <span class="menu-text">X（Twitter）@Talk_morimori</span>
-            <span class="menu-arrow">›</span>
-          </a>
+          <div class="book-item">
+            <span class="book-title">Node.js serve パッケージ導入・インストール・活用ガイドブック</span>
+            <div class="link-group">
+              <a href="serve_guide.md" class="badge-link badge-md">MD</a>
+              <a href="serve_guide.html" class="badge-link badge-html">HTML</a>
+            </div>
+          </div>
         </li>
 
       </ul>
+
+      <div class="back-btn-container">
+        <a href="../index.html" class="back-btn">‹ トップメニューへ戻る</a>
+      </div>
     </div>
 
     <div class="card-footer">© もりもり</div>

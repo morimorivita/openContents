@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>(BOOK)Node.js serve パッケージ導入・インストール・活用ガイドブック</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #39C5BB;
+      --secondary: #FFC778;
+      --bg: #fdfdfd;
+      --text-main: #2c3e50;
+      --text-muted: #666;
+      --border: #e0e0e0;
+      --highlight: rgba(57, 197, 187, 0.1);
+      --font-main: "Noto Sans JP", sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: var(--font-main);
+      color: var(--text-main);
+      background-color: var(--bg);
+      line-height: 1.8;
+      display: flex;
+    }
+
+    /* --- サイドバー目次 (TOC) --- */
+    .toc-container {
+      width: 300px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      background: #fff;
+      border-right: 1px solid var(--border);
+      padding: 24px 20px;
+      overflow-y: auto;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+      flex-shrink: 0;
+    }
+
+    .toc-title {
+      font-size: 1.1rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toc-list {
+      list-style: none;
+    }
+
+    .toc-list li {
+      margin-bottom: 8px;
+    }
+
+    .toc-link {
+      display: block;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+
+    .toc-link:hover {
+      background: var(--highlight);
+      color: var(--primary);
+    }
+
+    .toc-link.active {
+      background: var(--highlight);
+      color: var(--primary);
+      border-left-color: var(--primary);
+      font-weight: 700;
+    }
+
+    .toc-link.level-h3 {
+      font-size: 0.85rem;
+      padding-left: 24px;
+    }
+
+    /* --- メインコンテンツ --- */
+    .content-container {
+      flex: 1;
+      padding: 60px 40px 100px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .nav-buttons {
+      margin-bottom: 40px;
+    }
+    
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 8px 16px;
+      border: 1.5px solid var(--primary);
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+
+    .btn-back:hover {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(57, 197, 187, 0.3);
+    }
+
+    h1 {
+      scroll-margin-top: 40px;
+      margin-top: 60px;
+      margin-bottom: 24px;
+      line-height: 1.4;
+    }
+    
+    h3 {
+      scroll-margin-top: 40px;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    p {
+      margin-bottom: 20px;
+      font-size: 1.05rem;
+    }
+
+    pre {
+      background: #1e1e1e !important;
+      padding: 20px !important;
+      border-radius: 12px !important;
+      overflow-x: auto;
+      margin: 24px 0 !important;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      border: 1px solid #333;
+    }
+
+    code {
+      font-family: 'Consolas', 'Monaco', monospace;
+      color: #e6e6e6 !important;
+    }
+
+    p code, li code {
+      background: rgba(0,0,0,0.05);
+      padding: 3px 6px;
+      border-radius: 4px;
+      color: #d63384 !important;
+      font-size: 0.95em;
+    }
+
+    blockquote {
+      background: #fff8f0;
+      border-left: 5px solid var(--secondary);
+      padding: 16px 20px;
+      margin: 24px 0;
+      border-radius: 0 8px 8px 0;
+      color: #7a5c2d;
+    }
+
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+      
+      .toc-container {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      }
+
+      .content-container {
+        padding: 40px 20px 80px;
+      }
+      
+      h1 { font-size: 1.3em !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="toc-container">
+    <div class="toc-title">📚 目次</div>
+    <ul class="toc-list" id="toc-list">
+    </ul>
+  </aside>
+
+  <main class="content-container">
+    <div class="nav-buttons">
+      <a href="./" class="btn-back">‹ ブック一覧へ戻る</a>
+    </div>
+
+    <div id="guide-content">
+
+<img src="images/serve_img.png" alt="nginx" style="max-width: 100%; height: auto;"><br/><br/>      
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0)); margin: 40px 0;">
+<h1 id="nodejs-serve-パッケージ導入インストール活用ガイドブック" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">Node.js serve パッケージ導入・インストール・活用ガイドブック</h1>
+
+<span style="font-size:1.2em">📚</span> 本ガイドブックは、Node.js および serve パッケージを初めて利用される方から、すでに利用中の方まで、幅広くご活用いただけるよう設計されています。CORS エラーによる HTML ファイルの直接開きができない問題を解決し、開発効率を大幅に改善するための実践的な手順をご紹介します。<br/><br/>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+
+
+<h1 id="nodejs-について" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">Node.js について</h1>
+
+<h3 id="nodejs-とは" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Node.js とは</h3>
+
+Node.js は、JavaScript をサーバーサイド（パソコンやサーバーコンピュータ上）で実行するための<strong>オープンソースのランタイム環境</strong>です。通常、JavaScript はブラウザ上でのみ動作しますが、Node.js を使用することで、JavaScript でバックエンドアプリケーション、CLI ツール、ローカル開発サーバーなどを構築することができます。<br/><br/>
+
+2009 年に Ryan Dahl 氏によって開発され、現在では世界中の開発者に利用されている、非常に人気の高いプラットフォームです。<br/><br/>
+
+<h3 id="nodejs-の主な特性" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Node.js の主な特性</h3>
+
+<div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 20px 0; border: 1px solid #e0e0e0;"><table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">特性</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">説明</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>非同期処理</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ファイル I/O やネットワーク通信を効率的に処理でき、複数のリクエストを同時に扱える</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>シングルスレッド</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">一つのスレッドで動作するため、実装がシンプルで予測しやすい</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>npm エコシステム</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">数百万のパッケージが登録された npm（Node Package Manager）により、再利用可能なコンポーネントが豊富</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>クロスプラットフォーム</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Windows、macOS、Linux など主要な OS で動作可能</td></tr></tbody></table></div>
+<h3 id="nodejs-の使用用途" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Node.js の使用用途</h3>
+
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>Web サーバーの構築</strong>：Express や Hapi などのフレームワークを使用した API サーバーの開発</li>
+  <li style="margin-bottom: 8px;"><strong>スタティック Web サーバー</strong>：本ガイドで紹介する serve パッケージなど、簡単な Web サーバーの実行</li>
+  <li style="margin-bottom: 8px;"><strong>ビルドツール</strong>：Webpack、Gulp、Grunt などの開発ツールの実行</li>
+  <li style="margin-bottom: 8px;"><strong>コマンドラインツール</strong>：自動化スクリプトやデータ処理ツール</li>
+  <li style="margin-bottom: 8px;"><strong>リアルタイムアプリケーション</strong>：WebSocket を使用したチャットアプリやゲームサーバー</li>
+</ul>
+
+<h3 id="nodejs-のバージョン戦略" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Node.js のバージョン戦略</h3>
+
+Node.js には複数のバージョンリリース系統があります：<br/><br/>
+
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>Current（最新版）</strong>：最新の機能が含まれているが、6 ヶ月でサポート終了</li>
+  <li style="margin-bottom: 8px;"><strong>LTS（Long Term Support）</strong>：長期間サポートされる安定版。3 年間のサポート期間を持つ</li>
+</ul>
+
+開発環境では最新版を使用し、本番環境では LTS バージョンを使用することが推奨される慣習です。<br/><br/>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1 id="serve-パッケージについて" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">serve パッケージについて</h1>
+
+<h3 id="serve-パッケージとは" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">serve パッケージとは</h3>
+
+<code>serve</code> は、Node.js 用の極めてシンプルで高速なスタティック Web サーバーパッケージです。複雑な設定なしに、ローカルの任意のフォルダをすぐに Web サーバー化できるため、<strong>開発効率の向上</strong>に非常に有効です。<br/><br/>
+
+<h3 id="serve-パッケージが解決する問題" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">serve パッケージが解決する問題</h3>
+
+HTML ファイルを Windows エクスプローラーでダブルクリックしたり、ブラウザに直接ドラッグ&ドロップしたりすると、<code>file://</code> プロトコルで読み込まれます。このプロトコルでは、<strong>CORS（Cross-Origin Resource Sharing）セキュリティ制限</strong>により、JSON ファイルなどの外部リソースの読み込みが自動的にブロックされます。<br/><br/>
+
+<strong>serve を使用することで：</strong><br/><br/>
+
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">HTTP プロトコルで HTML ファイルをサーブするため CORS 制限が適用されない</li>
+  <li style="margin-bottom: 8px;">複雑なサーバー設定は不要で、一行のコマンドで実行可能</li>
+  <li style="margin-bottom: 8px;">ローカルマシンのネットワーク IP アドレス経由でリモートアクセスも可能</li>
+</ol>
+
+<h3 id="serve-の主な特徴" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">serve の主な特徴</h3>
+
+<div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 20px 0; border: 1px solid #e0e0e0;"><table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">特徴</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">詳細</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>設定不要</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">JSON や設定ファイルが不要で、コマンドラインで実行可能</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>高速</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Node.js のネイティブモジュールを使用した最小限の実装</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>圧縮対応</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">gzip 圧縮により、ネットワーク転送量を削減</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>SSL/TLS 対応</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">HTTPS でのサーブも可能（証明書生成は別途必要）</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>ポートカスタマイズ</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">任意のポート番号で実行可能</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>ブラウザキャッシュ対応</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">適切な HTTP ヘッダー設定により、効率的なブラウザキャッシュをサポート</td></tr></tbody></table></div>
+<h3 id="serve-の公式情報" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">serve の公式情報</h3>
+
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>公式 GitHub リポジトリ</strong>：https://github.com/vercel/serve</li>
+  <li style="margin-bottom: 8px;"><strong>npm パッケージページ</strong>：https://www.npmjs.com/package/serve</li>
+  <li style="margin-bottom: 8px;"><strong>ドキュメント</strong>：https://github.com/vercel/serve#readme</li>
+</ul>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1 id="node-version-manager-nvm-とは" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">Node Version Manager (NVM) とは</h1>
+
+<h3 id="nvm-の役割" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">NVM の役割</h3>
+
+複数のバージョンの Node.js を同一マシン上にインストールし、プロジェクトごとに使い分ける必要が生じることがあります。NVM（<strong>Node Version Manager</strong>）は、このような複数バージョンの管理を簡単に行うためのツールです。<br/><br/>
+
+<h3 id="nvm-が必要な理由" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">NVM が必要な理由</h3>
+
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>バージョン互換性</strong>：異なるプロジェクトが異なる Node.js バージョンに依存している場合がある</li>
+  <li style="margin-bottom: 8px;"><strong>LTS と最新版の共存</strong>：本番サーバーでは LTS 版を使用し、開発環境では最新版を試したいケースがある</li>
+  <li style="margin-bottom: 8px;"><strong>簡単な切り替え</strong>：グローバルインストールではなく、シェル単位でバージョンを切り替え可能</li>
+  <li style="margin-bottom: 8px;"><strong>アンインストールの容易さ</strong>：不要なバージョンを簡単に削除できる</li>
+  <li style="margin-bottom: 8px;"><strong>権限問題の回避</strong>：ユーザーレベルでの管理により、sudo コマンドが不要な場合が多い</li>
+</ul>
+
+<h3 id="windows-での-nvm-選択肢" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Windows での NVM 選択肢</h3>
+
+Windows の場合、いくつかの NVM 実装が存在します：<br/><br/>
+
+<div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 20px 0; border: 1px solid #e0e0e0;"><table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">NVM 実装</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">説明</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">特徴</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>nvm-windows</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Windows 専用の NVM 実装</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">GUI インストーラー利用可能、最も推奨</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>nvm（PowerShell 版）</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">PowerShell スクリプトベースの実装</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">PowerShell のみで動作</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>fnm</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Rust で実装された軽量な NVM</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">クロスプラットフォーム対応</td></tr></tbody></table></div>
+<strong>本ガイドでは nvm-windows を推奨</strong>します。最も安定しており、GUI インストーラーにより初心者にも分かりやすいためです。<br/><br/>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1 id="nvm-の入手方法" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">NVM の入手方法</h1>
+
+<h3 id="nvm-windows-の入手" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">nvm-windows の入手</h3>
+
+<h3 id="公式リポジトリからのダウンロード" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">公式リポジトリからのダウンロード</h3>
+
+nvm-windows の最新版は、GitHub リポジトリから直接ダウンロードできます。<br/><br/>
+
+<strong>公式 GitHub リポジトリ</strong>：  <br/><br/>
+https://github.com/coreybutler/nvm-windows<br/><br/>
+
+<h3 id="ダウンロード手順" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ダウンロード手順</h3>
+
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">上記の GitHub ページにアクセスします</li>
+  <li style="margin-bottom: 8px;">右側の <strong>"Releases"</strong> セクションを探し、最新版をクリックします</li>
+  <li style="margin-bottom: 8px;"><strong>"Assets"</strong> セクションで、以下のファイルを探します：</li>
+</ol>
+   - <code>nvm-setup.exe</code>（推奨：GUI インストーラー）
+   - <code>nvm-noinstall.zip</code>（ポータブル版：設定が必要）
+
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><code>nvm-setup.exe</code> をダウンロードして実行します</li>
+</ol>
+
+<h3 id="代替chocolatey-を使用したインストール" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">代替：Chocolatey を使用したインストール</h3>
+
+Windows パッケージマネージャー「Chocolatey」がインストール済みの場合：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+choco install nvm
+</code>
+</pre>
+</div>
+
+<h3 id="代替powershell-インストールスクリプト" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">代替：PowerShell インストールスクリプト</h3>
+
+PowerShell を管理者権限で実行し、以下のコマンドで自動ダウンロード・インストール：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# nvm-windows の最新版をダウンロード・インストール
+$nvmLatestUrl = "https://github.com/coreybutler/nvm-windows/releases/latest/download/nvm-setup.exe"
+$outputPath = "$env:TEMP\nvm-setup.exe"
+Invoke-WebRequest -Uri $nvmLatestUrl -OutFile $outputPath
+Start-Process -FilePath $outputPath -Wait
+Remove-Item -Path $outputPath
+</code>
+</pre>
+</div>
+
+<h3 id="入手前の確認事項" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">入手前の確認事項</h3>
+
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>OS バージョン</strong>：Windows 7 以上のバージョンが必要です（Windows 10/11 は完全対応）</li>
+  <li style="margin-bottom: 8px;"><strong>管理者権限</strong>：インストール時に管理者権限が必要です</li>
+  <li style="margin-bottom: 8px;"><strong>ウイルス対策ソフト</strong>：稀にセキュリティソフトがダウンロードをブロックする場合があります。その場合は一時的に無効化してください</li>
+</ul>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1 id="nvm-のインストール方法" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">NVM のインストール方法</h1>
+
+<h3 id="gui-インストーラーを使用した方法推奨" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">GUI インストーラーを使用した方法（推奨）</h3>
+
+<h3 id="ステップ-1インストーラーの起動" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ステップ 1：インストーラーの起動</h3>
+
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">ダウンロードした <code>nvm-setup.exe</code> をダブルクリックで実行</li>
+  <li style="margin-bottom: 8px;">ユーザーアカウント制御（UAC）ダイアログで <strong>"はい"</strong> を選択</li>
+</ol>
+
+<h3 id="ステップ-2インストールウィザードの実行" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ステップ 2：インストールウィザードの実行</h3>
+
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">言語設定：<strong>"English"</strong> または <strong>"日本語"</strong> を選択</li>
+  <li style="margin-bottom: 8px;"><strong>"Next"</strong> ボタンをクリック</li>
+  <li style="margin-bottom: 8px;">ライセンス同意画面で <strong>"I agree to the License Agreement"</strong> にチェック</li>
+  <li style="margin-bottom: 8px;"><strong>"Next"</strong> ボタンをクリック</li>
+</ol>
+
+<h3 id="ステップ-3インストール先の指定" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ステップ 3：インストール先の指定</h3>
+
+<strong>デフォルト設定値</strong>：<code>C:\Users\[ユーザー名]\AppData\Roaming\nvm</code><br/><br/>
+
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">通常はデフォルト値で問題ありません</li>
+  <li style="margin-bottom: 8px;">ドライブ容量が限定されている場合は、変更することも可能です</li>
+  <li style="margin-bottom: 8px;"><strong>"Next"</strong> ボタンをクリック</li>
+</ul>
+
+<h3 id="ステップ-4symlink-フォルダの指定" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ステップ 4：symlink フォルダの指定</h3>
+
+<strong>symlink フォルダ</strong>：Node.js がインストールされるフォルダ<br/><br/>
+
+<strong>推奨値</strong>：<code>C:\Program Files\nodejs</code><br/><br/>
+
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">ここで指定した場所に、実際の Node.js インストールがリンクされます</li>
+  <li style="margin-bottom: 8px;"><strong>"Next"</strong> ボタンをクリック</li>
+</ul>
+
+<h3 id="ステップ-5インストール完了" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ステップ 5：インストール完了</h3>
+
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">インストール中、複数のファイルがダウンロード・展開されます</li>
+  <li style="margin-bottom: 8px;">完了後、<strong>"Finish"</strong> ボタンをクリック</li>
+</ol>
+
+<h3 id="インストール完了後の確認" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">インストール完了後の確認</h3>
+
+PowerShell または コマンドプロンプトで、新しいウィンドウを開きます：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# NVM のバージョン確認
+nvm -v
+
+# 出力例:
+# 1.1.11
+</code>
+</pre>
+</div>
+
+<code>nvm -v</code> でバージョンが表示されれば、インストール成功です。<br/><br/>
+
+<h3 id="トラブルシューティングnvm-が認識されない場合" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">トラブルシューティング：NVM が認識されない場合</h3>
+
+この問題は、PATH 環境変数が更新されていない場合に発生することがあります。<br/><br/>
+
+<h3 id="解決方法-1pc-の再起動" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">解決方法 1：PC の再起動</h3>
+
+新しいシェルウィンドウを開き、PATH が再読み込みされます。問題が解決しない場合は以下を試してください。<br/><br/>
+
+<h3 id="解決方法-2path-手動設定" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">解決方法 2：PATH 手動設定</h3>
+
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>"Windows キー + R"</strong> で <strong>「ファイル名を指定して実行」</strong> を開く</li>
+  <li style="margin-bottom: 8px;"><code>systempropertiesadvanced</code> と入力</li>
+  <li style="margin-bottom: 8px;"><strong>"環境変数"</strong> ボタンをクリック</li>
+  <li style="margin-bottom: 8px;"><strong>"システム環境変数"</strong> セクションで <strong>"Path"</strong> を選択し、<strong>"編集"</strong> をクリック</li>
+  <li style="margin-bottom: 8px;">以下の 2 つのパス（必要に応じて）を確認・追加：</li>
+</ol>
+   - <code>C:\Users\[ユーザー名]\AppData\Roaming\nvm</code>
+   - <code>C:\Program Files\nodejs</code>
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>"OK"</strong> ボタンをクリックし、新しいシェルウィンドウを開く</li>
+</ol>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1 id="nvm-を使用した-nodejs-のインストール" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">NVM を使用した Node.js のインストール</h1>
+
+<h3 id="ステップ-1利用可能なバージョンの一覧表示" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ステップ 1：利用可能なバージョンの一覧表示</h3>
+
+<h3 id="すべての利用可能な-nodejs-バージョンを表示" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">すべての利用可能な Node.js バージョンを表示</h3>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+nvm list available
+</code>
+</pre>
+</div>
+
+<strong>出力例</strong>：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+<div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 20px 0; border: 1px solid #e0e0e0;"><table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">LATEST</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">LTS</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">22.x.x</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">20.11.1</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">21.x.x</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">18.19.0</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">20.11.1</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">16.20.0</td></tr></tbody></table></div>...
+</code>
+</pre>
+</div>
+
+<h3 id="すでにインストール済みのバージョンを確認" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">すでにインストール済みのバージョンを確認</h3>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+nvm list
+</code>
+</pre>
+</div>
+
+<h3 id="ステップ-2nodejs-のインストール" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ステップ 2：Node.js のインストール</h3>
+
+<h3 id="最新版currentのインストール例" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">最新版（Current）のインストール例</h3>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+nvm install latest
+</code>
+</pre>
+</div>
+
+<h3 id="特定バージョンのインストール例" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">特定バージョンのインストール例</h3>
+
+LTS 版（例：20.11.1）をインストール：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+nvm install 20.11.1
+</code>
+</pre>
+</div>
+
+バージョン指定時は、<code>nvm list available</code> の出力から正確なバージョン番号をコピーしてください。<br/><br/>
+
+<h3 id="複数バージョンのインストール例" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">複数バージョンのインストール例</h3>
+
+開発環境用に最新版、本番リファレンス用に LTS をインストール：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# 最新版のインストール
+nvm install latest
+
+# LTS 版（20.x）のインストール
+nvm install 20.11.1
+</code>
+</pre>
+</div>
+
+<h3 id="ステップ-3バージョンの切り替え" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ステップ 3：バージョンの切り替え</h3>
+
+<h3 id="使用するバージョンの指定" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">使用するバージョンの指定</h3>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# 最新版の使用
+nvm use latest
+
+# LTS 版（20.x）の使用
+nvm use 20.11.1
+
+# バージョン番号の一部指定も可能
+nvm use 20  # 最新の 20.x.x を自動選択
+</code>
+</pre>
+</div>
+
+<h3 id="ステップ-4インストール完了の確認" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ステップ 4：インストール完了の確認</h3>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+node --version
+npm --version
+
+# 出力例:
+# v20.11.1
+# 9.8.1
+</code>
+</pre>
+</div>
+
+Node.js（<code>node</code>）と npm（<code>npm</code>）のバージョンが表示されれば、インストール成功です。<br/><br/>
+
+<h3 id="推奨される複数バージョンの管理戦略" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">推奨される複数バージョンの管理戦略</h3>
+
+<h3 id="シナリオ例開発環境では最新版参考用に-lts-をインポート" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">シナリオ例：開発環境では最新版、参考用に LTS をインポート</h3>
+
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>最新版（Current）をインストール</strong></li>
+</ol>
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+   nvm install latest
+</code>
+</pre>
+</div>
+   - 最新の言語機能やパフォーマンス改善を試験的に利用
+
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>LTS 版（Long Term Support）をインストール</strong></li>
+</ol>
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+   nvm install lts
+</code>
+</pre>
+</div>
+   - 本番環境同等の安定性で検証
+
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>デフォルト版の設定</strong></li>
+</ol>
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+   nvm use latest
+</code>
+</pre>
+</div>
+   - 普段は最新版を使用し、必要に応じて LTS に切り替え
+
+<h3 id="バージョン切り替え時の注意" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">バージョン切り替え時の注意</h3>
+
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>グローバルパッケージの独立</strong>：<code>npm install -g</code> でインストールされたパッケージは、バージョン別に管理されます。各バージョンで必要なツールを個別にインストールしてください</li>
+  <li style="margin-bottom: 8px;"><strong>プロジェクトローカルパッケージ</strong>：各プロジェクトの <code>node_modules</code> フォルダは、使用する Node.js バージョンに依存します。<code>.nvmrc</code> ファイルで自動バージョン切り替えを設定することも可能です</li>
+</ul>
+
+<h3 id="設定ファイル-nvmrc-による自動バージョン切り替え" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">設定ファイル <code>.nvmrc</code> による自動バージョン切り替え</h3>
+
+<h3 id="nvmrc-ファイルの作成" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;"><code>.nvmrc</code> ファイルの作成</h3>
+
+プロジェクトフォルダに <code>.nvmrc</code> ファイルを作成し、そのプロジェクトで使用する Node.js バージョンを指定：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+20.11.1
+</code>
+</pre>
+</div>
+
+<h3 id="自動バージョン切り替えと使用" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">自動バージョン切り替えと使用</h3>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# プロジェクトフォルダに移動
+cd my-project
+
+# .nvmrc で指定されたバージョンに自動切り替え
+nvm use
+
+# 出力例：
+# Now using node v20.11.1
+</code>
+</pre>
+</div>
+
+このように設定すれば、フォルダ移動時に自動的に適切なバージョンに切り替わります。<br/><br/>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1 id="serve-パッケージの入手とインストール" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">serve パッケージの入手とインストール</h1>
+
+<h3 id="serve-パッケージの入手方法" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">serve パッケージの入手方法</h3>
+
+serve パッケージは、npm（Node Package Manager）経由で入手します。Node.js をインストールすれば、npm は自動で含まれています。したがって、<strong>別途ダウンロードは不要</strong>です。<br/><br/>
+
+<h3 id="serve-2-つのインストール方法" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">serve 2 つのインストール方法</h3>
+
+serve には 2 つの利用方法があります。プロジェクトの規模や用途に応じて選択してください。<br/><br/>
+
+<h3 id="方法-1グローバルインストール推奨" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">方法 1：グローバルインストール（推奨）</h3>
+
+全プロジェクト共通で使用する場合、またはコマンドラインツールとして使用する場合：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+npm install -g serve
+</code>
+</pre>
+</div>
+
+<strong>メリット</strong>:<br/><br/>
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">インストール後、すぐにどのフォルダからでも <code>serve</code> コマンドが実行可能</li>
+  <li style="margin-bottom: 8px;">ディスク容量の節約（1 つのコピーで複数プロジェクトで共有）</li>
+  <li style="margin-bottom: 8px;">Node.js バージョン更新時に一度のインストールで済む</li>
+</ul>
+
+<strong>デメリット</strong>:<br/><br/>
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">複数バージョンの Node.js を使い分ける場合、各バージョンで個別インストールが必要</li>
+</ul>
+
+<h3 id="方法-2ローカルインストール" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">方法 2：ローカルインストール</h3>
+
+特定プロジェクトのみで使用する場合：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# プロジェクトフォルダに移動
+cd my-project
+
+# 現在位置にインストール
+npm install serve
+</code>
+</pre>
+</div>
+
+<strong>メリット</strong>:<br/><br/>
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">プロジェクト別に独立した環境を構築</li>
+  <li style="margin-bottom: 8px;"><code>package.json</code> で依存関係管理が可能</li>
+  <li style="margin-bottom: 8px;">複数バージョンの Node.js でも問題なし</li>
+</ul>
+
+<strong>デメリット</strong>:<br/><br/>
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">各プロジェクトで個別にインストールが必要</li>
+  <li style="margin-bottom: 8px;">ディスク容量を多く消費</li>
+</ul>
+
+<h3 id="推奨事項" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">推奨事項</h3>
+
+<strong>個人開発環境やローカル開発では方法 1（グローバルインストール）を推奨</strong>します。ローカル開発サーバーとしての用途が主であり、個別の厳密なバージョン管理の必要性が低いためです。<br/><br/>
+
+<h3 id="グローバルインストールの詳細手順" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">グローバルインストールの詳細手順</h3>
+
+<h3 id="ステップ-1powershell-を管理者権限で起動" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ステップ 1：PowerShell を管理者権限で起動</h3>
+
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">Windows キーを押して、"PowerShell" と入力</li>
+  <li style="margin-bottom: 8px;"><strong>"Windows PowerShell"</strong> 右クリック</li>
+  <li style="margin-bottom: 8px;"><strong>"管理者として実行"</strong> を選択</li>
+</ol>
+
+<h3 id="ステップ-2serve-のインストール" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ステップ 2：serve のインストール</h3>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+npm install -g serve
+</code>
+</pre>
+</div>
+
+<strong>インストール完了時の出力例</strong>：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+added 89 packages in 5s
+
+12 packages are looking for funding
+  run <code>npm fund</code> for details
+</code>
+</pre>
+</div>
+
+<h3 id="ステップ-3インストール確認" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ステップ 3：インストール確認</h3>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+serve --version
+
+# 出力例:
+# 14.2.3
+</code>
+</pre>
+</div>
+
+serve のバージョンが表示されれば、インストール成功です。<br/><br/>
+
+<h3 id="アップグレード方法" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">アップグレード方法</h3>
+
+serve を最新版に更新：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+npm install -g serve@latest
+</code>
+</pre>
+</div>
+
+<h3 id="アンインストール方法" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">アンインストール方法</h3>
+
+serve が不要になった場合：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+npm uninstall -g serve
+</code>
+</pre>
+</div>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1 id="serve-パッケージの実際の利用シーン" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">serve パッケージの実際の利用シーン</h1>
+
+<h3 id="基本的な使い方開発フォルダの-web-サーバー化" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">基本的な使い方：開発フォルダの Web サーバー化</h3>
+
+<h3 id="シーン-1ローカル開発でのブラウザ確認" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">シーン 1：ローカル開発でのブラウザ確認</h3>
+
+まず、具体的なプロジェクトを例に説明します。以下のようなフォルダ構成があるとします：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+C:\Users\MyUser\Documents\my-html-project\
+├── index.html
+├── style.css
+├── script.js
+└── data\
+    └── products.json
+</code>
+</pre>
+</div>
+
+各ファイルの内容例：<br/><br/>
+
+<strong>index.html</strong>
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;商品一覧&lt;/title&gt;
+  &lt;link rel="stylesheet" href="style.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;商品一覧&lt;/h1&gt;
+  &lt;ul id="product-list"&gt;&lt;/ul&gt;
+  &lt;script src="script.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code>
+</pre>
+</div>
+
+<strong>data/products.json</strong>
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+{
+  "products": [
+    { "id": 1, "name": "りんご",   "price": 150 },
+    { "id": 2, "name": "バナナ",   "price": 80  },
+    { "id": 3, "name": "オレンジ", "price": 120 }
+  ]
+}
+</code>
+</pre>
+</div>
+
+<strong>script.js</strong>
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+// data/products.json を読み込んでリスト表示する
+fetch('data/products.json')
+  .then(response =&gt; response.json())
+  .then(data =&gt; {
+    const list = document.getElementById('product-list');
+    data.products.forEach(product =&gt; {
+      const item = document.createElement('li');
+      item.textContent = <code>${product.name}：${product.price}円</code>;
+      list.appendChild(item);
+    });
+  })
+  .catch(error =&gt; {
+    console.error('読み込みエラー:', error);
+  });
+</code>
+</pre>
+</div>
+
+このプロジェクトを serve で起動する手順：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# 1. プロジェクトフォルダに移動
+cd C:\Users\MyUser\Documents\my-html-project
+
+# 2. カレントフォルダを Web サーバーのルートとして起動
+serve . -l 8000
+</code>
+</pre>
+</div>
+
+<strong>出力例</strong>：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+   ╔════════════════════════════════════════╗
+   ║   Accepting connections at:            ║
+   ║   http://localhost:8000                ║
+   ║   http://192.168.1.100:8000            ║
+   ║                                        ║
+   ║   Press Ctrl-C to stop the server      ║
+   ╚════════════════════════════════════════╝
+</code>
+</pre>
+</div>
+
+<h3 id="ブラウザでの確認" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ブラウザでの確認</h3>
+
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">ブラウザのアドレスバーに <code>http://localhost:8000</code> と入力</li>
+  <li style="margin-bottom: 8px;"><strong>Enter キー</strong>を押す</li>
+  <li style="margin-bottom: 8px;"><code>index.html</code> が表示され、<code>data/products.json</code> のデータが読み込まれた商品一覧が表示されます</li>
+  <li style="margin-bottom: 8px;"><code>file://</code> で開いたときと違い、CORS エラーが発生しません</li>
+</ol>
+
+<h3 id="ネットワークアクセス他のマシンから確認" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ネットワークアクセス：他のマシンから確認</h3>
+
+同一ネットワーク上の別マシン（タブレットやスマートフォンなど）から確認：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+http://192.168.1.100:8000
+</code>
+</pre>
+</div>
+
+（IP アドレスは出力の <code>###.###.###.###</code> を使用）<br/><br/>
+
+<h3 id="サーバー停止" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">サーバー停止</h3>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+Ctrl + C キーを押す
+</code>
+</pre>
+</div>
+
+<h3 id="実践的な使用シーン" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">実践的な使用シーン</h3>
+
+<h3 id="シーン-2複数-html-ページを持つ-web-サイトの確認" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">シーン 2：複数 HTML ページを持つ Web サイトの確認</h3>
+
+複数のページで構成されるサイトを開発する場合も、serve を使えば一発で全ページを確認できます。<br/><br/>
+
+<strong>フォルダ構成例：</strong>
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+C:\Users\MyUser\Documents\my-website\
+├── index.html          ← トップページ
+├── about.html          ← 会社概要ページ
+├── contact.html        ← お問い合わせページ
+├── css\
+│   └── style.css
+├── js\
+│   └── main.js
+└── images\
+    └── logo.png
+</code>
+</pre>
+</div>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# プロジェクトフォルダに移動して起動
+cd C:\Users\MyUser\Documents\my-website
+serve . -l 8000
+</code>
+</pre>
+</div>
+
+ブラウザから各ページへのアクセス方法：<br/><br/>
+
+<div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 20px 0; border: 1px solid #e0e0e0;"><table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">アクセス URL</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">表示されるページ</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><code>http://localhost:8000</code> または <code>http://localhost:8000/index.html</code></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">トップページ</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><code>http://localhost:8000/about.html</code></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">会社概要ページ</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><code>http://localhost:8000/contact.html</code></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">お問い合わせページ</td></tr></tbody></table></div>
+
+ファイル一覧（ディレクトリ表示）も自動的に有効になるため、<code>index.html</code> が存在しないフォルダにアクセスすると、ファイルの一覧が表示されます。<br/><br/>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h3 id="シーン-3ai-エージェントclaude-などとの-html-画面の共有" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">シーン 3：AI エージェント（Claude など）との HTML 画面の共有</h3>
+
+HTML + JSON の組み合わせで動的な画面を作成した場合、AI エージェント と画面内容を共有したいことがあります。<br/><br/>
+
+<strong>問題</strong>：<code>file://</code> でのアクセスではファイル I/O の制限により CORS エラーが発生<br/><br/>
+
+<strong>解決方法</strong>：serve で Web サーバーを立ち上げ、AI エージェントと URL を共有<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# Web サーバー起動
+serve C:\Users\MyUser\Documents\dashboard -l 8000
+
+# AI エージェント に以下の URL を共有して、画面内容をコピーしてもらう
+# http://localhost:8000
+# または、AI エージェント が外部ネットワークからアクセスできるなら：
+# http://192.168.1.100:8000
+</code>
+</pre>
+</div>
+
+<h3 id="継続的な公開の是非" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">継続的な公開の是非</h3>
+
+<h3 id="シーン-4長期的な-web-サーバー公開---セキュリティと方針" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">シーン 4：長期的な Web サーバー公開 - セキュリティと方針</h3>
+
+<h3 id="インターネットへの継続公開について" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">インターネットへの継続公開について</h3>
+
+<strong>推奨しません</strong>。以下の理由があります：<br/><br/>
+
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>セキュリティリスク</strong></li>
+</ol>
+   - ローカルフォルダ全体が HTTP で公開される
+   - プライベート情報やソースコード、設定ファイルが漏洩する可能性
+   - DDoS 攻撃やスキャンの対象になりやすい
+
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong><code>serve</code> の設計思想</strong></li>
+</ol>
+   - <code>serve</code> は<strong>ローカル開発用</strong>の軽量サーバーとして設計
+   - 本番環境での使用は想定されていない
+   - セキュリティアップデート等の対応が遅い場合がある
+
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>パフォーマンス</strong></li>
+</ol>
+   - 複数ユーザーの同時アクセスに最適化されていない
+   - 大規模トラフィックでの安定性が保証されていない
+
+<h3 id="ローカルネットワーク内での一時的な共有" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ローカルネットワーク内での一時的な共有</h3>
+
+<strong>許容できます</strong>。同一ネットワーク上の信頼済みデバイスのみからのアクセスです：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# ローカルネットワーク経由での公開
+serve . -l 8000
+# 192.168.x.x などのプライベート IP でアクセス
+
+# スマートフォンやタブレットにて確認
+# http://192.168.1.100:8000
+</code>
+</pre>
+</div>
+
+<h3 id="インターネット向けの継続公開の場合" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">インターネット向けの継続公開の場合</h3>
+
+本格的に Web サーバーとして公開する場合は、<strong>以下の選択肢</strong>を検討してください：<br/><br/>
+
+<div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 20px 0; border: 1px solid #e0e0e0;"><table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">ツール/サービス</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">説明</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">価格</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>Apache</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">オープンソースの企業グレード Web サーバー</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">無料</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>Nginx</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">軽量で高速な Web サーバー</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">無料</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>AWS S3</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Amazon クラウドストレージ + 静的サイトホスティング</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">月数ドル～</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>Vercel</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Node.js/React アプリケーションのホスティング</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">無料〜</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>Netlify</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">静的サイト/SPA ホスティング</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">無料〜</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>GitHub Pages</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">GitHub リポジトリからの静的サイトホスティング</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">無料</td></tr></tbody></table></div>
+<h3 id="コマンドラインオプションよく使われるパラメータ" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">コマンドラインオプション：よく使われるパラメータ</h3>
+
+serve コマンドの実行時に、以下のオプションでカスタマイズが可能：<br/><br/>
+
+<h3 id="ポート番号の指定" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ポート番号の指定</h3>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# ポート 3000 で実行
+serve . -l 3000
+
+# ポート指定なし（デフォルト 3000）
+serve .
+</code>
+</pre>
+</div>
+
+<h3 id="特定フォルダの指定" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">特定フォルダの指定</h3>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# 絶対パスでの指定
+serve C:\Projects\my-app -l 8000
+
+# 相対パスでの指定（カレントフォルダからの相対位置）
+serve ./dist -l 8000
+
+# 親フォルダの指定
+serve .. -l 8000
+</code>
+</pre>
+</div>
+
+<h3 id="単一ページアプリケーションspaモード" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">単一ページアプリケーション（SPA）モード</h3>
+
+React、Vue.js などの SPA で使用時、すべてのリクエストを <code>index.html</code> にリダイレクト：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+serve . -l 8000 --spa
+</code>
+</pre>
+</div>
+
+<h3 id="https-での実行" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">HTTPS での実行</h3>
+
+自己署名証明書での HTTPS 実行：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+serve . -l 8000 --ssl-cert cert.pem --ssl-key key.pem
+</code>
+</pre>
+</div>
+
+（証明書の生成については、別途 OpenSSL などで対応）<br/><br/>
+
+<h3 id="圧縮の無効化" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">圧縮の無効化</h3>
+
+ネットワーク転送量の削減ではなく、デバッグの容易さを優先する場合：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+serve . -l 8000 --no-gzip
+</code>
+</pre>
+</div>
+
+<h3 id="トラブルシューティングserve-実行時の各種エラー" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">トラブルシューティング：serve 実行時の各種エラー</h3>
+
+<h3 id="エラーserve-コマンドが見つからない" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">エラー：「serve コマンドが見つからない」</h3>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+'serve' は、内部コマンドまたは外部コマンド、
+操作可能なプログラムまたはバッチ ファイルとして認識されていません。
+</code>
+</pre>
+</div>
+
+<strong>原因</strong>：serve がグローバルインストールされていない<br/><br/>
+
+<strong>解決</strong>：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# グローバルインストール（管理者権限）
+npm install -g serve
+
+# バージョン確認
+serve --version
+</code>
+</pre>
+</div>
+
+<h3 id="エラーポートが既に使用されている" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">エラー：「ポートが既に使用されている」</h3>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+Error: listen EADDRINUSE: address already in use :::8000
+</code>
+</pre>
+</div>
+
+<strong>原因</strong>：指定したポート番号がすでに別のアプリケーションで使用中<br/><br/>
+
+<strong>解決方法 1</strong>：別のポートを指定<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+serve . -l 9000
+</code>
+</pre>
+</div>
+
+<strong>解決方法 2</strong>：既存プロセスを終了（ポート 8000 使用中の場合）<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# Windows で ポート 8000 を使用しているプロセスを表示
+netstat -ano | findstr :8000
+
+# PID (Process ID) を確認してタスクマネージャーで終了
+# または以下で強制終了（管理者権限必要）
+taskkill /PID &lt;PID番号&gt; /F
+</code>
+</pre>
+</div>
+
+<h3 id="エラーファイルが見つからない" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">エラー：「ファイルまたはフォルダが見つからない」</h3>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+Error: ENOENT: no such file or directory, stat 'C:\path\to\folder'
+</code>
+</pre>
+</div>
+
+<strong>原因</strong>：指定したパスが存在しないか、タイプミスがある<br/><br/>
+
+<strong>解決方法 1</strong>：カレントフォルダを確認する<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# 現在いるフォルダのパスを確認
+Get-Location
+
+# 出力例：
+# Path
+# ----
+# C:\Users\MyUser\Documents
+</code>
+</pre>
+</div>
+
+<strong>解決方法 2</strong>：対象フォルダが実際に存在するか確認する<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# フォルダが存在するか確認（True が返れば存在する）
+Test-Path "C:\Users\MyUser\Documents\my-project"
+
+# 出力例（存在する場合）：True
+# 出力例（存在しない場合）：False
+</code>
+</pre>
+</div>
+
+<strong>解決方法 3</strong>：フォルダ内のファイル一覧を確認する<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# フォルダの中身を確認
+dir C:\Users\MyUser\Documents\my-project
+</code>
+</pre>
+</div>
+
+<strong>解決方法 4</strong>：正しいパスを使って serve を起動し直す<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# パスを正確に指定して起動
+serve "C:\Users\MyUser\Documents\my-project" -l 8000
+
+# または、正しいフォルダに移動してから起動
+cd "C:\Users\MyUser\Documents\my-project"
+serve . -l 8000
+</code>
+</pre>
+</div>
+
+<blockquote>
+<p style="margin-bottom:0;"><strong>ヒント</strong>：フォルダ名やパスにスペースが含まれる場合は、ダブルクォーテーション（<code>"</code>）で囲んでください。</p>
+<p style="margin-bottom:0;">例：<code>serve "C:\Users\My User\Documents\my project" -l 8000</code></p>
+</blockquote>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1 id="よくある質問と-トラブルシューティング" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">よくある質問と トラブルシューティング</h1>
+
+<h3 id="q1-nodejs-と-npm-はどう違うのですか" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Q1. Node.js と npm はどう違うのですか？</h3>
+
+<strong>A</strong>. Node.js はJavaScript の実行環境であり、npm はパッケージ（ライブラリ）を管理するツールです。Node.js をインストールすれば npm も自動で含まれます。<br/><br/>
+
+<h3 id="q2-nvm-が必要ですか直接-nodejs-をインストールできませんか" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Q2. NVM が必要ですか？直接 Node.js をインストールできませんか？</h3>
+
+<strong>A</strong>. 直接インストールすることも可能です。しかし以下の理由で NVM の使用を推奨します：<br/><br/>
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">複数バージョンを簡単に管理・切り替え可能</li>
+  <li style="margin-bottom: 8px;">不要なバージョンをクリーンアップしやすい</li>
+  <li style="margin-bottom: 8px;">アップグレード時に設定が保持される</li>
+</ul>
+
+<h3 id="q3-serve-をインストールしたがコマンドが実行できません" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Q3. serve をインストールしたが、コマンドが実行できません。</h3>
+
+<strong>A</strong>. あいにく、多くの原因が想定されます。以下を順に確認してください：<br/><br/>
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">PowerShell を管理者権限で実行したか</li>
+  <li style="margin-bottom: 8px;"><code>npm install -g serve</code> でグローバルインストールしたか</li>
+  <li style="margin-bottom: 8px;">インストール後、新しい PowerShell ウィンドウを開いたか</li>
+  <li style="margin-bottom: 8px;"><code>serve --version</code> でバージョンが表示されるか</li>
+</ol>
+
+上記でも不可の場合、PATH 環境変数の手動設定（前述の「トラブルシューティング」参照）を試してください。<br/><br/>
+
+<h3 id="q4-localhost8000-にブラウザからアクセスできません" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Q4. <code>localhost:8000</code> にブラウザからアクセスできません。</h3>
+
+<strong>A</strong>. 以下を確認してください：<br/><br/>
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">serve のコマンドを実行後、「HTTP://localhost:8000」と表示されているか確認</li>
+  <li style="margin-bottom: 8px;">ファイアウォールが serve をブロックしていないか確認</li>
+  <li style="margin-bottom: 8px;">別のアプリケーションがポート 8000 を使用していないか確認（前述の netstat コマンド参照）</li>
+</ol>
+
+<h3 id="q5-json-ファイルを読み込みしても-cors-エラーが出ます" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Q5. JSON ファイルを読み込みしても CORS エラーが出ます。</h3>
+
+<strong>A</strong>. <code>file://</code> プロトコルで HTML を開いていないか確認してください。必ず <code>http://localhost:8000</code> を使用してください。<br/><br/>
+
+<h3 id="q6-nodejs-アップデート後グローバルインストールした-serve-が使用できなくなりました" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Q6. Node.js アップデート後、グローバルインストールした serve が使用できなくなりました。</h3>
+
+<strong>A</strong>. Node.js のメジャーバージョン変更時に発生することがあります。改めインストール：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+npm install -g serve
+</code>
+</pre>
+</div>
+
+<h3 id="q7-スマートフォンから-192168xx8000-にアクセスできません" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Q7. スマートフォンから <code>192.168.x.x:8000</code> にアクセスできません。</h3>
+
+<strong>A</strong>. 以下を確認してください：<br/><br/>
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">Windows ファイアウォールの設定を確認（Port 8000 の許可）</li>
+  <li style="margin-bottom: 8px;">スマートフォンが同じ WiFi ネットワークに接続しているか確認</li>
+  <li style="margin-bottom: 8px;">Windows マシンの IP アドレスが正しいか確認</li>
+</ol>
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+   ipconfig
+</code>
+</pre>
+</div>
+
+<h3 id="q8-serve-のパフォーマンスが不安です大規模なプロジェクトでも使用できますか" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Q8. serve のパフォーマンスが不安です。大規模なプロジェクトでも使用できますか？</h3>
+
+<strong>A</strong>. serve は軽量開発用サーバーとしての設計です。本番環境または大規模プロジェクト（毎日複数ユーザーからのアクセス）では、Apache などの企業グレード Web サーバー（前述の「継続的な公開の是非」セクション参照）の使用を強く推奨します。<br/><br/>
+
+<h3 id="q9-serve-でファイルの自動リロードは可能ですか" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Q9. serve でファイルの自動リロードは可能ですか？</h3>
+
+<strong>A</strong>. serve には自動リロード機能はありませんが、ブラウザの手動リロード <code>F5</code> で最新コンテンツを取得できます。自動リロードが必須の場合は、<code>live-server</code> パッケージの使用を検討してください。<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+npm install -g live-server
+live-server . --port=8000
+</code>
+</pre>
+</div>
+
+<h3 id="q10-maclinux-でも同じように使用できますか" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Q10. Mac/Linux でも同じように使用できますか？</h3>
+
+<strong>A</strong>. はい、NVM と serve はクロスプラットフォーム対応です。Mac/Linux での NVM インストールは以下のコマンドで行います（Windows の nvm-windows とは異なります）：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# Mac/Linux での NVM インストール（ターミナルで実行）
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+</code>
+</pre>
+</div>
+
+インストール後、ターミナルを再起動して <code>nvm --version</code> で確認してください。serve のインストールと使い方は Windows と同じです。<br/><br/>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1 id="まとめ" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">まとめ</h1>
+
+本ガイドブックでは、CORS エラーの解決元として <strong>Node.js の <code>serve</code> パッケージを活用</strong> する方法を、初期セットアップから実践的な利用シーンまで、段階的にご説明しました。<br/><br/>
+
+<h3 id="最初の一歩30-秒での実行" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">最初の一歩：30 秒での実行</h3>
+
+NVM と serve のインストール後、最も簡単に動作確認するステップ：<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# プロジェクトフォルダに移動
+cd C:\Users\&lt;YourName&gt;\Documents\my-project
+
+# Web サーバー起動
+serve . -l 8000
+
+# ブラウザで確認
+# http://localhost:8000
+</code>
+</pre>
+</div>
+
+このたった 3 行のステップで、CORS エラーの問題を完全に解決できます。<br/><br/>
+
+<h3 id="開発効率の向上" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">開発効率の向上</h3>
+
+正式なバージョン管理（NVM）と軽量 Web サーバー（serve）を組み合わせることで：<br/><br/>
+
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><span style="font-size:1.2em">⚡</span> セットアップから実行までのリードタイムを短縮</li>
+  <li style="margin-bottom: 8px;"><span style="font-size:1.2em">🛡️</span> CORS に由来する予期しないバグを未然に防止</li>
+  <li style="margin-bottom: 8px;"><span style="font-size:1.2em">🔄</span> マシン間（PC とタブレットなど）でのテストが容易</li>
+</ul>
+
+これらのツールは<strong>完全オープンソース</strong>かつ<strong>無料</strong>です。ぜひ本ガイドをご活用ください。<br/><br/>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1 id="参考リンク一覧" style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white; font-family: Arial; font-size: 1.5em; text-align: center; padding: 10px; border-radius: 8px;">参考リンク一覧</h1>
+
+<div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 20px 0; border: 1px solid #e0e0e0;"><table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">リンク</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">詳細</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><a href="https://nodejs.org/" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">Node.js 公式ウェブサイト</a></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Node.js の最新情報、ダウンロード、ドキュメント</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><a href="https://www.npmjs.com/" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">npm 公式サイト</a></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">npm パッケージレジストリ、パッケージ検索等</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><a href="https://github.com/coreybutler/nvm-windows" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">nvm-windows GitHub リポジトリ</a></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">nvm-windows の最新版ダウンロード、ドキュメント</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><a href="https://github.com/vercel/serve" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">serve GitHub リポジトリ</a></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">serve パッケージの詳細、使用例、Issue 報告</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><a href="https://www.npmjs.com/package/serve" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">serve npm パッケージページ</a></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">npm 経由での serve 情報、バージョン履歴</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><a href="https://developer.mozilla.org/ja/docs/Glossary/CORS" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">MDN - CORS（Cross-Origin Resource Sharing）</a></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">CORS の詳細解説（日本語）</td></tr></tbody></table></div>
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<strong>更新日時</strong>：2026 年 3 月 12 日<br/><br/>
+
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const content = document.getElementById("guide-content");
+      const tocList = document.getElementById("toc-list");
+      
+      const headings = Array.from(content.querySelectorAll("h1, h3")).filter(h => {
+        return h.textContent.trim() !== "目次" && !h.closest(".toc-container");
+      });
+
+      if (headings.length === 0) return;
+
+      headings.forEach((heading, index) => {
+        if (!heading.id) {
+          heading.id = "heading-" + index;
+        }
+
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = "#" + heading.id;
+        a.textContent = heading.textContent;
+        a.className = "toc-link" + (heading.tagName.toLowerCase() === "h3" ? " level-h3" : "");
+        
+        li.appendChild(a);
+        tocList.appendChild(li);
+
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          heading.scrollIntoView({ behavior: "smooth", block: "start" });
+          history.pushState(null, null, "#" + heading.id);
+        });
+      });
+
+      const tocLinks = document.querySelectorAll('.toc-link');
+      
+      window.addEventListener('scroll', () => {
+        let current = '';
+        
+        headings.forEach(heading => {
+          const headingTop = heading.getBoundingClientRect().top;
+          if (headingTop <= 100) {
+            current = heading.id;
+          }
+        });
+
+        tocLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href').includes(current) && current !== '') {
+            link.classList.add('active');
+          }
+        });
+      }, { passive: true });
+    });
+  </script>
+</body>
+</html>
