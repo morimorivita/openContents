@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【基礎】コンポーネント指向と状態管理の基本</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #39C5BB;
+      --secondary: #FFC778;
+      --bg: #fdfdfd;
+      --text-main: #2c3e50;
+      --text-muted: #666;
+      --border: #e0e0e0;
+      --highlight: rgba(57, 197, 187, 0.1);
+      --font-main: "Noto Sans JP", sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: var(--font-main);
+      color: var(--text-main);
+      background-color: var(--bg);
+      line-height: 1.8;
+      display: flex;
+    }
+
+    /* --- サイドバー目次 (TOC) --- */
+    .toc-container {
+      width: 300px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      background: #fff;
+      border-right: 1px solid var(--border);
+      padding: 24px 20px;
+      overflow-y: auto;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+      flex-shrink: 0;
+    }
+
+    .toc-title {
+      font-size: 1.1rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toc-list {
+      list-style: none;
+    }
+
+    .toc-list li {
+      margin-bottom: 8px;
+    }
+
+    .toc-link {
+      display: block;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+
+    .toc-link:hover {
+      background: var(--highlight);
+      color: var(--primary);
+    }
+
+    .toc-link.active {
+      background: var(--highlight);
+      color: var(--primary);
+      border-left-color: var(--primary);
+      font-weight: 700;
+    }
+
+    .toc-link.level-h3 {
+      font-size: 0.85rem;
+      padding-left: 24px;
+    }
+
+    /* --- メインコンテンツ --- */
+    .content-container {
+      flex: 1;
+      padding: 60px 40px 100px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .nav-buttons {
+      margin-bottom: 40px;
+    }
+    
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 8px 16px;
+      border: 1.5px solid var(--primary);
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+
+    .btn-back:hover {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(57, 197, 187, 0.3);
+    }
+
+    .toc-back {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .btn-back-sidebar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 10px;
+      border: 1.5px solid var(--primary);
+      border-radius: 12px;
+      transition: all 0.2s;
+      background: #fff;
+    }
+
+    .btn-back-sidebar:hover {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(57, 197, 187, 0.2);
+    }
+
+    h1 {
+      scroll-margin-top: 40px;
+      margin-top: 60px;
+      margin-bottom: 24px;
+      line-height: 1.4;
+    }
+    
+    h3 {
+      scroll-margin-top: 40px;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    p {
+      margin-bottom: 20px;
+      font-size: 1.05rem;
+    }
+
+    pre {
+      background: #1e1e1e !important;
+      padding: 20px !important;
+      border-radius: 12px !important;
+      overflow-x: auto;
+      margin: 24px 0 !important;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      border: 1px solid #333;
+    }
+
+    code {
+      font-family: 'Consolas', 'Monaco', monospace;
+      color: #e6e6e6 !important;
+    }
+
+    p code, li code {
+      background: rgba(0,0,0,0.05);
+      padding: 3px 6px;
+      border-radius: 4px;
+      color: #d63384 !important;
+      font-size: 0.95em;
+    }
+
+    blockquote {
+      background: #fff8f0;
+      border-left: 5px solid var(--secondary);
+      padding: 16px 20px;
+      margin: 24px 0;
+      border-radius: 0 8px 8px 0;
+      color: #7a5c2d;
+    }
+
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+      
+      .toc-container {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      }
+
+      .content-container {
+        padding: 40px 20px 80px;
+      }
+      
+      h1 { font-size: 1.3em !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="toc-container">
+    <div class="toc-back">
+      <a href="./" class="btn-back-sidebar">‹ ブック一覧へ戻る</a>
+    </div>
+    <div class="toc-title">📚 目次</div>
+    <ul class="toc-list" id="toc-list">
+    </ul>
+  </aside>
+
+  <main class="content-container">
+    <div class="nav-buttons">
+      <a href="./" class="btn-back">‹ ブック一覧へ戻る</a>
+    </div>
+
+    <div id="guide-content">
+<h1>【Concept】コンポーネント指向と状態管理の基本</h1>
+
+<img src="images/basicGuide_Concept.png" alt="basicGuide_Concept" style="max-width: 100%; height: auto;"><br/><br/>
+
+
+📚 本ガイドブックは、モダンWeb開発の中核をなす<strong>*コンポーネント指向</strong>*と<strong>*状態管理（State Management）</strong>*の概念を理解し、従来のページ単位の開発から部品単位の開発へと設計思考を転換することを目的としています。jQueryなどを用いた直接的なDOM操作から、データ駆動型の宣言的UIへの変革をマスターしましょう。
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+
+
+<h1>1. コンポーネント指向とは：UIを部品で考える</h1>
+
+<h3>概要・説明</h3>
+
+コンポーネント指向とは、Webサイトの画面全体をひとつの大きな塊として捉えるのではなく、再利用可能な<strong>*小さな部品（コンポーネント）の組み合わせ</strong>*として構成する設計手法です。
+
+
+
+
+例えば、「ヘッダー」「商品カード」「サイドバー」といった単位で部品を作り、それらをパズルを組み立てるように配置していくことで、複雑なUIを効率的に構築できます。
+
+
+
+
+<h3>コンポーネント化の3大メリット</h3>
+
+<table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">メリット</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">説明</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><b>再利用性</strong></b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">一度作った部品を別のページや別のプロジェクトで使い回せます。</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><b>独立性</strong></b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">各部品が自己完結しているため、修正が他の場所に影響しにくくなります。</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><b>可読性</strong></b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ファイルが小さく分割されるため、コードの意図が把握しやすくなります。</td></tr></tbody></table>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>2. 比較：ページ単位（旧）vs コンポーネント単位（新）</h1>
+
+従来のWeb開発（JSP, ASP, jQuery等）とモダンWeb（React, Next.js等）での設計思想の違いを整理します。
+
+
+
+
+
+
+<table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">比較項目</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">従来のページ単位開発</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">モダンなコンポーネント指向</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><b>構成単位</strong></b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ページ（HTMLファイル）全体</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">部品（Component）の組み合わせ</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><b>コード構成</strong></b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">HTML / CSS / JS がバラバラ</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">1つのコンポーネントにセットで定義</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><b>UIの作り方</strong></b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">命令的（「XXを書き換えろ」）</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">宣言的（「データがXXならこう表示」）</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><b>更新の仕組み</strong></b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ページ全体の再読み込み / DOM直接操作</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">必要な部品のみが自動的に再描画</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><b>保守性</strong></b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">変更の影響範囲が予測しにくい</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">部品内で完結するため修正が容易</td></tr></tbody></table>
+
+
+
+<h3>設計思想のイメージ図</h3>
+
+
+<pre style="color:Green;">
+<code>
+graph TD
+    subgraph "ページ単位 (Traditional)"
+        P1[ページ全体] --&gt; H1[HTMLファイル]
+        P1 --&gt; C1[CSSファイル]
+        P1 --&gt; J1[JSファイル]
+        J1 -- "直接操作" --&gt; H1
+    end
+
+    subgraph "コンポーネント指向 (Modern)"
+        CompA["コンポーネントA&lt;br/&gt;(Header)"] --- CompB["コンポーネントB&lt;br/&gt;(ProductCard)"]
+        CompA --- CompC["コンポーネントC&lt;br/&gt;(ProductCard)"]
+        CompB --- CompD["コンポーネントD&lt;br/&gt;(Button)"]
+
+        style CompA fill:#f9f,stroke:#333
+        style CompB fill:#bbf,stroke:#333
+        style CompC fill:#bbf,stroke:#333
+        style CompD fill:#bfb,stroke:#333
+    end
+</code>
+</pre>
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>3. 「状態（State）」のメカニズム：画面が動く仕組み</h1>
+
+モダンWebにおいて、画面の表示内容を決定するのは<strong>*状態（State）</strong>*と呼ばれるデータです。
+
+
+
+
+<h3>状態（State）とは</h3>
+
+コンポーネントが保持する「変化する内部的なデータ」のことです。
+
+
+
+
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">「ボタンがクリックされたか？」</li>
+  <li style="margin-bottom: 8px;">「検索ボックスに入力された文字は何か？」</li>
+  <li style="margin-bottom: 8px;">「APIから取得したデータリスト」</li>
+</ul>
+
+<h3>自動更新のフロー</h3>
+
+モダンWebフレームワーク（React等）では、<strong>*「Stateが変わると、UIが自動的にリセット（再描画）される」</strong>*という強力な仕組みを持っています。
+
+
+
+
+
+<pre style="color:Green;">
+<code>
+sequenceDiagram
+    participant U as ユーザー
+    participant S as 状態 (State)
+    participant V as 仮想DOM (Virtual DOM)
+    participant D as 実際の画面 (Real DOM)
+
+    U -&gt;&gt; S: 1. 操作してデータを変更
+    S -&gt;&gt; V: 2. 状態の変化を通知
+    V -&gt;&gt; V: 3. 新しいUI構造を計算
+    V -&gt;&gt; D: 4. 差分だけを適用（最小限の更新）
+</code>
+</pre>
+
+
+<blockquote>
+<p style="margin-bottom:0;"><strong>*ポイント</strong>*：開発者が「ここの文字を書き換えろ」とDOMに命令する必要はありません。開発者は「このStateならこのUIを表示する」というルール（宣言）を書くだけで、あとはフレームワークが自動で同期してくれます。</p>
+</blockquote>
+
+
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>4. 実践：コンポーネントの分解と実装例</h1>
+
+具体的に、「お気に入りボタン付きの商品カード」を例に考えてみましょう。
+
+
+
+
+<h3>UIの分解（コンポーネント構成）</h3>
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><code>App</code>（最上位）：複数の商品カードを並べる親画面</li>
+  <li style="margin-bottom: 8px;"><code>ProductCard</code>（中間）：商品情報の枠組み。<code>name</code> と <code>price</code> をPropsで受け取る</li>
+  <li style="margin-bottom: 8px;"><code>LikeButton</code>（末端）：お気に入り状態の管理と表示</li>
+</ol>
+
+<h3>コンポーネントの実装（子：LikeButton）</h3>
+
+お気に入りボタンの状態管理に注目してください。
+
+
+
+
+
+<pre style="color:Green;">
+<code>
+// components/LikeButton.tsx
+import { useState } from 'react';
+
+// 子コンポーネント：お気に入りボタン
+export function LikeButton() {
+  // liked が「状態（State）」、setLiked がそれを更新する関数
+  const [liked, setLiked] = useState(false);
+
+  return (
+    &lt;button onClick={() =&gt; setLiked(!liked)}&gt;
+      {liked ? '❤️ お気に入り済' : '🤍 お気に入りに追加'}
+    &lt;/button&gt;
+  );
+}
+</code>
+</pre>
+
+
+<h3>コンポーネントの実装（中間：ProductCard）</h3>
+
+Propsで親からデータを受け取り、子コンポーネントを組み合わせます。
+
+
+
+
+
+<pre style="color:Green;">
+<code>
+// components/ProductCard.tsx
+import { LikeButton } from './LikeButton';
+
+// Propsの型定義（TypeScript）
+interface ProductCardProps {
+  name: string;
+  price: number;
+}
+
+// 親コンポーネント：商品カード
+export function ProductCard({ name, price }: ProductCardProps) {
+  return (
+    &lt;div style={{ border: '1px solid #ccc', padding: '16px', borderRadius: '8px' }}&gt;
+      &lt;h3&gt;{name}&lt;/h3&gt;
+      &lt;p&gt;価格：{price.toLocaleString()}円&lt;/p&gt;
+      &lt;LikeButton /&gt;
+    &lt;/div&gt;
+  );
+}
+</code>
+</pre>
+
+
+<h3>コンポーネントの呼び出し（最上位：App）</h3>
+
+<code>ProductCard</code> を実際に画面に並べる側のコードです。ここを見ることで「Props（引数）としてデータを渡す」イメージが掴めます。
+
+
+
+
+
+<pre style="color:Green;">
+<code>
+// App.tsx
+import { ProductCard } from './components/ProductCard';
+
+// 商品データ（実際はAPIから取得する）
+const products = [
+  { id: 1, name: 'ノートPC', price: 120000 },
+  { id: 2, name: 'キーボード', price: 8000 },
+  { id: 3, name: 'マウス', price: 3500 },
+];
+
+export default function App() {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;商品一覧&lt;/h1&gt;
+      {products.map((product) =&gt; (
+        // Props として name と price を渡している
+        &lt;ProductCard key={product.id} name={product.name} price={product.price} /&gt;
+      ))}
+    &lt;/div&gt;
+  );
+}
+</code>
+</pre>
+
+
+<strong>*出力例</strong>*：<code>ProductCard</code> が3つ並び、それぞれに独立した「🤍 お気に入りに追加」ボタンが表示されます。1つをクリックしても他のボタンには影響しません——なぜなら、それぞれの <code>LikeButton</code> が<strong>*独自のState</strong>*を持っているからです。
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>5. 副作用（useEffect）：画面の外で起きることを管理する</h1>
+
+<h3>副作用とは</h3>
+
+コンポーネントの「描画（レンダリング）」以外に発生する処理を<strong>*副作用（Side Effect）</strong>*といいます。代表的なものは以下の3つです。
+
+
+
+
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>*APIコール</strong>*：コンポーネントが表示されたとき、サーバーからデータを取得する</li>
+  <li style="margin-bottom: 8px;"><strong>*タイマー・インターバル</strong>*：定期的に処理を実行する</li>
+  <li style="margin-bottom: 8px;"><strong>*イベントリスナーの登録・解除</strong>*：ウィンドウサイズ変更の検知など</li>
+</ul>
+
+<h3>useEffect の基本形</h3>
+
+
+<pre style="color:Green;">
+<code>
+// components/OrderList.tsx
+import { useState, useEffect } from 'react';
+
+interface Order {
+  id: number;
+  status: string;
+}
+
+export function OrderList() {
+  const [orders, setOrders] = useState&lt;Order[]&gt;([]);
+  const [loading, setLoading] = useState(true);
+
+  // コンポーネントが「マウント（表示）」されたタイミングで実行される
+  useEffect(() =&gt; {
+    // APIからデータを取得
+    fetch('/api/orders')
+      .then((res) =&gt; res.json())
+      .then((data: Order[]) =&gt; {
+        setOrders(data);
+        setLoading(false);
+      });
+  }, []); // ← [] は「最初の1回だけ実行」を意味する依存配列
+
+  if (loading) return &lt;p&gt;読み込み中...&lt;/p&gt;;
+
+  return (
+    &lt;ul&gt;
+      {orders.map((order) =&gt; (
+        &lt;li key={order.id}&gt;注文 #{order.id} - {order.status}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+</code>
+</pre>
+
+
+<h3>useEffect の依存配列</h3>
+
+<code>useEffect</code> の第2引数（依存配列）の意味を理解することがReact習得の鍵です。
+
+
+
+
+<table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">依存配列の書き方</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">実行タイミング</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><code>useEffect(() => {...}, [])</code></strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">マウント時に1回だけ</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><code>useEffect(() => {...}, [userId])</code></strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><code>userId</code> が変わるたびに</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><code>useEffect(() => {...})</code></strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">毎回のレンダリング後（無限ループに注意）</td></tr></tbody></table>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>6. グローバルな状態管理：Stateをコンポーネントの外で管理する</h1>
+
+<h3>Props のバケツリレー問題</h3>
+
+コンポーネントが深くネストされると、上位のStateを下位のコンポーネントまで渡すために多くの中間コンポーネントがPropsをただ「中継」するだけになります。これを<strong>*Props Drilling（バケツリレー）</strong>*と呼びます。
+
+
+
+
+
+<pre style="color:Green;">
+<code>
+graph TD
+    A[App - ユーザー情報State保持] --&gt;|Props| B[Layout]
+    B --&gt;|Props| C[Sidebar]
+    C --&gt;|Props| D[UserMenu - ここで使いたい]
+    style D fill:#fbb,stroke:#333
+    style A fill:#bfb,stroke:#333
+</code>
+</pre>
+
+
+<h3>解決策1：React Context API（標準機能）</h3>
+
+Reactに組み込まれているグローバルState共有の仕組みです。ログインユーザー情報・テーマカラーなど、アプリ全体で使うデータに適しています。
+
+
+
+
+
+<pre style="color:Green;">
+<code>
+// context/UserContext.tsx
+import { createContext, useContext, useState } from 'react';
+
+interface User { name: string; role: string; }
+const UserContext = createContext&lt;User | null&gt;(null);
+
+// Provider：State の供給源
+export function UserProvider({ children }: { children: React.ReactNode }) {
+  const [user] = useState&lt;User&gt;({ name: '森田', role: 'admin' });
+  return &lt;UserContext.Provider value={user}&gt;{children}&lt;/UserContext.Provider&gt;;
+}
+
+// フック：どのコンポーネントからでも使える
+export function useUser() {
+  return useContext(UserContext);
+}
+</code>
+</pre>
+
+
+
+<pre style="color:Green;">
+<code>
+// 深くネストされたコンポーネントでもPropsなしでアクセスできる
+import { useUser } from '../context/UserContext';
+
+export function UserMenu() {
+  const user = useUser();
+  return &lt;p&gt;ようこそ、{user?.name} さん&lt;/p&gt;;
+}
+</code>
+</pre>
+
+
+<h3>解決策2：外部ライブラリ（Zustand / Redux Toolkit）</h3>
+
+アプリ全体の状態が複雑になってきたら、専用の状態管理ライブラリを検討します。
+
+
+
+
+<table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">ライブラリ</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">特徴</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">向いているケース</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><b>Zustand</strong></b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">シンプル・軽量・学習コストが低い</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">中規模アプリ・まず試す</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><b>Redux Toolkit</strong></b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">厳格なアーキテクチャ・デバッグが強力</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">大規模チーム開発</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><b>React Query / TanStack Query</strong></b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">サーバーからのデータ取得・キャッシュ管理に特化</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">APIデータの管理</td></tr></tbody></table>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>7. jQuery時代との決定的違いと保守性の向上</h1>
+
+<h3>1. 命令的プログラミングの限界</h3>
+
+jQueryでは「このボタンを押したら、このIDの要素を探して、クラスを削除して、テキストを書き換えて...」という<strong>*手順（命令）</strong>*を書きます。規模が大きくなると、どのコードがどのHTMLをいじっているのか把握できなくなり、スパゲッティコード化（<strong>*保守性の崩壊</strong>*）へ繋がります。
+
+
+
+
+
+<pre style="color:Green;">
+<code>
+// jQuery（命令型）：処理の手順を細かく命令する
+$('#likeButton').on('click', function () {
+  const isLiked = $(this).hasClass('liked');
+  if (isLiked) {
+    $(this).removeClass('liked').text('🤍 お気に入りに追加');
+    $('#likeCount').text(parseInt($('#likeCount').text()) - 1);
+  } else {
+    $(this).addClass('liked').text('❤️ お気に入り済');
+    $('#likeCount').text(parseInt($('#likeCount').text()) + 1);
+  }
+});
+</code>
+</pre>
+
+
+<h3>2. 宣言的UIによる保守性の向上</h3>
+
+Reactでは同じ機能を「データ（State）がどういう状態か」だけを定義します。
+
+
+
+
+
+<pre style="color:Green;">
+<code>
+// React（宣言型）：データの状態だけを管理する
+function LikeButton() {
+  const [liked, setLiked] = useState(false);
+  const [count, setCount] = useState(0);
+
+  const handleClick = () =&gt; {
+    setLiked(!liked);
+    setCount(liked ? count - 1 : count + 1);
+  };
+
+  return (
+    &lt;button onClick={handleClick}&gt;
+      {liked ? '❤️ お気に入り済' : '🤍 お気に入りに追加'} ({count})
+    &lt;/button&gt;
+  );
+}
+</code>
+</pre>
+
+
+<table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">特徴</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">jQuery (直接操作)</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">React等 (状態管理)</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><b>整合性</strong></b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">自分で整合性を保つ必要がある</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">フレームワークが強制的に同期する</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><b>テスト</strong></b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">画面を実際に動かさないと難しい</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">データの変化だけでテストが可能</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><b>開発効率</strong></b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">規模に比例して複雑度が爆発</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">規模が大きくても複雑度を抑えられる</td></tr></tbody></table>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>8. よくある質問とトラブルシューティング</h1>
+
+<h3>Q1. 全てのボタンをコンポーネントにするべきですか？</h3>
+
+<strong>A</strong>. <strong>*再利用性がある</strong>*、または<strong>*独自の内部状態を持っている</strong>*場合はコンポーネント化を推奨します。あまりに細分化しすぎると管理が大変になるため、まずは「再利用したい塊」から始めましょう。
+
+
+
+
+<h3>Q2. 状態（State）が書き換わったのに、画面が更新されません。</h3>
+
+<strong>A</strong>. 以下を順に確認してください：
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>直接代入していないか</strong>：<code>state = newValue</code> のように直接代入してはいけません。必ず <code>setState</code> などの更新関数を使ってください。</li>
+  <li style="margin-bottom: 8px;"><strong>参照型データの更新</strong>：オブジェクトや配列の場合、中身だけを書き換えても検知されません。新しいオブジェクトとして作成（スプレッド構文 <code>...</code> など）してセットする必要があります。</li>
+</ol>
+
+
+<pre style="color:Green;">
+<code>
+// NG：同じ配列オブジェクトを変更しているためStateが変わったと検知されない
+items.push(newItem);
+setItems(items);
+
+// OK：新しい配列を作って渡す
+setItems([...items, newItem]);
+</code>
+</pre>
+
+
+<h3>Q3. 「Props」と「State」の違いは何ですか？</h3>
+
+
+
+<table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">項目</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">Props (プロップス)</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">State (ステート)</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><b>役割</strong></b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">親から子への「引数」</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">自分自身の「内部データ」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><b>変更権限</strong></b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">子から変更することはできない</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">自分自身で自由に変更できる</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><b>イメージ</strong></b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">スマホの「設定情報」(外から来る)</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">スマホの「残バッテリー」(中で変わる)</td></tr></tbody></table>
+
+
+
+<h3>Q4. useEffect の依存配列に何を入れればよいか分かりません。</h3>
+
+<strong>A</strong>. <code>useEffect</code> 内で参照している変数（StateやProps）を依存配列に入れるのが基本ルールです。ESLintの <code>eslint-plugin-react-hooks</code> を導入すると、不足している依存配列を自動で警告してくれます。
+
+
+
+
+
+<pre style="color:Green;">
+<code>
+<h1>React Hooksのルールを強制するESLintプラグイン</h1>
+npm install --save-dev eslint-plugin-react-hooks
+</code>
+</pre>
+
+
+<h3>Q5. グローバルStateはいつ使えばよいですか？</h3>
+
+<strong>A</strong>. 以下の場合にグローバルStateを検討してください。1) 同じデータを3階層以上の深さで複数コンポーネントが参照する場合。2) ログインユーザー情報・テーマ・言語設定など「アプリ全体の設定」を保持する場合。それ以外はローカルState（<code>useState</code>）で十分なことが多いです。
+
+
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>まとめ</h1>
+
+本ガイドブックでは、モダンWeb開発の心臓部である <strong>*コンポーネント指向</strong>* と <strong>*状態管理</strong>* を解説しました。
+
+
+
+
+<h3>最初の一歩：思考のアップデート</h3>
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>画面をパーツに分ける</strong>：1つのHTMLとしてではなく、部品の積み重ねとして見る。</li>
+  <li style="margin-bottom: 8px;"><strong>命令を捨てる</strong>：要素を捕まえて書き換えるのをやめる。</li>
+  <li style="margin-bottom: 8px;"><strong>データを中心に置く</strong>：データ（State）がどう変わるかだけを考え、UIはそれに従わせる。</li>
+  <li style="margin-bottom: 8px;"><strong>副作用を分離する</strong>：描画以外の処理（APIコール等）は <code>useEffect</code> に切り出す。</li>
+  <li style="margin-bottom: 8px;"><strong>グローバルStoreは最後の手段</strong>：まずローカルState、次にContext、最後に外部ライブラリ。</li>
+</ol>
+
+モダンWeb特有の「作り方」をマスターすることで、<strong>*メンテナンスしやすく、堅牢で、かつ美しいWebアプリケーション</strong>*をAIエージェントと共に爆速で開発できるようになります。
+
+
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>参考リンク一覧</h1>
+
+<table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">リンク</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">詳細</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><a href="https://ja.react.dev/" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">React 公式ドキュメント（日本語）</a></strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">useState・useEffect・Contextの真髄を学べます</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><a href="https://tanstack.com/query/latest" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">TanStack Query（React Query）</a></strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">サーバーデータのフェッチ・キャッシュ管理の定番</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><a href="https://github.com/pmndrs/zustand" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">Zustand（状態管理）</a></strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">シンプルなグローバルState管理ライブラリ</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><a href="https://developer.mozilla.org/ja/docs/Learn/Tools_and_testing/Client-side_JavaScript_frameworks/React_getting_started" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">MDN: 状態管理の概念</a></strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">技術的な深掘り</td></tr></tbody></table>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<strong>更新日時</strong>：2026 年 03 月 21 日
+
+
+
+
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const content = document.getElementById("guide-content");
+      const tocList = document.getElementById("toc-list");
+      
+      const headings = Array.from(content.querySelectorAll("h1, h3")).filter(h => {
+        return h.textContent.trim() !== "目次" && !h.closest(".toc-container");
+      });
+
+      if (headings.length === 0) return;
+
+      headings.forEach((heading, index) => {
+        if (!heading.id) {
+          heading.id = "heading-" + index;
+        }
+
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = "#" + heading.id;
+        a.textContent = heading.textContent;
+        a.className = "toc-link" + (heading.tagName.toLowerCase() === "h3" ? " level-h3" : "");
+        
+        li.appendChild(a);
+        tocList.appendChild(li);
+
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          heading.scrollIntoView({ behavior: "smooth", block: "start" });
+          history.pushState(null, null, "#" + heading.id);
+        });
+      });
+
+      const tocLinks = document.querySelectorAll('.toc-link');
+      
+      window.addEventListener('scroll', () => {
+        let current = '';
+        
+        headings.forEach(heading => {
+          const headingTop = heading.getBoundingClientRect().top;
+          if (headingTop <= 100) {
+            current = heading.id;
+          }
+        });
+
+        tocLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href').includes(current) && current !== '') {
+            link.classList.add('active');
+          }
+        });
+      }, { passive: true });
+    });
+  </script>
+</body>
+</html>

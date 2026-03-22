@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【基礎】モダンWeb & AI用語辞典</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #39C5BB;
+      --secondary: #FFC778;
+      --bg: #fdfdfd;
+      --text-main: #2c3e50;
+      --text-muted: #666;
+      --border: #e0e0e0;
+      --highlight: rgba(57, 197, 187, 0.1);
+      --font-main: "Noto Sans JP", sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: var(--font-main);
+      color: var(--text-main);
+      background-color: var(--bg);
+      line-height: 1.8;
+      display: flex;
+    }
+
+    /* --- サイドバー目次 (TOC) --- */
+    .toc-container {
+      width: 300px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      background: #fff;
+      border-right: 1px solid var(--border);
+      padding: 24px 20px;
+      overflow-y: auto;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+      flex-shrink: 0;
+    }
+
+    .toc-title {
+      font-size: 1.1rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toc-list {
+      list-style: none;
+    }
+
+    .toc-list li {
+      margin-bottom: 8px;
+    }
+
+    .toc-link {
+      display: block;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+
+    .toc-link:hover {
+      background: var(--highlight);
+      color: var(--primary);
+    }
+
+    .toc-link.active {
+      background: var(--highlight);
+      color: var(--primary);
+      border-left-color: var(--primary);
+      font-weight: 700;
+    }
+
+    .toc-link.level-h3 {
+      font-size: 0.85rem;
+      padding-left: 24px;
+    }
+
+    /* --- メインコンテンツ --- */
+    .content-container {
+      flex: 1;
+      padding: 60px 40px 100px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .nav-buttons {
+      margin-bottom: 40px;
+    }
+    
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 8px 16px;
+      border: 1.5px solid var(--primary);
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+
+    .btn-back:hover {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(57, 197, 187, 0.3);
+    }
+
+    .toc-back {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .btn-back-sidebar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 10px;
+      border: 1.5px solid var(--primary);
+      border-radius: 12px;
+      transition: all 0.2s;
+      background: #fff;
+    }
+
+    .btn-back-sidebar:hover {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(57, 197, 187, 0.2);
+    }
+
+    h1 {
+      scroll-margin-top: 40px;
+      margin-top: 60px;
+      margin-bottom: 24px;
+      line-height: 1.4;
+    }
+    
+    h3 {
+      scroll-margin-top: 40px;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    p {
+      margin-bottom: 20px;
+      font-size: 1.05rem;
+    }
+
+    pre {
+      background: #1e1e1e !important;
+      padding: 20px !important;
+      border-radius: 12px !important;
+      overflow-x: auto;
+      margin: 24px 0 !important;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      border: 1px solid #333;
+    }
+
+    code {
+      font-family: 'Consolas', 'Monaco', monospace;
+      color: #e6e6e6 !important;
+    }
+
+    p code, li code {
+      background: rgba(0,0,0,0.05);
+      padding: 3px 6px;
+      border-radius: 4px;
+      color: #d63384 !important;
+      font-size: 0.95em;
+    }
+
+    blockquote {
+      background: #fff8f0;
+      border-left: 5px solid var(--secondary);
+      padding: 16px 20px;
+      margin: 24px 0;
+      border-radius: 0 8px 8px 0;
+      color: #7a5c2d;
+    }
+
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+      
+      .toc-container {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      }
+
+      .content-container {
+        padding: 40px 20px 80px;
+      }
+      
+      h1 { font-size: 1.3em !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="toc-container">
+    <div class="toc-back">
+      <a href="./" class="btn-back-sidebar">‹ ブック一覧へ戻る</a>
+    </div>
+    <div class="toc-title">📚 目次</div>
+    <ul class="toc-list" id="toc-list">
+    </ul>
+  </aside>
+
+  <main class="content-container">
+    <div class="nav-buttons">
+      <a href="./" class="btn-back">‹ ブック一覧へ戻る</a>
+    </div>
+
+    <div id="guide-content">
+
+      
+<img src="images/basicGuide_Glossary.png" alt="" style="max-width: 100%; height: auto;"><br/><br/>
+
+
+<h1>【Glossary】モダンWeb & AI用語辞典 (A-Z / 五十音)</h1>
+
+📚 本ガイドブックは、<strong>*モダンWeb開発</strong>* と <strong>*AIエージェント活用</strong>* において頻出する重要用語をまとめた辞典です。用語の概念を正しく理解し、AIエージェントへの指示（プロンプト）の解像度を上げることで、より高品質な成果物を効率的に生成することを目指します。
+
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+
+
+<h1>1. 本辞典の役割と使い方</h1>
+
+<h3>用語と「な・ど・し・り・さ」の関連</h3>
+
+本プロジェクトの基盤である <strong>*「な・ど・し・り・さ」</strong>* のフレームワークに基づき、各用語がどの要素に深く関わるかを分類列（<strong>分類</strong>）で示しています。
+
+
+
+<table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">記号</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">意味</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">説明</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>な</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">なぜ</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">設計思想、導入のきっかけ、解決したい課題</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>ど</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">どう</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">具体的な実装方法、使用ツール、手順</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>し</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">書式</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">データの形式、コードの書き方、出力ルール</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>り</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">履歴</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">技術の変遷、過去の経緯、実績</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>さ</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">制約</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">セキュリティ、禁止事項、守るべきルール</td></tr></tbody></table>
+
+
+<h3>辞典の活用方法</h3>
+
+AIエージェントに指示を出す際、曖昧な言葉ではなく、本辞典にある <strong>*専門用語</strong>* を適切に織り交ぜることで、AIの理解が劇的に深まり、意図しない生成（ハルシネーション）を防ぐことができます。
+
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>2. モダンWeb & AI 用語辞典 (A-Z)</h1>
+
+
+
+
+
+<table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">用語名</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">分類</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">意味・解説</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">AIに指示する際の活用例</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>Agent</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">な・ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">人間に代わり、目標達成のために自律的に考えてツール（検索、実行、出力）を使いこなすAIのこと。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「あなたは熟練のエンジニアエージェントとして、このコードのリファクタリングを行ってください。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>API</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ソフトウェア同士が機能を共有するための窓口。モダンWebではJSON形式でのやり取りが一般的。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「バックエンドAPIの仕様書に基づき、フロントエンドのfetch処理を実装してください。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>BOM</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">し</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ファイルの先頭にある、文字コードを判定するための特殊な記号。UTF-8では「BOMなし」が標準的。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「出力するファイルは、必ずBOMなしUTF-8で保存してください。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>Bundle</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">複数のJSファイルを1つ（または少数）にまとめる処理・成果物。Viteなどのビルドツールが担う。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「本番ビルド後のバンドルサイズを確認し、不要なライブラリを削除してください。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>CI/CD</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ど・さ</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">コードをPushすると自動的にテスト・ビルド・デプロイが走る仕組み。GitHub Actionsなどで実現。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「GitHub ActionsでCI/CDパイプラインを構築し、mainブランチへのマージ時に自動デプロイしてください。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>Component</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">し・ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">UIを構成する再利用可能な部品単位。React等で <code>.jsx</code> / <code>.tsx</code> ファイルとして定義する。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「このフォームを独立した <code>SearchComponent</code> として切り出し、Propsで検索条件を受け取るようにしてください。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>CORS</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">さ</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">異なるドメイン（ポート）間でのリソース共有を制限するブラウザのセキュリティ機能。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「localhost:3000からAPIを叩くとCORSエラーが出るので、nginxでプロキシ設定をしてください。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>CSR</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">り・ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ブラウザ側でJavaScriptを実行して画面を組み立てる方式。SPA（後述）の基盤技術。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「SEOは重視しない管理画面なので、CSRメインの設計で提案してください。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>DOM</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">し</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">HTML/XML文書をプログラム（JS）から操作するための仕組み。要素をツリー状に扱う。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「直接DOMを操作するのではなく、Reactのステート管理を通じて表示を切り替えてください。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>ESModule</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">し・り</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ブラウザ・Node.jsが標準サポートするJSのモジュール構文（<code>import</code> / <code>export</code>）。CommonJS（<code>require</code>）の後継。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「CommonJSのrequire構文をESModuleのimport構文に書き換えてください。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>Framework</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">な・ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">アプリ開発の土台となる設計・仕組みのセット。React（UIライブラリ）やNext.js（フルスタックFW）などが代表。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「Next.jsフレームワークを使い、SSRとAPIルートを1つのプロジェクトにまとめてください。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>Git</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ど・り</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ソースコードの変更履歴を管理する分散型バージョン管理システム。現代開発の必須インフラ。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「featureブランチを切ってから実装し、mainへはPull Request経由でマージしてください。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>Hallucination</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">さ</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">AIが事実に基づかない、もっともらしい嘘（幻覚）をつく現象。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「ハルシネーションを防ぐため、必ずプロジェクト内の <code>instructions.md</code> を参照してください。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>Hook</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">し・ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Reactで状態管理（useState）や副作用（useEffect）などの機能を関数コンポーネントで使うための仕組み。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「useEffectフックを使って、コンポーネントのマウント時にAPIからデータを取得してください。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>Hydration</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">サーバーから届いた静的なHTMLに、JavaScriptが息を吹き込み、動的なページに変える工程。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「SSR環境でのHydrationエラーを防ぐため、windowオブジェクトの参照ポイントに注意して。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>ISR</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">な・ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Incremental Static Regeneration。ビルド時に生成した静的HTMLを、設定した間隔でサーバー側から自動再生成する仕組み（Next.js等）。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「商品一覧ページはISRで1時間ごとに再生成し、鮮度とパフォーマンスを両立させてください。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>JSON</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">し</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">JavaScript Object Notation。APIとのデータ送受信に使われる軽量テキスト形式。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「APIのレスポンスはJSON形式で、<code>{ "id": 1, "status": "shipped" }</code> の構造で返してください。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>LLM</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">り</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">大規模言語モデル。GPTやClaudeなど、大量の情報から言葉の繋がりを学習したAI本体。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「このプロジェクトではLLMを文書要約エンジンとして活用する予定です。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>Module</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">し・ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">機能ごとに分割されたコードのまとまり。<code>import</code> / <code>export</code> で相互に利用する。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「日付変換ロジックを <code>dateUtils.ts</code> モジュールとして切り出してください。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>npm</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">JavaScriptのパッケージ（部品）を管理するツール集。ライブラリの導入・更新に必須。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「プロジェクト開始時に、必要なパッケージを <code>npm install</code> する手順をまとめてください。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>Props</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">し・ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">コンポーネントが親から受け取る引数。Stateとの違いは「外から渡される読み取り専用のデータ」である点。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「<code>UserCard</code> コンポーネントはPropsで <code>name</code> と <code>role</code> を受け取り、表示するよう実装してください。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>Prompt</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">な・ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">AIに与える指示文。文脈（Context）や制約（Constraint）を明示することが重要。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「このプロンプトに、不足している前提条件を1つ追加してブラッシュアップして。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>RAG</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Retrieval-Augmented Generation。外部の知識（ファイルやDB）を検索し、その情報を元にAIが回答する技術。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「最新の技術情報をRAGで取得し、それに基づいた実装計画を立ててください。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>Router</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ど・し</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">URLとコンポーネントのマッピングを管理する仕組み。ページ遷移を制御する。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「Next.jsのApp Routerを使い、<code>/dashboard</code> 以下は認証必須のルートとして設定してください。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>SPA</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">り・な</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Single Page Application。単一のHTMLで構成され、ページ遷移なしで滑らかに動くWebアプリの形態。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「ユーザー体験を重視し、Next.jsを使ったSPA構成でプロジェクトを作成しましょう。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>SSG</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">な・ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Static Site Generation。ビルド時に全ページのHTMLをあらかじめ生成する方式。高速・SEO向き。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「更新頻度の低いランディングページはSSGで構築し、CDNから配信してください。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>SSR</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">り・な</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Server-Side Rendering。サーバー側でHTMLを組み立ててからブラウザに送る方式。初期表示が速くSEOに強い。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「SEO対策が必要なランディングページなので、SSRを採用する方針でお願いします。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>TypeScript</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">し・さ</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">JavaScriptに静的型付けを追加したAltJS。コンパイル時にバグを検知でき、大規模開発での堅牢性を高める。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「JavaScriptファイルをTypeScriptに書き換え、関数の引数と戻り値に型を定義してください。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>Vite</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">超高速な開発環境を提供するビルドツール。最新のモダンWeb開発における標準。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「create-react-appではなく、Viteを使ってReact環境を構築してください。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>WebSocket</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ど・な</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">サーバーとブラウザ間に持続的な双方向通信チャネルを確立するプロトコル。リアルタイム通知に不可欠。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「在庫数のリアルタイム同期にはWebSocketを使い、変更を即時ブロードキャストしてください。」</td></tr></tbody></table>
+
+
+
+
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>3. モダンWeb & AI 用語辞典 (五十音)</h1>
+
+
+
+
+
+<table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">用語名</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">分類</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">意味・解説</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">AIに指示する際の活用例</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>依存関係</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ど・さ</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">あるライブラリが動くために必要な他のライブラリのこと。<code>package.json</code> で管理される。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「依存関係を最新にアップデートし、脆弱性（npm audit）がないか確認してください。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>仮想DOM</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">実際のDOMを直接触らず、メモリ上の「仮のDOM」で差分計算してから反映する高速化技術。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「Reactの仮想DOMの仕組みを活かし、不必要な再レンダリングが発生しないよう修正して。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>型（型定義）</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">し・さ</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">TypeScriptで変数・関数の引数・戻り値に付けるデータ種別の宣言。 <code>string</code>, <code>number</code>, <code>boolean</code> など。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「このAPIレスポンスの型定義をTypeScriptの <code>interface</code> として作成してください。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>コンポーネント</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">し</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ヘッダーやボタンなど、UIを再利用可能な「部品」として分割した単位。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「このフォームの一部を、独立した <code>InputComponent</code> として切り出してください。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>コンテキスト</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ど・し</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">AIが対話の文脈を把握するための「共通認識」となる情報。履歴や前提ファイル。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「これまでの会話のコンテキストを維持したまま、今の指示を実行して。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>デプロイ</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">開発したアプリを本番環境（サーバー・クラウド）に配備し、ユーザーが利用できる状態にすること。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「Vercelを使い、GitHubのmainブランチへのPushで自動デプロイされるよう設定してください。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>な・ど・し・り・さ</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">全て</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">本プロジェクト独自の思考フレームワーク。なぜ・どう・書式・履歴・制約の略。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「この新しい要望を、な・ど・し・り・さ の観点で漏れなく整理して。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>ビルド</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ソースコードを製品（本番用）として動く形に最適化・変換する工程。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「本番環境へデプロイする前に、<code>npm run build</code> を実行してエラーがないか確認して。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>フック</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">し・ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Reactで状態管理や副作用などの機能を扱うための特殊関数。<code>useState</code>, <code>useEffect</code>, <code>useContext</code> など。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「<code>useEffect</code> フックでコンポーネント初期表示時にデータを取得する処理を追加して。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>フレームワーク</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">な・ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">アプリ開発の骨組みを提供するソフトウェア基盤。React, Next.js, Vue, Nuxtなどが代表例。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「このプロジェクトではNext.jsフレームワークを採用し、App Router構成で進めてください。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>プロップス</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">し・ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">親コンポーネントから子コンポーネントへ値を渡すための仕組み（Props）。子は変更できない読み取り専用の引数。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「<code>name</code> と <code>email</code> をプロップスで受け取り、ユーザーカードとして表示するコンポーネントを作って。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>ルーター</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ど・し</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">URLとページ（コンポーネント）の対応関係を管理する仕組み（Router）。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「Next.jsのApp Routerで、<code>/admin</code> 以下のページは認証済みユーザーのみアクセス可能にして。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>ステート（状態）</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">し</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">コンポーネントが内部で持つ、値や表示フラグなどの動的なデータ。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「チェックボックスが押されたらステートを更新し、全体の表示に反映させてください。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>トークン</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">AIが単語を処理する際の最小単位。長い文章ほどトークンを多く消費し、コストや限界に関わる。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「コンテキストウィンドウが溢れないよう、不要なログを削除してトークンを節約して。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>副作用</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">し・ど</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">コンポーネントの描画以外に発生する処理（APIコール・イベントリスナー登録等）。Reactでは <code>useEffect</code> で管理する。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「コンポーネントのアンマウント時にイベントリスナーを解除する副作用クリーンアップを追加して。」</td></tr></tbody></table>
+
+
+
+
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>4. AIエージェントへの指示精度を上げるコツ</h1>
+
+AIエージェントを使いこなすには、単に願いを伝えるだけでなく、以下の <strong>*指示の三要素</strong>* を意識することが重要です。
+
+
+
+<h3>1. 役割（Role）の定義</h3>
+
+「あなたはシニアフロントエンドエンジニアです」と定義することで、生成されるコードの専門性が上がります。
+
+
+
+<h3>2. 背景（Context）の提供</h3>
+
+「なぜこれを作るのか（な）」「過去にどんな経緯があったか（り）」をファイル等で共有します。本プロジェクトでは <code>instructions.md</code> がこの役割を担います。
+
+
+
+<h3>3. 制約（Constraint）の明示</h3>
+
+「このファイルは触らない（さ）」「書式はこれ（し）」と釘を刺すことで、期待通りの出力が得られます。
+
+
+
+<h3>指示文の改善例</h3>
+
+<table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">Before（曖昧）</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">After（解像度高）</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>「ボタンを作って」</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「<code>SubmitButton</code> コンポーネントを作成し、Propsで <code>label</code>（string）と <code>onClick</code>（関数）を受け取るようにしてください。TypeScriptで型定義も含めること。」</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>「エラーを直して」</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「<code>useEffect</code> 内でのAPIコール時に発生するCORSエラーを解決してください。バックエンドはNode.js/Expressです。」</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>「いい感じにして」</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">「コードをリファクタリングし、ロジックとUIを分離したカスタムフック（<code>useOrderData</code>）を作成してください。」</td></tr></tbody></table>
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>5. まとめ</h1>
+
+本辞典は、技術の進化やプロジェクトの進展に合わせて <strong>*随時更新</strong>* されるべき動的なドキュメントです。用語を正しく使うことは、人間同士のコミュニケーションだけでなく、AIとの協力関係においても <strong>*最強の武器</strong>* となります。
+
+
+
+もし分からない用語に出会ったときは、まずこの辞典を引き、必要であればAIに「さらに詳しく、な・ど・し・り・さ の観点で解説して」と尋ねてみてください。
+
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>参考リンク一覧</h1>
+
+<table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">リンク</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">詳細</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><a href="https://developer.mozilla.org/ja/" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">MDN Web Docs (日本語)</a></strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Web開発全般の最も信頼できる辞書・ドキュメント</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><a href="https://nodejs.org/ja" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">Node.js 公式 (日本語)</a></strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">モダンWebの実行環境の総本山</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><a href="https://ja.react.dev/" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">React 公式ドキュメント</a></strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">コンポーネント指向・Hook・Stateを学ぶための必読書</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><a href="https://www.typescriptlang.org/docs/" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">TypeScript 公式ドキュメント</a></strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">型システムの正式リファレンス</td></tr></tbody></table>
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+
+
+<strong>*このガイドブックが、あなたのモダンWeb & AI開発の第一歩を支える道標となれば幸いです。解像度の高い定義こそが、高い品質への最短距離です。</strong>*
+
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+<strong>更新日時</strong>：2026 年 03 月 21 日
+
+
+
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const content = document.getElementById("guide-content");
+      const tocList = document.getElementById("toc-list");
+      
+      const headings = Array.from(content.querySelectorAll("h1, h3")).filter(h => {
+        return h.textContent.trim() !== "目次" && !h.closest(".toc-container");
+      });
+
+      if (headings.length === 0) return;
+
+      headings.forEach((heading, index) => {
+        if (!heading.id) {
+          heading.id = "heading-" + index;
+        }
+
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = "#" + heading.id;
+        a.textContent = heading.textContent;
+        a.className = "toc-link" + (heading.tagName.toLowerCase() === "h3" ? " level-h3" : "");
+        
+        li.appendChild(a);
+        tocList.appendChild(li);
+
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          heading.scrollIntoView({ behavior: "smooth", block: "start" });
+          history.pushState(null, null, "#" + heading.id);
+        });
+      });
+
+      const tocLinks = document.querySelectorAll('.toc-link');
+      
+      window.addEventListener('scroll', () => {
+        let current = '';
+        
+        headings.forEach(heading => {
+          const headingTop = heading.getBoundingClientRect().top;
+          if (headingTop <= 100) {
+            current = heading.id;
+          }
+        });
+
+        tocLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href').includes(current) && current !== '') {
+            link.classList.add('active');
+          }
+        });
+      }, { passive: true });
+    });
+  </script>
+</body>
+</html>

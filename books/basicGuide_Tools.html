@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【基礎】モダンWebアプリ開発のための基礎ツール</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #39C5BB;
+      --secondary: #FFC778;
+      --bg: #fdfdfd;
+      --text-main: #2c3e50;
+      --text-muted: #666;
+      --border: #e0e0e0;
+      --highlight: rgba(57, 197, 187, 0.1);
+      --font-main: "Noto Sans JP", sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: var(--font-main);
+      color: var(--text-main);
+      background-color: var(--bg);
+      line-height: 1.8;
+      display: flex;
+    }
+
+    /* --- サイドバー目次 (TOC) --- */
+    .toc-container {
+      width: 300px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      background: #fff;
+      border-right: 1px solid var(--border);
+      padding: 24px 20px;
+      overflow-y: auto;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+      flex-shrink: 0;
+    }
+
+    .toc-title {
+      font-size: 1.1rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toc-list {
+      list-style: none;
+    }
+
+    .toc-list li {
+      margin-bottom: 8px;
+    }
+
+    .toc-link {
+      display: block;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+
+    .toc-link:hover {
+      background: var(--highlight);
+      color: var(--primary);
+    }
+
+    .toc-link.active {
+      background: var(--highlight);
+      color: var(--primary);
+      border-left-color: var(--primary);
+      font-weight: 700;
+    }
+
+    .toc-link.level-h3 {
+      font-size: 0.85rem;
+      padding-left: 24px;
+    }
+
+    /* --- メインコンテンツ --- */
+    .content-container {
+      flex: 1;
+      padding: 60px 40px 100px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .nav-buttons {
+      margin-bottom: 40px;
+    }
+    
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 8px 16px;
+      border: 1.5px solid var(--primary);
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+
+    .btn-back:hover {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(57, 197, 187, 0.3);
+    }
+
+    .toc-back {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .btn-back-sidebar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 10px;
+      border: 1.5px solid var(--primary);
+      border-radius: 12px;
+      transition: all 0.2s;
+      background: #fff;
+    }
+
+    .btn-back-sidebar:hover {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(57, 197, 187, 0.2);
+    }
+
+    h1 {
+      scroll-margin-top: 40px;
+      margin-top: 60px;
+      margin-bottom: 24px;
+      line-height: 1.4;
+    }
+    
+    h3 {
+      scroll-margin-top: 40px;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    p {
+      margin-bottom: 20px;
+      font-size: 1.05rem;
+    }
+
+    pre {
+      background: #1e1e1e !important;
+      padding: 20px !important;
+      border-radius: 12px !important;
+      overflow-x: auto;
+      margin: 24px 0 !important;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      border: 1px solid #333;
+    }
+
+    code {
+      font-family: 'Consolas', 'Monaco', monospace;
+      color: #e6e6e6 !important;
+    }
+
+    p code, li code {
+      background: rgba(0,0,0,0.05);
+      padding: 3px 6px;
+      border-radius: 4px;
+      color: #d63384 !important;
+      font-size: 0.95em;
+    }
+
+    blockquote {
+      background: #fff8f0;
+      border-left: 5px solid var(--secondary);
+      padding: 16px 20px;
+      margin: 24px 0;
+      border-radius: 0 8px 8px 0;
+      color: #7a5c2d;
+    }
+
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+      
+      .toc-container {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      }
+
+      .content-container {
+        padding: 40px 20px 80px;
+      }
+      
+      h1 { font-size: 1.3em !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="toc-container">
+    <div class="toc-back">
+      <a href="./" class="btn-back-sidebar">‹ ブック一覧へ戻る</a>
+    </div>
+    <div class="toc-title">📚 目次</div>
+    <ul class="toc-list" id="toc-list">
+    </ul>
+  </aside>
+
+  <main class="content-container">
+    <div class="nav-buttons">
+      <a href="./" class="btn-back">‹ ブック一覧へ戻る</a>
+    </div>
+
+    <div id="guide-content">
+<h1 id="学習-モダンwebアプリ開発のための基礎ツールについて-tools-学習ガイドブック" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white;
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em;
+    font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px;
+    letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">
+    (BOOK)【学習】モダンWebアプリ開発のための基礎ツールについて【Tools】学習ガイドブック
+</h1>
+
+<img src="images/basicGuide_Tools.png" alt="basicGuide_Tools" style="max-width: 100%; height: auto;"><br/><br/>
+
+
+📚 本ガイドブックは、モダンWeb開発において <strong>*Git, npm, TypeScript, Vite, 各種フレームワーク</strong>* がなぜ「必須」とされるのか、その技術的背景と必然性を、従来の開発手法との比較を通じて解説します。単なるツールの使い方ではなく、エコシステムの進化という文脈から、現代の開発環境の正体を解き明かしましょう!!
+
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+
+
+<h1>1. Web開発エコシステムの変遷と「必然性」</h1>
+
+
+
+<h3>概要・説明</h3>
+
+
+
+現代のWeb開発は、HTML/CSS/JSを書いてFTPでアップロードするだけの単純な作業ではなくなりました。ユーザーの要求（リッチなUI、高速なレスポンス、セキュリティ）が高度化した結果、それらを人力で管理することは不可能になり、<strong>*自動化と標準化</strong>* のためのツール群が「必然的」に誕生しました。
+
+
+
+技術の進化は、まるで命の芽吹きのように、必要とされる場所で次々と生まれてきたんです。
+
+
+
+<h3>ツール進化の比較表</h3>
+
+
+
+<table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">ツールカテゴリ</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">従来のやり方（Before）</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">モダンなやり方（After）</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">解決された課題</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>バージョン管理</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">手動コピー・日付フォルダ</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Git / GitHub</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">修正の競合、変更履歴の追跡不能</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>ライブラリ管理</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">scriptタグで直貼り</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">npm / yarn / pnpm</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">依存関係の衝突、脆弱性対応の遅れ</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>型安全性</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">生のJSで実行時エラー</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">TypeScript</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">コンパイル前にバグを検知できない問題</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>ビルド / 変換</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">生のJSをそのまま配信</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Vite / Webpack</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ローディング速度、最新構文の非対応</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>UI開発</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">jQueryによるDOM直接操作</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">React / Vue / Next.js</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">コードの複雑化（スパゲッティ化）</td></tr></tbody></table>
+
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>2. Git：単なるバックアップから「協働とデプロイの基盤」へ</h1>
+
+
+
+<h3>なぜ Git なのか？</h3>
+
+
+
+かつては「ファイルを壊さないためにバックアップを取る」のが主な目的でしたが、現代では <strong>*「誰が、いつ、なぜその変更をしたのか」という文脈を保存する</strong>* ことが重視されます。
+
+
+
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>*Before</strong>*：<code>index_20240321_fixed.html</code> のようなファイルが量産され、誰の修正が最新か分からなくなる。</li>
+  <li style="margin-bottom: 8px;"><strong>*After</strong>*：Gitにより、ブランチ（並行作業）とマージ（統合）が安全に行えるようになり、CI/CD（自動テスト・デプロイ）のトリガーとして機能します。</li>
+</ul>
+
+
+
+<h3>Git ワークフローの視覚化</h3>
+
+
+
+
+<pre style="color:Green;">
+<code>
+```mermaid
+graph LR
+    A[Local Develop] -->|commit| B(Local Branch)
+    B                -->|push| C{GitHub/Remote}
+    C                -->|Pull Request| D[Code Review]
+    D                -->|Merge| E[Main Branch]
+    E                -->|Auto Deploy| F((Production))
+```
+</code>
+</pre>
+
+
+
+
+
+
+<h3>モダンプロジェクトの標準的なフォルダ構成</h3>
+
+
+
+npmによって管理されるプロジェクトは、以下のような構成が「標準」となります。これを知るだけで、どこに何があるか一目で分かるようになるんですよ!!
+
+
+
+
+<pre style="color:Green;">
+<code>
+my-modern-app/
+├── node_modules/     ← <strong>*npmが管理する膨大なライブラリ群</strong>*（ここは触らないで下さいね）
+├── public/           ← 画像などの静的ファイル
+├── src/              ← <strong>*自分が書くソースコード</strong>*（TS, TSX, CSS等）
+│   ├── components/   ← 部品化したUIパーツ（.tsx）
+│   ├── hooks/        ← カスタムフック（useXxx.ts）
+│   ├── types/        ← TypeScript型定義ファイル（.d.ts）
+│   ├── App.tsx       ← メインの構成要素
+│   └── main.tsx      ← 起動の起点
+├── .gitignore        ← Gitの管理から除外する設定
+├── .env.local        ← 環境変数（APIキー等。Gitには含めないのがお約束です）
+├── index.html        ← 全ての起点となるHTML
+├── package.json      ← <strong>*プロジェクトの設計図</strong>*（名前、依存ライブラリ）
+├── package-lock.json ← 依存バージョンの厳密な記録
+├── tsconfig.json     ← TypeScriptコンパイラの設定ファイル
+└── vite.config.ts    ← ビルドツールの設定ファイル
+</code>
+</pre>
+
+
+
+
+<h3>セットアップ時の「ハマりポイント」（Git）</h3>
+
+
+
+#### ハマり1：改行コードの自動変換（Windows固有）
+
+
+
+WindowsとLinux/Macで改行コードが異なり（CRLF vs LF）、差分が大量に出てしまうことがあります。Surface Go 2 などWindowsマシンでは必ず設定してくださいね。
+
+
+
+
+<pre style="color:Green;">
+<code>
+<h1>Windowsでの推奨設定（チェックアウト時CRLF、コミット時LFに変換）</h1>
+git config --global core.autocrlf true
+</code>
+</pre>
+
+
+
+
+#### ハマり2：.gitignore の設定漏れ
+
+
+
+<code>node_modules</code> や秘密情報（<code>.env.local</code>）をコミットしてしまう。プロジェクト開始直後に配置することが鉄則です。
+
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>3. npm/Node.js：スクリプト配布から「依存関係管理の自動化」へ</h1>
+
+
+
+<h3>依存関係の「必然性」</h3>
+
+
+
+現代のアプリは数千のライブラリに依存しています。これらを <strong>*手動でダウンロードして管理することは物理的に不可能</strong>* です。
+
+
+
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>*Before</strong>*：jQueryの公式サイトからZIPを落とし、<code>libs/</code> フォルダに入れて <code>script</code> タグで書く。依存ライブラリのバージョンが合わないと動かない。</li>
+  <li style="margin-bottom: 8px;"><strong>*After</strong>*：<code>package.json</code> に名前とバージョンを書くだけで、npmが芋づる式（依存グラフ）に全ての必要なファイルを整理します。</li>
+</ul>
+
+
+
+皆さんの大切なアプリを、npmが陰で支えてくれているんですね🛡️
+
+
+
+<h3>確認コマンド</h3>
+
+
+
+
+<pre style="color:Green;">
+<code>
+<h1>Node.jsとnpmのバージョン確認（両方インストールされていれば動く）</h1>
+node -v
+npm -v
+
+<h1>出力例:</h1>
+<h1>v20.11.0</h1>
+<h1>10.2.4</h1>
+</code>
+</pre>
+
+
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>4. TypeScript：JavaScriptに「型の堅牢性」を加えた必然</h1>
+
+
+
+<h3>なぜ TypeScript なのか？</h3>
+
+
+
+JavaやC#では当たり前だった「コンパイル時の型チェック」を、JavaScriptにも持ち込んだのが<strong>*TypeScript</strong>*です。
+
+
+
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><strong>*Before（生JS）</strong>*：<code>function calcTotal(price, qty) { return price * qty; }</code> に文字列を渡しても実行時まで気づかない。本番で <code>NaN</code> が出てから調査が始まる。</li>
+  <li style="margin-bottom: 8px;"><strong>*After（TypeScript）</strong>*：<code>function calcTotal(price: number, qty: number): number</code> と定義することで、文字列を渡すとコンパイラが「ちょっと待って!!」と優しく教えてくれます。</li>
+</ul>
+
+
+
+
+<pre style="color:Green;">
+<code>
+// 型定義の例：出荷ステータスを列挙型で管理
+type ShipmentStatus = 'pending' | 'processing' | 'shipped' | 'delivered';
+
+interface Shipment {
+  id: number;
+  orderId: string;
+  status: ShipmentStatus;
+  shippedAt?: Date;  // ? は省略可能を意味する
+}
+
+// 間違った使い方はコンパイル時にエラーになる
+const shipment: Shipment = {
+  id: 1,
+  orderId: 'ORD-001',
+  status: 'flying',  // ← エラー：'flying' は ShipmentStatus に存在しない
+};
+</code>
+</pre>
+
+
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>5. Vite/ビルドツール：なぜJSに「ビルド」が必要なのか？</h1>
+
+
+
+<h3>ビルドという「必然的な壁」</h3>
+
+
+
+ブラウザがそのまま理解できない「最新のJS構文」や、ファイルを小さくする「圧縮」など、ブラウザに届ける前の「身支度」をするのが<strong>*変換工程（ビルド）</strong>* です。
+
+
+
+Viteは開発中は超高速に動作し、本番公開用には最適化された「1つのファイル群」にまとめ上げる魔法のようなツールなんです✨
+
+
+
+
+<pre style="color:Green;">
+<code>
+<h1>Viteプロジェクトを新規作成（React + TypeScript）</h1>
+npm create vite@latest my-app -- --template react-ts
+cd my-app
+npm install
+npm run dev
+
+<h1>出力例:</h1>
+<h1> VITE v5.x.x  ready in 150 ms</h1>
+<h1> ➜  Local:   http://localhost:5173/</h1>
+</code>
+</pre>
+
+
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>6. フレームワーク（React/Next.js）：命令型から「宣言型」へのパラダイムシフト</h1>
+
+
+
+<h3>「どう作るか」から「どうあるべきか」へ</h3>
+
+
+
+モダンフレームワークは <strong>*宣言型（Declarative）</strong>* であり、「データがこうなったら、画面はこうなる」という状態を定義します。
+
+
+
+コンポーネント単位でカプセル化され、データの変更に合わせて画面が「必然的」に更新される様は、見ていて本当に美しく感動しますよ!!
+
+
+
+<table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">ツール</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">役割</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">例えるなら</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>React</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">UIを構築するライブラリ。コンポーネントとState管理を担う</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">エンジン</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong>Next.js</strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ReactをベースにしたフルスタックFW。ルーティング・SSR・API等を追加</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">完成した車（エンジン込み）</td></tr></tbody></table>
+
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>7. よくある質問とトラブルシューティング</h1>
+
+
+
+<h3>Q1. なぜ node_modules はあんなに巨大なのですか？</h3>
+
+
+
+<strong>A</strong>. 現代のWeb開発が提供する高度な機能を支えるために、数多くの最小単位のモジュールが組み合わされているからです。「車を作るためにネジまで自作せず、最高品質の部品を専門メーカーから仕入れている」状態と同じなんですよ。
+
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>まとめ</h1>
+
+
+
+本ガイドブックでは、現代のWeb開発に欠かせない <strong>*Git, npm, TypeScript, Vite, フレームワーク</strong>* の必然性について解説しました。
+
+
+
+<ul style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;">⚡ <strong>*Git</strong>*：履歴を守り、未来へ繋ぐ基盤</li>
+  <li style="margin-bottom: 8px;">🛡️ <strong>*npm</strong>*：膨大な知恵（ライブラリ）を安全に届ける仕組み</li>
+  <li style="margin-bottom: 8px;">🔍 <strong>*TypeScript</strong>*：間違いを未然に防ぐ、静かな優しさ</li>
+  <li style="margin-bottom: 8px;">🔄 <strong>*Vite</strong>*：開発者の情熱をすぐに画面に届けるスピード感</li>
+</ul>
+
+
+
+これらのツールが揃い、その意義を理解した時、AIエージェントとも、より深い対話ができるようになるはずです!!
+
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1>参考リンク一覧</h1>
+
+
+
+<table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">リンク</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">詳細</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><a href="https://git-scm.com/doc">Git 公式ドキュメント</a></strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Gitの基本からブランチ戦略まで</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><a href="https://docs.npmjs.com/">npm 公式ドキュメント</a></strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">パッケージ管理の全操作リファレンス</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><a href="https://www.typescriptlang.org/docs/">TypeScript 公式ドキュメント</a></strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">型システムの正式リファレンス</td></tr></tbody></table>
+
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<strong>更新日時</strong>：2026 年 3 月 21 日
+
+
+
+<strong>*本ガイドブックは、初心者から中級者まで幅広にご利用いただけるよう、実践的かつ技術的な内容をバランスよく盛り込んでいます。</strong>*
+
+
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const content = document.getElementById("guide-content");
+      const tocList = document.getElementById("toc-list");
+      
+      const headings = Array.from(content.querySelectorAll("h1, h3")).filter(h => {
+        return h.textContent.trim() !== "目次" && !h.closest(".toc-container");
+      });
+
+      if (headings.length === 0) return;
+
+      headings.forEach((heading, index) => {
+        if (!heading.id) {
+          heading.id = "heading-" + index;
+        }
+
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = "#" + heading.id;
+        a.textContent = heading.textContent;
+        a.className = "toc-link" + (heading.tagName.toLowerCase() === "h3" ? " level-h3" : "");
+        
+        li.appendChild(a);
+        tocList.appendChild(li);
+
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          heading.scrollIntoView({ behavior: "smooth", block: "start" });
+          history.pushState(null, null, "#" + heading.id);
+        });
+      });
+
+      const tocLinks = document.querySelectorAll('.toc-link');
+      
+      window.addEventListener('scroll', () => {
+        let current = '';
+        
+        headings.forEach(heading => {
+          const headingTop = heading.getBoundingClientRect().top;
+          if (headingTop <= 100) {
+            current = heading.id;
+          }
+        });
+
+        tocLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href').includes(current) && current !== '') {
+            link.classList.add('active');
+          }
+        });
+      }, { passive: true });
+    });
+  </script>
+</body>
+</html>
