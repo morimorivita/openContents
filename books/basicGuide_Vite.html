@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>(BOOK)モダンWebアプリ開発の第一歩 Viteセットアップガイド</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #39C5BB;
+      --secondary: #FFC778;
+      --bg: #fdfdfd;
+      --text-main: #2c3e50;
+      --text-muted: #666;
+      --border: #e0e0e0;
+      --highlight: rgba(57, 197, 187, 0.1);
+      --font-main: "Noto Sans JP", sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-main);
+      color: var(--text-main);
+      background-color: var(--bg);
+      line-height: 1.8;
+      display: flex;
+    }
+
+    /* --- サイドバー目次 (TOC) --- */
+    .toc-container {
+      width: 300px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      background: #fff;
+      border-right: 1px solid var(--border);
+      padding: 24px 20px;
+      overflow-y: auto;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+      flex-shrink: 0;
+    }
+
+    .toc-title {
+      font-size: 1.1rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toc-list {
+      list-style: none;
+    }
+
+    .toc-list li {
+      margin-bottom: 8px;
+    }
+
+    .toc-link {
+      display: block;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+
+    .toc-link:hover {
+      background: var(--highlight);
+      color: var(--primary);
+    }
+
+    .toc-link.active {
+      background: var(--highlight);
+      color: var(--primary);
+      border-left-color: var(--primary);
+      font-weight: 700;
+    }
+
+    .toc-link.level-h3 {
+      font-size: 0.85rem;
+      padding-left: 24px;
+    }
+
+    /* --- メインコンテンツ --- */
+    .content-container {
+      flex: 1;
+      padding: 60px 40px 100px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .nav-buttons {
+      margin-bottom: 40px;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 8px 16px;
+      border: 1.5px solid var(--primary);
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+
+    .btn-back:hover {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(57, 197, 187, 0.3);
+    }
+
+    .toc-back {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .btn-back-sidebar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 10px;
+      border: 1.5px solid var(--primary);
+      border-radius: 12px;
+      transition: all 0.2s;
+      background: #fff;
+    }
+
+    .btn-back-sidebar:hover {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(57, 197, 187, 0.2);
+    }
+
+    h1 {
+      scroll-margin-top: 40px;
+      margin-top: 60px;
+      margin-bottom: 24px;
+      line-height: 1.4;
+    }
+
+    h3 {
+      scroll-margin-top: 40px;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    p {
+      margin-bottom: 20px;
+      font-size: 1.05rem;
+    }
+
+    pre {
+      background: #1e1e1e !important;
+      padding: 20px !important;
+      border-radius: 12px !important;
+      overflow-x: auto;
+      margin: 24px 0 !important;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      border: 1px solid #333;
+    }
+
+    code {
+      font-family: 'Consolas', 'Monaco', monospace;
+      color: #e6e6e6 !important;
+    }
+
+    p code, li code {
+      background: rgba(0,0,0,0.05);
+      padding: 3px 6px;
+      border-radius: 4px;
+      color: #d63384 !important;
+      font-size: 0.95em;
+    }
+
+    blockquote {
+      background: #fff8f0;
+      border-left: 5px solid var(--secondary);
+      padding: 16px 20px;
+      margin: 24px 0;
+      border-radius: 0 8px 8px 0;
+      color: #7a5c2d;
+    }
+
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+
+      .toc-container {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      }
+
+      .content-container {
+        padding: 40px 20px 80px;
+      }
+
+      h1 { font-size: 1.3em !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOCエリア（JavaScriptで自動生成） -->
+  <aside class="toc-container">
+    <!-- サイドバー最上部の戻るボタン -->
+    <div class="toc-back">
+      <a href="./" class="btn-back-sidebar">‹ ブック一覧へ戻る</a>
+    </div>
+    <div class="toc-title">📚 目次</div>
+    <ul class="toc-list" id="toc-list"></ul>
+  </aside>
+
+  <!-- メインコンテンツエリア -->
+  <main class="content-container">
+    <div class="nav-buttons">
+      <a href="./" class="btn-back">‹ ブック一覧へ戻る</a>
+    </div>
+
+    <!-- 本文コンテンツ -->
+    <div id="guide-content">
+こんにちは!!もりもりです!!<br/><br/>
+今回はこれからのAI協働開発のために【モダンWebアプリ開発の第一歩、Viteのセットアップガイド】をお届けします!!<br/><br/>
+<figure style="margin: 24px 0; text-align: center;">
+  <img
+    src="images/basicGuide_Vite.png"
+    alt=""
+    loading="lazy"
+    style="max-width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.12);"
+  />
+</figure>
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0)); margin: 40px 0;">
+
+<h1 id="【学習】モダンwebアプリ開発のための初期段階のビルドツールと環境構築【vite】" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">【学習】モダンWebアプリ開発のための初期段階のビルドツールと環境構築【Vite】</h1>
+
+
+<span style="font-size:1.2em">📚</span> 今回は、これからモダンWebアプリ開発を始めよう！という方に向けて、フロントエンドのビルドツールである「Vite（ヴィート）」の導入から、Hello Worldアプリの起動、そして全世界へ向けたGitHub Pagesへの公開までを最短で体験できるガイドをお届けします！<br/><br/>
+これからVueやReactといったフレームワークを利用していく前の、とても大切な基礎知識となりますので、ぜひ一緒に手を動かして体験してみましょう<span style="font-size:1.2em">✨</span><br/><br/>
+
+---
+
+
+<h1 id="目次" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">目次</h1>
+
+
+1. [Viteの概要と特性](#viteの概要と特性)
+2. [Viteのインストール手順](#viteのインストール手順)
+3. [Vue / React との関係性](#vue--react-との関係性)
+4. [最短の成功体験ガイド（ローカル起動〜公開）](#最短の成功体験ガイドローカル起動公開)
+5. [よくある質問とトラブルシューティング](#よくある質問とトラブルシューティング)
+
+---
+
+
+<h1 id="viteの概要と特性" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">Viteの概要と特性</h1>
+
+
+<h3 id="概要・説明" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">概要・説明</h3>
+
+
+Vite（ヴィート）は、フランス語で「速い」を意味する、<b><b><b><b><b><b>****次世代のフロントエンドビルドツール***</b></b>*</b></b></b></b>です。<br/><br/>
+
+かつて主流だったツール（Webpackなど）は大変優秀でしたが、「開発サーバーの起動が遅い」「コードを修正してブラウザに反映されるまでコーヒーが飲めるほど待たされる」といった悩ましい課題がありました<span style="font-size:1.2em">💦</span><br/><br/>
+そんな課題を鮮やかに解決するために作られたのがこのViteです！Vue.jsの開発者であるEvan You氏によって作成されましたが、今ではReactなど他の多くのフレームワークでも標準的に利用されている、まさに現在のWeb開発における大黒柱のような存在です<span style="font-size:1.2em">🚀</span><br/><br/>
+
+<h3 id="主な特性・特徴" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">主な特性・特徴</h3>
+
+
+<div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 20px 0; border: 1px solid #e0e0e0;"><table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">特性 / 特徴</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">説明</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>**即時サーバー起動**</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">プロジェクトのサイズに関わらず、開発サーバーがミリ秒単位で素早く起動します。もう待たされることはありません！</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>**超高速なHMR**</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">コードを書き換えると、ブラウザ全体をリロードせずに変更部分だけが瞬時に反映されます（Hot Module Replacement）。この魔法のような体験は一度味わうと手放せません。</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>**豊富なテンプレート**</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Vue, React, Svelteなどの環境をコマンド一つですぐに構築できる公式テンプレートが最初から用意されています。</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>**本番用ビルドの最適化**</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">デプロイ（公開）用のデータを作成する際は、自動的に最適化（ファイルの圧縮等）を賢く行ってくれます。</td></tr></tbody></table></div>
+
+
+<h3 id="公式情報・リンク" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">公式情報・リンク</h3>
+
+
+- <b><b><b><b><b><b>****公式ドキュメント***</b></b>*</b></b></b></b>：https://ja.vitejs.dev/
+- <b><b><b><b><b><b>****公式 GitHub リポジトリ***</b></b>*</b></b></b></b>：https://github.com/vitejs/vite
+
+---
+
+
+<h1 id="viteのインストール手順" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">Viteのインストール手順</h1>
+
+
+<h3 id="事前確認事項" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">事前確認事項</h3>
+
+
+- <b><b><b><b><b><b>****Node.js***</b></b>*</b></b></b></b>：Viteを動かすには、JavaScriptの実行環境である「Node.js」（18以上、または20以上推奨）がPCにインストールされている必要があります。
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# Node.jsがインストールされているか（バージョン）を確認
+node -v
+
+# 出力例:
+# v20.x.x
+</code>
+</pre>
+</div>
+
+バージョンが正しく表示されれば準備完了です！次へ進みましょう<span style="font-size:1.2em">😊</span><br/><br/>
+
+<h3 id="プロジェクトの作成手順（コマンドライン使用）" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">プロジェクトの作成手順（コマンドライン使用）</h3>
+
+
+<b><b><b><b><b><b>****npm create vite@latest***</b></b>*</b></b></b></b> という強力なコマンドを使うことで、対話形式でプロジェクトの土台を作成できます。少しハッカーになった気分を味わいながら進めましょう！<br/><br/>
+
+<b><b><b><b><b><b>****ステップ 1：作業フォルダへ移動***</b></b>*</b></b></b></b><br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# 開発用フォルダ（例としてDocuments配下）に移動します
+cd C:\Users\YourName\Documents
+
+# Viteの作成コマンドを実行します
+npm create vite@latest
+</code>
+</pre>
+</div>
+
+
+<b><b><b><b><b><b>****ステップ 2：対話形式での設定***</b></b>*</b></b></b></b><br/><br/>
+
+コマンドを実行すると、ターミナル上で以下のように質問されますので、キーボードの矢印キーとEnterで選択していきます。<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+? Project name: > my-vite-app
+  （好きなプロジェクト名を入力してEnter）
+
+? Select a framework: > - Use arrow-keys. Return to submit.
+    Vanilla
+    Vue      ← 今回はこれを選択してみましょう
+    React
+    ...
+
+? Select a variant: > - Use arrow-keys. Return to submit.
+    TypeScript
+    JavaScript  ← まずは基本のこれを選択
+</code>
+</pre>
+</div>
+
+
+<b><b><b><b><b><b>****ステップ 3：依存関係のインストール***</b></b>*</b></b></b></b><br/><br/>
+
+プロジェクトの「箱」が作成されたら、その中に移動して必要な部品（パッケージ）をインストールします。<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# 作成したフォルダへ移動
+cd my-vite-app
+
+# 必須パッケージのインストール（初回のみ必須）
+npm install
+</code>
+</pre>
+</div>
+
+
+これでViteのセットアップは完了です！本当にあっという間ですよね<span style="font-size:1.2em">🎉</span><br/><br/>
+
+---
+
+
+<h1 id="vue-/-react-との関係性" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">Vue / React との関係性</h1>
+
+
+「VueとReact、どちらを学べばいいのかな？」<br/><br/>
+これはプログラミングを学ぶ初心者が必ずといっていいほど直面する大きな疑問です。Viteはどちらのフレームワークであっても、その土台としてしっかりと機能してくれます。<br/><br/>
+
+<h3 id="技術的な関係性" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">技術的な関係性</h3>
+
+
+- <b><b><b><b><b><b>****Vite***</b></b>*</b></b></b></b>：開発環境を爆速で提供する、いわば「作業台・高機能な工具箱」です。
+- <b><b><b><b><b><b>****Vue / React***</b></b>*</b></b></b></b>：画面のUI（ボタンや入力欄などの部品）を組み立てるための「設計図・部品集」です。
+
+どちらの設計図（Vue/React）を使うにしても、優秀な作業台（Vite）があったほうが圧倒的に作業効率が良いため、現在は<b><b><b><b><b><b>****「Viteの上でVueやReactを動かす」***</b></b>*</b></b></b></b>のが世界的な標準スタイルとなっています。<br/><br/>
+
+<h3 id="どちらに進むかの判断基準" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">どちらに進むかの判断基準</h3>
+
+
+<div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 20px 0; border: 1px solid #e0e0e0;"><table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">フレームワーク</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">特徴</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">こんな人におすすめ</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>**Vue.js**</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">HTML/CSS/JSの知識がそのまま活かしやすいのが最大の特徴。学習曲線が比較的ゆるやかで、テンプレート構文が直感的に理解できます。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b><b>***従来のHTMLベタ書きやjQueryなどの制作経験からモダン開発へ移行したい人***</b></b></td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>**React**</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">世界的なシェアNo.1の絶対王者。全てをJavaScript(JSX)という記法で記述します。大規模アプリや複雑な状態管理に非常に優れています。</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b><b>***世界標準の技術をしっかり学びたい人、複雑なWebアプリを作りたい人***</b></b></td></tr></tbody></table></div>
+
+
+> [!TIP]<br/><br/>
+> 迷った場合は、直感的にわかりやすいとされる <b><b>***Vue.js***</b></b> から学び始めることを個人的にはお勧めしています<span style="font-size:1.2em">🌟</span>一つの概念（コンポーネント、Stateなど）を深く理解すれば、もう一方への乗り換えも驚くほど容易になりますよ！<br/><br/>
+
+---
+
+
+<h1 id="最短の成功体験ガイド（ローカル起動〜公開）" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">最短の成功体験ガイド（ローカル起動〜公開）</h1>
+
+
+<h3 id="シーン-1：hello-worldページをローカルで動かす" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">シーン 1：Hello Worldページをローカルで動かす</h3>
+
+
+先ほどインストールしたアプリのひな形を、実際に自分のPC上のブラウザで表示させてみましょう！この瞬間が一番ワクワクしますね。<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# 開発用サーバーを起動
+npm run dev
+</code>
+</pre>
+</div>
+
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+  VITE v5.x.x  ready in 250 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+</code>
+</pre>
+</div>
+
+
+ブラウザを開いて `http://localhost:5173/` にアクセスしてみてください。Vite（およびVue/React）のロゴがくるくると回る「Hello World」の初期画面が表示されれば大成功です！！<br/><br/>
+起動中は、エディタでコードを変更すると<b><b>***即座に画面が更新される***</b></b>魔法のような体験（HMR）ができます。この爆速のフィードバックループが、モダンWeb開発の最大の魅力です。<br/><br/>
+終了する時はターミナルで `Ctrl + C` を押します。<br/><br/>
+
+<h3 id="シーン-2：viteでビルドする（最適化）" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">シーン 2：Viteでビルドする（最適化）</h3>
+
+
+ローカルで動いているファイル群は、実はそのままでは一般的なWebサーバーにアップロードできません。全世界に公開するための「軽く最適化された一つのパッケージ」に変換（ビルド）する作業が必要です。<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# 本番公開用のファイルを生成
+npm run build
+</code>
+</pre>
+</div>
+
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+vite v5.x.x building for production...
+✓ 34 modules transformed.
+dist/index.html                   0.45 kB │ gzip:  0.29 kB
+dist/assets/index-D1g_xxx.css     1.20 kB │ gzip:  0.60 kB
+dist/assets/index-C2a_yyy.js    143.50 kB │ gzip: 46.20 kB
+✓ built in 1.20s
+</code>
+</pre>
+</div>
+
+
+成功すると、プロジェクトフォルダの中に `dist` という新しいディレクトリがひょっこり作成されます。この `dist` フォルダの中身こそが、一般のWebサーバーにアップロードする最終成果物（本番ファイル）なのです！<br/><br/>
+
+<h3 id="シーン-3：github-pagesに公開する" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">シーン 3：GitHub Pagesに公開する</h3>
+
+
+今回は作成した `dist` を無料で世界中へ公開できる「GitHub Pages」にデプロイする、最も簡単な流れをご紹介します。自分の作品がインターネットで見られるようになる感動をぜひ味わってください<span style="font-size:1.2em">🌎</span><br/><br/>
+
+<b><b><b><b><b><b>****1. Viteの設定ファイル（vite.config.js）を修正する***</b></b>*</b></b></b></b><br/><br/>
+
+GitHub Pagesでは `https://yourname.github.io/my-vite-app/` のように、サブディレクトリがURLになるため、パスの起点（base）を正しく設定する必要があります。<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+// vite.config.js
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue' // (Vueの場合)
+
+export default defineConfig({
+  plugins: [vue()],
+  // ▼ 以下の一行を追加します（独自のリポジトリ名に合わせてください）
+  base: '/my-vite-app/', 
+})
+</code>
+</pre>
+</div>
+
+
+<b><b><b><b><b><b>****2. もう一度ビルドする***</b></b>*</b></b></b></b><br/><br/>
+
+設定を変えたら、変更を反映させるために必ず再度ビルドをして `dist` フォルダの中身を更新します。<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+npm run build
+</code>
+</pre>
+</div>
+
+
+<b><b><b><b><b><b>****3. GitHubへプッシュし、Pagesを設定する***</b></b>*</b></b></b></b><br/><br/>
+
+1. `dist` フォルダを含めて（必要なら公開用の別のブランチへ）GitHubリポジトリにPushします（最近はGitHub Actionsでこの作業を全自動化するのも主流ですよ！）。
+2. GitHubのリポジトリ画面の `Settings` > `Pages` に進みます。
+3. `Source` を `Deploy from a branch` に設定し、アップロードしたブランチの `/(root)` などを選択して `Save` を押します。
+4. 数分待つと、世界中からアクセスできる URL が発行されます。おめでとうございます！<span style="font-size:1.2em">🎊</span>
+
+---
+
+
+<h1 id="よくある質問とトラブルシューティング" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">よくある質問とトラブルシューティング</h1>
+
+
+<h3 id="q1.-`npm-run-dev`-で起動した画面に同じwi-fiのスマホからアクセスできません！" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Q1. `npm run dev` で起動した画面に同じWi-Fiのスマホからアクセスできません！</h3>
+
+
+<b><b>***A***</b></b>. おっしゃる通り、デフォルトではセキュリティの観点から、開発サーバーは「そのPC（localhost）」からしか見られないよう守られています。同じのスマホやタブレットから実機確認したい場合は、ネットワークに公開するオプションをつけて起動してみて下さい。<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# ネットワーク経由でのアクセスを許可して起動する
+npm run dev -- --host
+</code>
+</pre>
+</div>
+
+
+<h3 id="q2.-起動時に「ポート-5173-は既に使用されています」と赤いエラーが出ます。" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Q2. 起動時に「ポート 5173 は既に使用されています」と赤いエラーが出ます。</h3>
+
+
+<b><b>***A***</b></b>. すでに別のターミナル画面で `npm run dev` を実行したままになっている（サーバーが起動しっぱなし）可能性が高いです！起動させたままの黒い画面（ターミナル）がないか探し、そこで `Ctrl + C` を押して一旦停止させてから、再度実行してください。ちなみに最近のViteは賢いので、自動的に次の空いているポート（5174など）を開いてくれることもあります。<br/><br/>
+
+<h3 id="q3.-「npm-は内部コマンドまたは外部コマンド、操作可能なプログラム...として認識されていません」と怒られます。" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Q3. 「npm は内部コマンドまたは外部コマンド、操作可能なプログラム...として認識されていません」と怒られます。</h3>
+
+
+<b><b>***A***</b></b>. Node.js がPCにインストールされていないか、インストール時の環境変数（パス）設定がうまくいっていないサインです。焦らずにNode.jsの公式サイトから再度インストーラーをダウンロードし、インストールをやり直してみてください（PCの再起動が必要な場合もあります）。一歩ずつ進めば必ず解決しますよ！<br/><br/>
+
+---
+
+
+<h1 id="まとめ" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">まとめ</h1>
+
+
+本ガイドブックでは、モダン開発の爽快な第一歩として <b><b><b><b><b><b>****Viteを活用***</b></b>*</b></b></b></b> する方法をご説明しました。<br/><br/>
+
+<h3 id="最初の一歩：たった3分での実行" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">最初の一歩：たった3分での実行</h3>
+
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# 1. プロジェクト作成（vanilla/vue/reactを選択）
+npm create vite@latest my-app
+
+# 2. フォルダへ移動してパッケージインストール
+cd my-app
+npm install
+
+# 3. 開発サーバー起動
+npm run dev
+</code>
+</pre>
+</div>
+
+
+このたった3つのステップで、世界最先端の開発環境があなたのお手元のPCに構築されてしまうんです。すごい時代になりましたね<span style="font-size:1.2em">✨</span><br/><br/>
+
+これらの強力なツールは<b><b><b><b><b><b>****完全オープンソース***</b></b>*</b></b></b></b>かつ<b><b><b><b><b><b>****無料***</b></b>*</b></b></b></b>で提供されています。エコシステムに感謝しつつ、ぜひ本ガイドをご活用いただき、次のステップ（VueやReactの本格的な学習、そしてアプリ開発）へ自信を持って進んでみてください！<br/><br/>
+
+---
+
+
+<h1 id="参考リンク一覧" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">参考リンク一覧</h1>
+
+
+<div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 20px 0; border: 1px solid #e0e0e0;"><table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">リンク先</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">詳細な説明</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>[Vite 公式サイト（日本語）](https://ja.vitejs.dev/)</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Viteの公式ドキュメントです。最新情報や高度な設定はこちら。</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>[Node.js 公式サイト](https://nodejs.org/ja/)</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">必須環境となるNode.jsのダウンロード先です。</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>[Vue.js 公式サイト](https://ja.vuejs.org/)</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">わかりやすいVueフレームワークの公式ドキュメント。</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>[React 公式サイト](https://ja.react.dev/)</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">世界シェアトップのReactフレームワーク公式ドキュメント。</td></tr></tbody></table></div>
+
+
+---
+
+
+<b><b>***更新日時***</b></b>：2026 年 03 月 23 日<br/><br/>
+
+<b><b><b><b><b><b>****本ガイドブックは、初心者から中級者まで幅広にご利用いただけるよう、実践的かつ技術的な内容をバランスよく盛り込んでいます。***</b></b>*</b></b></b></b><br/><br/>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0)); margin: 40px 0;">
+それではまた次の記事でお会いしましょう!!<br/><br/>
+
+
+---
+
+# 【AI画像生成用プロンプト】
+
+以下は、今回のブログ記事用のイメージ画像を生成するためのAI・プロンプトです。
+
+```text
+A masterpiece, delicate Japanese manga/anime illustration style of a beautiful adult woman of Nordic descent working on web development. 
+She has short, gracefully layered emerald green/bluish-grey hair with striking pink/red highlights towards the tips. 
+She has light brown/amber eyes with prominent eyelashes, a distinct small beauty mark (mole) under her right eye, and light pink manicured nails. 
+She is wearing elegant drop earrings featuring a silver crescent moon, a small gold bead, and a dangling turquoise teardrop stone. 
+She is dressed in a refined, neat white/cream top with fine lacy detailing on the neckline and a modest long skirt or jeans (minimal leg exposure). 
+She is operating a Microsoft Surface Go2. 
+Her expression is a bright, friendly, and slightly shy/serene smile. 
+The background is a soft, beautifully blurred, warm and relaxed outdoor terrace or cafe setting with a subtle hint of a palm tree, fitting for modern web development work. 
+High quality, detailed, soft warm lighting, aesthetically pleasing color palette.
+```
+
+    </div>
+  </main>
+
+  <script>
+    // 目次（TOC）の自動生成と、スクロールに連動したアクティブ強調
+    document.addEventListener("DOMContentLoaded", () => {
+      const content = document.getElementById("guide-content");
+      const tocList = document.getElementById("toc-list");
+
+      // guide-content 内の h1, h3 を抽出（「目次」見出しおよびTOC内の要素は除外）
+      const headings = Array.from(content.querySelectorAll("h1, h3")).filter(h => {
+        return h.textContent.trim() !== "目次" && !h.closest(".toc-container");
+      });
+
+      if (headings.length === 0) return;
+
+      headings.forEach((heading, index) => {
+        // id が無い場合は自動付与
+        if (!heading.id) {
+          heading.id = "heading-" + index;
+        }
+
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = "#" + heading.id;
+        a.textContent = heading.textContent;
+        a.className = "toc-link" + (heading.tagName.toLowerCase() === "h3" ? " level-h3" : "");
+
+        li.appendChild(a);
+        tocList.appendChild(li);
+
+        // スムーズスクロール
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          heading.scrollIntoView({ behavior: "smooth", block: "start" });
+          history.pushState(null, null, "#" + heading.id);
+        });
+      });
+
+      // スクロール位置に応じてTOCのアクティブ項目を変更
+      const tocLinks = document.querySelectorAll('.toc-link');
+
+      window.addEventListener('scroll', () => {
+        let current = '';
+
+        headings.forEach(heading => {
+          const headingTop = heading.getBoundingClientRect().top;
+          if (headingTop <= 100) {
+            current = heading.id;
+          }
+        });
+
+        tocLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href').includes(current) && current !== '') {
+            link.classList.add('active');
+          }
+        });
+      }, { passive: true });
+    });
+  </script>
+</body>
+</html>

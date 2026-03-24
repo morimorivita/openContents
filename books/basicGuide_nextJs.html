@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>(BOOK)AIエージェント開発実践ガイドブック - Next.js</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #39C5BB;
+      --secondary: #FFC778;
+      --bg: #fdfdfd;
+      --text-main: #2c3e50;
+      --text-muted: #666;
+      --border: #e0e0e0;
+      --highlight: rgba(57, 197, 187, 0.1);
+      --font-main: "Noto Sans JP", sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-main);
+      color: var(--text-main);
+      background-color: var(--bg);
+      line-height: 1.8;
+      display: flex;
+    }
+
+    /* --- サイドバー目次 (TOC) --- */
+    .toc-container {
+      width: 300px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      background: #fff;
+      border-right: 1px solid var(--border);
+      padding: 24px 20px;
+      overflow-y: auto;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+      flex-shrink: 0;
+    }
+
+    .toc-title {
+      font-size: 1.1rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toc-list {
+      list-style: none;
+    }
+
+    .toc-list li {
+      margin-bottom: 8px;
+    }
+
+    .toc-link {
+      display: block;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+
+    .toc-link:hover {
+      background: var(--highlight);
+      color: var(--primary);
+    }
+
+    .toc-link.active {
+      background: var(--highlight);
+      color: var(--primary);
+      border-left-color: var(--primary);
+      font-weight: 700;
+    }
+
+    .toc-link.level-h3 {
+      font-size: 0.85rem;
+      padding-left: 24px;
+    }
+
+    /* --- メインコンテンツ --- */
+    .content-container {
+      flex: 1;
+      padding: 60px 40px 100px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .nav-buttons {
+      margin-bottom: 40px;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 8px 16px;
+      border: 1.5px solid var(--primary);
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+
+    .btn-back:hover {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(57, 197, 187, 0.3);
+    }
+
+    .toc-back {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .btn-back-sidebar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 10px;
+      border: 1.5px solid var(--primary);
+      border-radius: 12px;
+      transition: all 0.2s;
+      background: #fff;
+    }
+
+    .btn-back-sidebar:hover {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(57, 197, 187, 0.2);
+    }
+
+    h1 {
+      scroll-margin-top: 40px;
+      margin-top: 60px;
+      margin-bottom: 24px;
+      line-height: 1.4;
+    }
+
+    h3 {
+      scroll-margin-top: 40px;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    p {
+      margin-bottom: 20px;
+      font-size: 1.05rem;
+    }
+
+    pre {
+      background: #1e1e1e !important;
+      padding: 20px !important;
+      border-radius: 12px !important;
+      overflow-x: auto;
+      margin: 24px 0 !important;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      border: 1px solid #333;
+    }
+
+    code {
+      font-family: 'Consolas', 'Monaco', monospace;
+      color: #e6e6e6 !important;
+    }
+
+    p code, li code {
+      background: rgba(0,0,0,0.05);
+      padding: 3px 6px;
+      border-radius: 4px;
+      color: #d63384 !important;
+      font-size: 0.95em;
+    }
+
+    blockquote {
+      background: #fff8f0;
+      border-left: 5px solid var(--secondary);
+      padding: 16px 20px;
+      margin: 24px 0;
+      border-radius: 0 8px 8px 0;
+      color: #7a5c2d;
+    }
+
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+
+      .toc-container {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      }
+
+      .content-container {
+        padding: 40px 20px 80px;
+      }
+
+      h1 { font-size: 1.3em !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOCエリア（JavaScriptで自動生成） -->
+  <aside class="toc-container">
+    <!-- サイドバー最上部の戻るボタン -->
+    <div class="toc-back">
+      <a href="./" class="btn-back-sidebar">‹ ブック一覧へ戻る</a>
+    </div>
+    <div class="toc-title">📚 目次</div>
+    <ul class="toc-list" id="toc-list"></ul>
+  </aside>
+
+  <!-- メインコンテンツエリア -->
+  <main class="content-container">
+    <div class="nav-buttons">
+      <a href="./" class="btn-back">‹ ブック一覧へ戻る</a>
+    </div>
+
+    <!-- 本文コンテンツ -->
+    <div id="guide-content">
+こんにちは!!もりもりです!!<br/><br/>
+今回は【実践編：AIエージェントを活用したNext.jsアプリ開発のガイドブック】をお届けします!!<br/><br/>
+
+<figure style="margin: 24px 0; text-align: center;">
+  <img
+    src="images/basicGuide_nextJs.png"
+    alt=""
+    loading="lazy"
+    style="max-width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.12);"
+  />
+</figure>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0)); margin: 40px 0;">
+
+<h1 id="実践編-aiエージェント開発実践ガイドブック---nextjs" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">【実践編】AIエージェント開発実践ガイドブック - Next.js</h1>
+
+<span style="font-size:1.2em">📚</span> 本ガイドブックは、AIエージェントを活用して「Next.js」による本格的なフルスタックWebアプリケーションを開発するための実践ノウハウです。<br/><br/>
+これまで学んできたReactの基礎（コンポーネント・JSX・Hooks）をベースに、<b><b>***「サーバーとクライアントの境界」***</b></b>というNext.js特有の概念を理解することで、世界中で使われている本番レベルのアプリ開発が可能になります!!<br/><br/>
+Next.jsは昨今のモダンWeb開発においてデファクトスタンダードになりつつある強力な武器です。これを身につければ、あなたの開発力は間違いなく次の次元へと進化しますよ!!<br/><br/>
+
+---
+
+<h1 id="目次" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">目次</h1>
+
+1. [Next.jsとは何か？（Vite+Reactとの違い）](#nextjsとは何かvitereactとの違い)<br/><br/>
+2. [Next.jsのセットアップ手順](#nextjsのセットアップ手順)<br/><br/>
+3. [Next.js開発におけるAIとの協業メリット](#nextjs開発におけるaiとの協業メリット)<br/><br/>
+4. [Next.jsの基本構造（AIに指示を出すための共通言語）](#nextjsの基本構造aiに指示を出すための共通言語)<br/><br/>
+5. [【発展】外部バックエンドとの連携（Spring Boot・Django等）](#外部バックエンドとの連携)<br/><br/>
+6. [【共通付録】AIエージェントへの依頼テンプレート](#共通付録aiエージェントへの依頼テンプレート)<br/><br/>
+7. [【共通付録】AIの出力を検証するチェックリスト](#共通付録aiの出力を検証するチェックリスト)<br/><br/>
+8. [【共通付録】修正依頼の書き方例](#共通付録修正依頼の書き方例)<br/><br/>
+
+---
+
+<h1 id="nextjsとは何かvitereactとの違い" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">Next.jsとは何か？（Vite+Reactとの違い）</h1>
+
+<h3 id="nextjsの正体" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Next.jsの正体</h3>
+
+Next.jsは<b><b>***Reactをベースとした、フルスタックWebフレームワーク***</b></b>です。<br/><br/>
+
+「フルスタック」とは、「画面（フロントエンド）」と「サーバー処理（バックエンド）」の両方を、**1つのプロジェクト内**で扱えることを指します。Vite+Reactが「フロントエンド専用の工具箱」だとすれば、Next.jsは「フロントとバックをまるごと扱える工場」と言えるでしょう。<br/><br/>
+
+<div style="background: linear-gradient(135deg, #f0fcfb, #fff8ec); border: 1px solid #39C5BB; border-left: 5px solid #FFC778; border-radius: 10px; padding: 15px 20px; margin: 10px 0 20px 0;">
+<span style="font-size:1.1em">📌</span> <b>本ガイドブックの前提について</b><br/><br/>
+本ガイドブックでは、Next.jsに<b>内蔵されているサーバー機能（Route Handlers・Server Actions）</b>を使った「一体型フルスタック構成」を前提として解説します。<br/><br/>
+実際の開発現場では、<b>Spring Boot（Java）・Django（Python）・Laravel（PHP）・Express.js（Node.js）</b>など、Next.jsとは独立した外部バックエンドサーバーと組み合わせる構成も広く使われています。そのアーキテクチャの概要については、本ガイド後半の「<b>【発展】外部バックエンドとの連携</b>」の章で紹介しますが、詳細な実装手順は本ガイドの範囲外となります。ご了承ください。
+</div><br/>
+
+<h3 id="なぜvitereactがあるのにnextjsが必要なのか" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">なぜVite+Reactがあるのに、Next.jsが必要なのか？</h3>
+
+これはモダンWeb開発を学ぶ上での核心的な疑問です。結論から言えば、<b><b>***「やりたいこと」によって適切なツールが異なる***</b></b>からです。<br/><br/>
+
+<div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 20px 0; border: 1px solid #e0e0e0;"><table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">やりたいこと</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">Vite + React</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">Next.js</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>画面のUIを作りたい</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">✅</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">✅</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>ボタンやフォームの動きを実装したい</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">✅</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">✅</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>データベースから直接データを取得したい</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">❌</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">✅</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>ユーザーのログイン認証を実装したい</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">△（別途APIサーバーが必要）</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">✅</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>検索エンジンに正しく表示されるSEO対策</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">△（工夫が必要）</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">✅</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>GitHub Pagesなどに無料で簡単に公開したい</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">✅</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">❌（専用サーバーが必要）</td></tr></tbody></table></div>
+
+<h3 id="具体例で理解する" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">具体例で理解する</h3>
+
+例えばブログサービスを手作りしたい時、Vite+Reactだけだと画面は綺麗に作れても記事データを管理するとなると別でバックエンドサーバーを立てないといけなくなり、一気にハードルが上がってしまいます。<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+【例】ブログサービスを作りたい
+
+Vite + React の場合：
+  画面（React）… 自分で作れる ✅
+  記事データの保存・取得… 別途バックエンドサーバーを構築する必要がある ❌
+  → フロントとバックで「2つのプロジェクト」を管理する手間が生じる
+
+Next.js の場合：
+  画面（React）… 作れる ✅
+  記事データの保存・取得… 同じプロジェクト内に「サーバー側の処理」を書ける ✅
+  → 「1つのプロジェクト」で完結する
+</code>
+</pre>
+</div><br/>
+
+<h3 id="どちらから始めるべきか" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">どちらから始めるべきか？</h3>
+
+<b><b>***Reactの基礎を学んでいない場合***</b></b>：まずVite+Reactガイドで土台を作ってから本ガイドへ進んでください。Next.jsはReactの上に成り立っているため、Reactの概念（コンポーネント・Hooks）を理解していることが前提です!!<br/><br/>
+<b><b>***Reactの基礎を学んだ場合***</b></b>：本ガイドがまさに次のステップです。Vite+Reactで学んだ知識はそのままNext.jsでも活きるので安心してくださいね。<br/><br/>
+
+---
+
+<h1 id="nextjsのセットアップ手順" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">Next.jsのセットアップ手順</h1>
+
+<h3 id="事前確認事項" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">事前確認事項</h3>
+
+- <b><b>***Node.js***</b></b>：Next.jsを動かすには、Node.js（18以上推奨）が必要です。<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# Node.jsのバージョンを確認
+node -v
+
+# 出力例:
+# v20.x.x
+</code>
+</pre>
+</div><br/>
+
+バージョンが表示されれば準備完了です。表示されない場合は、[Node.js公式サイト](https://nodejs.org/ja/)からインストールしてください。<br/><br/>
+
+<h3 id="プロジェクトの作成手順" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">プロジェクトの作成手順</h3>
+
+Next.jsは `create-next-app` という公式ツールで簡単に作成できます!!<br/><br/>
+
+<h3 id="ステップ-1作業フォルダへ移動してプロジェクトを作成" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ステップ 1：作業フォルダへ移動してプロジェクトを作成</h3>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# 開発用フォルダへ移動（例）
+cd C:\Users\YourName\Documents
+
+# Next.jsプロジェクトの作成コマンドを実行
+npx create-next-app@latest
+</code>
+</pre>
+</div><br/>
+
+<h3 id="ステップ-2対話形式での設定" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ステップ 2：対話形式での設定</h3>
+
+コマンドを実行すると、ターミナルで対話形式の質問が始まります。初めてだと戸惑うかもしれませんが、以下の推奨選択を参考にしてみてください。<br/><br/>
+
+<b><b>***出力例と推奨選択***</b></b>：
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+? What is your project named? › my-next-app
+  （好きなプロジェクト名を入力してEnter）
+
+? Would you like to use TypeScript? › No / Yes
+  （初心者は No でも可。型安全性を学びたい場合は Yes）
+
+? Would you like to use ESLint? › No / Yes
+  （コードの品質チェックツール。Yes を推奨）
+
+? Would you like to use Tailwind CSS? › No / Yes
+  （CSSフレームワーク。Yes を推奨）
+
+? Would you like your code inside a `src/` directory? › No / Yes
+  （ファイル整理の方針。どちらでも可。迷う場合は No）
+
+? Would you like to use App Router? (recommended) › No / Yes
+  （最新の仕組み。Yes を強く推奨）
+
+? Would you like to use Turbopack for next dev? › No / Yes
+  （高速開発サーバー。Yes を推奨）
+
+? Would you like to customize the import alias? › No / Yes
+  （最初は No で問題なし）
+</code>
+</pre>
+</div><br/>
+
+<h3 id="ステップ-3開発サーバーの起動" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ステップ 3：開発サーバーの起動</h3>
+
+作成が終わったら、以下のコマンドで起動します!!<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# 作成したフォルダへ移動
+cd my-next-app
+
+# 開発サーバーを起動
+npm run dev
+
+# 出力例:
+# ▲ Next.js 15.x.x
+# - Local:        http://localhost:3000
+# - Environments: .env.local
+#
+# ✓ Starting...
+# ✓ Ready in 1234ms
+</code>
+</pre>
+</div><br/>
+
+ブラウザで `http://localhost:3000` にアクセスしてみてください。Next.jsの初期画面が表示されれば成功です!! 終了するときはターミナルで `Ctrl + C` を押します。<br/><br/>
+
+<h3 id="vitereactとの起動コマンドの違い" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Vite+Reactとの起動コマンドの違い</h3>
+
+<div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 20px 0; border: 1px solid #e0e0e0;"><table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">項目</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">Vite + React</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">Next.js</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>プロジェクト作成</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">`npm create vite@latest`</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">`npx create-next-app@latest`</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>開発サーバー起動</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">`npm run dev`（ポート5173）</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">`npm run dev`（ポート3000）</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>本番ビルド</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">`npm run build`（`dist/`フォルダが生成）</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">`npm run build`（`.next/`フォルダが生成）</td></tr></tbody></table></div>
+
+> 注意：開発サーバーの起動コマンド `npm run dev` は同じですが、<b><b>***デフォルトのポート番号が異なります（Vite: 5173 / Next.js: 3000）***</b></b>。同時に起動するとポートが競合するため、エラーが出た場合は一方を止めてから再起動してください。<br/><br/>
+
+---
+
+<h1 id="nextjs開発におけるaiとの協業メリット" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">Next.js開発におけるAIとの協業メリット</h1>
+
+Next.jsはReactを拡張し、<b><b>***「画面の表示（フロントエンド）」***</b></b>だけでなく<b><b>***「データの取得や保存（バックエンド）」***</b></b>も一つのプロジェクト内に記述できるフルスタック・フレームワークです。<br/><br/>
+
+機能が豊富ゆえに高度で複雑なフレームワークですが、ここでAIアシスタントの存在が輝きます!! AIを活用することで、人間だけでは数日かかる作業も劇的に効率化できます。<br/><br/>
+
+- <b><b>***最新機能（App Router等）のキャッチアップ***</b></b>：Next.jsは進化が早く、公式ドキュメントも頻繁に更新されます。人間が全ての最新仕様を追うのは大変ですが、AIは常にベストプラクティスを提示してくれます。<br/><br/>
+- <b><b>***バックエンド処理の丸投げ***</b></b>：「データベースから記事一覧を取得して」「ユーザー認証のAPIを作って」といった、本来なら専門のバックエンドエンジニアが必要な処理も、AIがフロントエンドと繋がる形で一括生成してくれます。あなた自身のアイディアに集中できるのです!!<br/><br/>
+
+---
+
+<h1 id="nextjsの基本構造aiに指示を出すための共通言語" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">Next.jsの基本構造（AIに指示を出すための共通言語）</h1>
+
+Next.js（特に最新の **App Router**）をAIに指示して連携作業する際、絶対に押さえておくべき<b><b>***3つの重要概念***</b></b>があります。<br/><br/>
+
+<h3 id="1-app-router（フォルダがそのままurlになる）" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">1. App Router（フォルダがそのままURLになる）</h3>
+
+Next.jsでは `app` フォルダの中に作った `page.tsx` や `layout.tsx` がそのまま画面になります。<br/><br/>
+
+- <b><b>***AIへの指示例***</b></b>：「`/about` というURLでアクセスできる会社概要ページを作って」<br/><br/>
+- <b><b>***AIが生成するコードのイメージ***</b></b>：`app/about/page.tsx` というファイルが作られます。<br/><br/>
+
+Vite+Reactとの大きな違いはここにあります。Vite+Reactでは `react-router-dom` などのルーティングライブラリを別途導入して自分でURLの紐づけを書く必要がありましたが、Next.jsでは<b><b>***フォルダ構造がそのままURLになる***</b></b>ため、とても直感的に複数のページを作れます。<br/><br/>
+
+<h3 id="2-サーバーコンポーネントserver-components" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">2. サーバーコンポーネント（Server Components）</h3>
+
+**デフォルトのファイルはすべてサーバー側で動きます。** データベースに直接アクセスでき、描画した結果のHTMLだけをブラウザへ送るため表示が爆速です。ただし代わりに `useState`（データの変更）や `onClick`（ボタンを押す動き）は使えません。<br/><br/>
+
+- <b><b>***AIへの指示例***</b></b>：「データベースから記事の一覧を取得して表示するページを作って」<br/><br/>
+- <b><b>***AIが生成するコードのイメージ***</b></b>：高速に動作するシンプルなReactファイルが作られます。<br/><br/>
+
+<h3 id="3-クライアントコンポーネントuse-client" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">3. クライアントコンポーネント（"use client"）</h3>
+
+ユーザーがクリックしたり、文字を入力したりする<b><b>***「動き」が必要な部分***</b></b>です。ファイルの先頭におまじないのように `"use client"` と一行書くことで、Vite+Reactの頃と全く同じようにブラウザの動きとして動作してくれます。<br/><br/>
+
+- <b><b>***AIへの指示例***</b></b>：「ボタンを押した回数を保持するインタラクティブなカウンターを作って」<br/><br/>
+- <b><b>***AIが生成するコードのイメージ***</b></b>：ファイルの先頭に `"use client"` が記述され、`useState` などのHooksが使われます。<br/><br/>
+
+> 💡：サーバーかクライアントか毎回悩まなくても大丈夫です。AIに<b><b>***「ここは情報の動きがないページ」「ここはボタンを押して状態が変わる部品」***</b></b>と日本語のニュアンスで伝えるだけで、AIが自動的に設計図を描き、 `"use client"` の有無を正しく判別してコードを分けてくれますよ。<br/><br/>
+
+
+---
+
+<h1 id="外部バックエンドとの連携" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">【発展】外部バックエンドとの連携（Spring Boot・Django等）</h1>
+
+<h3 id="この章の位置づけ" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">この章の位置づけ</h3>
+
+<span style="font-size:1.2em">⚠️</span> <b>本章はあくまで「こういう世界がある」という概要の紹介です。</b>本ガイドブックは引き続き「Next.js内蔵サーバーを使う構成」を軸としており、外部バックエンドの詳細な実装手順（Spring Boot側のAPI開発など）は本ガイドの対象外です。将来的にチーム開発や大規模プロダクトに関わる際の参考として読んでいただければ幸いです!!<br/><br/>
+
+<h3 id="なぜ外部バックエンドを使うのか" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">なぜ外部バックエンドを使うのか？</h3>
+
+Next.jsの内蔵サーバー機能は個人開発やスタートアップ段階では非常に強力ですが、<b><b>***大規模なチーム開発・エンタープライズ案件***</b></b>では以下のような理由から「バックエンドを完全に分離する」構成が採られることがあります。<br/><br/>
+
+- <b><b>***既存システムとの統合***</b></b>：会社にすでにSpring Bootで構築されたAPIサーバーが存在する場合、それをそのまま活用できます。<br/><br/>
+- <b><b>***フロントとバックのチーム分業***</b></b>：フロントエンドチームがNext.jsを、バックエンドチームがSpring BootやDjangoを担当し、APIという「契約書」で繋げます。<br/><br/>
+- <b><b>***スケーリングの柔軟性***</b></b>：処理負荷の高いバックエンドだけを独立してサーバー増強できます。<br/><br/>
+
+<h3 id="アーキテクチャの違い" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">アーキテクチャの違い</h3>
+
+<div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 20px 0; border: 1px solid #e0e0e0;"><table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">構成</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">Next.jsの役割</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">向いているケース</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>一体型（本ガイドの前提）</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">フロントエンド＋バックエンドの両方</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">個人開発・スタートアップ・スピード重視</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>分離型（外部バックエンド）</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">フロントエンド専用（外部APIを呼び出す）</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">チーム開発・既存システム連携・大規模サービス</td></tr></tbody></table></div>
+
+<h3 id="主な外部バックエンドの選択肢" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">主な外部バックエンドの選択肢</h3>
+
+<div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 20px 0; border: 1px solid #e0e0e0;"><table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">バックエンド</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">言語</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">特徴</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>Spring Boot</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Java / Kotlin</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">エンタープライズ向けの定番。大規模・高信頼性が強み</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>Django / FastAPI</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Python</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">AI・機械学習との親和性が高い。FastAPIは高速</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>Laravel</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">PHP</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Web開発向けに揃った機能が充実。学習コストが低い</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>Express.js / Fastify</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Node.js（JavaScript）</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">フロントと同じ言語で書ける。軽量で導入しやすい</td></tr></tbody></table></div>
+
+<h3 id="next-jsからの外部api呼び出しイメージ" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Next.jsからの外部API呼び出しイメージ</h3>
+
+外部バックエンドを使う場合でも、Next.js側のコードは比較的シンプルです。サーバーコンポーネント（またはクライアントコンポーネント）から `fetch` で外部APIのURLを呼び出すだけです!!<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+【構成イメージ】
+
+  ブラウザ
+    ↕（画面表示）
+  Next.js（フロントエンド専用）
+    ↕（HTTP / REST API）
+  Spring Boot（例）（ポート 8080 で起動中）
+    ↕
+  データベース
+
+【Next.js サーバーコンポーネントからの呼び出し例（TypeScript）】
+
+// app/articles/page.tsx
+
+// ※ Spring Boot 側が http://localhost:8080/api/articles を提供しているとする
+
+type Article = {
+  id: number;
+  title: string;
+  content: string;
+};
+
+export default async function ArticlesPage() {
+  // 外部APIをfetchで呼び出す（サーバー側で実行される）
+  const res = await fetch("http://localhost:8080/api/articles");
+  const articles: Article[] = await res.json();
+
+  return (
+    &lt;ul&gt;
+      {articles.map((article) =&gt; (
+        &lt;li key={article.id}&gt;{article.title}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+</code>
+</pre>
+</div><br/>
+
+> 💡 ポイント：Next.js側のコードは「外部URLを `fetch` するだけ」でほぼ完結します。Spring Boot側がどんな言語で書かれていても、<b><b>***「決められたURL（エンドポイント）にアクセスすればJSONが返ってくる」***</b></b>という取り決め（REST API）さえ守られていれば、Next.jsは問題なく連携できます。<br/><br/>
+
+<h3 id="外部バックエンド連携時のaiへの依頼テンプレート" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">外部バックエンド連携時のAIへの依頼テンプレート</h3>
+
+外部バックエンドと組み合わせる場合は、AIへの依頼時に「Next.js内蔵サーバーは使わない」旨を明記することが重要です。<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# 開発依頼：Next.js（フロントのみ）+ 外部バックエンド連携
+
+## 前提・構成
+- Next.js は UI の表示専用として使う（Route Handlers / Server Actions は使わない）
+- バックエンドAPIは別サーバーで稼働中。（例：Spring Boot / Django / Laravel 等）
+- APIのベースURL：（例：http://localhost:8080/api）
+
+## 依頼内容
+- 取得したいAPIエンドポイント：（例：GET /articles → 記事一覧のJSON）
+- 取得したデータをどう表示するか：（例：カード型のリストUIにする）
+
+## 制約
+- データの取得はサーバーコンポーネントの fetch を使うこと。
+- API URLは環境変数（.env.local の NEXT_PUBLIC_API_URL 等）で管理すること。
+- TypeScript で型定義（type / interface）を必ず記述すること。
+</code>
+</pre>
+</div><br/>
+
+---
+
+<h1 id="共通付録aiエージェントへの依頼テンプレート" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">【共通付録】AIエージェントへの依頼テンプレート</h1>
+
+AIエージェントにNext.js（App Router）での新規機能やページ作成を丸投げする際に、そのまま使えるテンプレートを掲載しておきます!!<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# 開発依頼：【機能名やページ名を入力】の作成
+
+## 1. 概要
+- 作成したい機能の目的：（例：ブログ記事の一覧ページと、個別の記事詳細ページ）
+- アクセスするURL：（例：一覧は `/blog`、詳細は `/blog/[id]`）
+
+## 2. デザイン・UIの要件
+- 必要な画面要素：（例：記事のサムネイル、タイトル、公開日時のリスト）
+- 見た目の希望：（例：Tailwind CSSを使って、カード型のモダンなデザインにする）
+
+## 3. データ取得とロジックの要件（バックエンド）
+- データの取得方法：（例：ダミーのローカルJSONファイルから読み込む）
+- インタラクティブ要素の有無：（例：検索窓から文字を入力して、記事を絞り込む機能が必要）
+- （Next.js特記）：最新の App Router を使用すること。
+
+## 4. 制約事項や構文ルール
+- 「動きのないデータの表示」はサーバーコンポーネントにし、「検索窓などの動きのある部分」だけをクライアントコンポーネント（"use client"）に分割するベストプラクティスを守ること。
+- TypeScriptを使用して、データの型（Type/Interface）を明記すること。
+</code>
+</pre>
+</div><br/>
+
+---
+
+<h1 id="共通付録aiの出力を検証するチェックリスト" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">【共通付録】AIの出力を検証するチェックリスト</h1>
+
+Next.jsは「サーバー」と「ブラウザ」の両方で同時にプログラムが動くため、エラーの出方も独特になります。以下の点に注意して検証を行ってください。<br/><br/>
+
+<h3 id="サーバークライアントの境界確認" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">サーバー/クライアントの境界確認</h3>
+- [ ] ブラウザの開発者ツール（F12）ではなく、<b><b>***VSCode等のターミナル（黒い画面）***</b></b>の方にエラーが出ていないか？<br/><br/>
+  - ※サーバー側（データベースアクセス等）のエラーは、ブラウザではなくターミナルに出力されます。<br/><br/>
+- [ ] 画面が真っ白にエラーになり、ターミナルに `Error: Event handlers cannot be passed to Client Component props.` といったエラーが出ていないか？<br/><br/>
+  - ※サーバーコンポーネントからクライアントコンポーネントへのデータの渡し方が間違っている場合によく出ます。<br/><br/>
+
+<h3 id="動作uiuxの確認" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">動作（UI/UX）の確認</h3>
+- [ ] 指定したURL（例：`http://localhost:3000/blog`）にアクセスしたとき、正しく画面が切り替わるか？<br/><br/>
+- [ ] 画面を再読み込み（F5）した際、一瞬画面がちらついたりせずに文字が高速に表示されるか？（これがSEOに強いNext.jsの利点です）<br/><br/>
+
+---
+
+<h1 id="共通付録修正依頼の書き方例" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">【共通付録】修正依頼の書き方例</h1>
+
+Next.js開発ならではの頻出エラーに対する、効果的な修正依頼の例文です。エラーに遭遇しても焦らずに、以下の例文を使ってAIに助けてもらいましょう。<br/><br/>
+
+<h3 id="ケース1use-client-関連のエラーが出た場合" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ケース1：`"use client"` 関連のエラーが出た場合</h3>
+
+- ❌ 悪い依頼例：「エラーです。なんでですか？」<br/><br/>
+- ✅ 良い依頼例：「ブラウザに以下のエラーが表示されました。サーバーコンポーネントとクライアントコンポーネントの使い分けが間違っているようです。`"use client"` を追加する場所を間違えていないか確認し、修正版のコードを提示してください。<br/>
+`Error: bar is not a function. Event handlers cannot be passed ...`」<br/><br/>
+
+> **ポイント**：Next.jsではこのエラーが非常に多発します。「サーバーとクライアントの境界に問題がある」という文脈とともにエラー文を丸ごと渡すと、AIがアーキテクチャ全体を見直して一発で直してくれます。<br/><br/>
+
+<h3 id="ケース2ファイル構造がわからなくなった場合" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ケース2：ファイル構造がわからなくなった場合</h3>
+
+- ❌ 悪い依頼例：「どこに保存すればいいですか？」<br/><br/>
+- ✅ 良い依頼例：「提供していただいたコードですが、Next.jsの App Router において、どのファイルをどのフォルダ（ディレクトリ）に配置すればよいのか、ツリー形式（階層構造）で可視化して教えてください。」<br/><br/>
+
+> **ポイント**：Next.jsはファイル名（`page.tsx` や `layout.tsx`）が固定されているため、「どこに置くか」の指示が極めて重要です。AIにファイルツリーを出力させると、人間も迷わず作業できます。<br/><br/>
+
+---
+
+<h1 id="まとめ" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">まとめ</h1>
+
+<span style="font-size:1.2em">✨</span> Next.jsは、個人で世界規模のWebサービスを作り上げるポテンシャルを秘めた最高のツールです。<br/><br/>
+
+「サーバー」と「クライアント」を行き来するため難易度は上がりますが、すべてのコードをあなたが理解・記述する必要はありません。<b><b>***「人間が要件（やりたいこと）を定義し、AIが実装し、エラーが出たら人間がAIにフィードバックする」***</b></b>。このサイクルを回すことこそが、モダンWeb開発における最強の『ペアプログラミング』です。<br/><br/>
+
+僭越ながら、本ガイドブックを含めた全シリーズを羅針盤としていただければ望外の幸せです。あなた自身の素晴らしいアイディアを、AIと共に世界へ羽ばたかせてください!!<br/><br/>
+
+---
+
+**更新日時**：2026 年 03 月 24 日<br/><br/>
+
+<b><b>***私やあなたの開発の旅はここから始まります。AIエージェントという素晴らしいパートナーと力を合わせて未踏の世界を切り拓いて行きましょう!!***</b></b><br/><br/>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0)); margin: 40px 0;">
+それではまた次の記事でお会いしましょう!!<br/><br/>
+
+    </div>
+  </main>
+
+  <script>
+    // 目次（TOC）の自動生成と、スクロールに連動したアクティブ強調
+    document.addEventListener("DOMContentLoaded", () => {
+      const content = document.getElementById("guide-content");
+      const tocList = document.getElementById("toc-list");
+
+      // guide-content 内の h1, h3 を抽出（「目次」見出しおよびTOC内の要素は除外）
+      const headings = Array.from(content.querySelectorAll("h1, h3")).filter(h => {
+        return h.textContent.trim() !== "目次" && !h.closest(".toc-container");
+      });
+
+      if (headings.length === 0) return;
+
+      headings.forEach((heading, index) => {
+        // id が無い場合は自動付与
+        if (!heading.id) {
+          heading.id = "heading-" + index;
+        }
+
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = "#" + heading.id;
+        a.textContent = heading.textContent;
+        a.className = "toc-link" + (heading.tagName.toLowerCase() === "h3" ? " level-h3" : "");
+
+        li.appendChild(a);
+        tocList.appendChild(li);
+
+        // スムーズスクロール
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          heading.scrollIntoView({ behavior: "smooth", block: "start" });
+          history.pushState(null, null, "#" + heading.id);
+        });
+      });
+
+      // スクロール位置に応じてTOCのアクティブ項目を変更
+      const tocLinks = document.querySelectorAll('.toc-link');
+
+      window.addEventListener('scroll', () => {
+        let current = '';
+
+        headings.forEach(heading => {
+          const headingTop = heading.getBoundingClientRect().top;
+          if (headingTop <= 100) {
+            current = heading.id;
+          }
+        });
+
+        tocLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href').includes(current) && current !== '') {
+            link.classList.add('active');
+          }
+        });
+      }, { passive: true });
+    });
+  </script>
+</body>
+</html>

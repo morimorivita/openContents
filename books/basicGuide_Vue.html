@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>(BOOK)AIエージェント開発実践ガイドブック - Vueルート</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #39C5BB;
+      --secondary: #FFC778;
+      --bg: #fdfdfd;
+      --text-main: #2c3e50;
+      --text-muted: #666;
+      --border: #e0e0e0;
+      --highlight: rgba(57, 197, 187, 0.1);
+      --font-main: "Noto Sans JP", sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-main);
+      color: var(--text-main);
+      background-color: var(--bg);
+      line-height: 1.8;
+      display: flex;
+    }
+
+    /* --- サイドバー目次 (TOC) --- */
+    .toc-container {
+      width: 300px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      background: #fff;
+      border-right: 1px solid var(--border);
+      padding: 24px 20px;
+      overflow-y: auto;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+      flex-shrink: 0;
+    }
+
+    .toc-title {
+      font-size: 1.1rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toc-list {
+      list-style: none;
+    }
+
+    .toc-list li {
+      margin-bottom: 8px;
+    }
+
+    .toc-link {
+      display: block;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+
+    .toc-link:hover {
+      background: var(--highlight);
+      color: var(--primary);
+    }
+
+    .toc-link.active {
+      background: var(--highlight);
+      color: var(--primary);
+      border-left-color: var(--primary);
+      font-weight: 700;
+    }
+
+    .toc-link.level-h3 {
+      font-size: 0.85rem;
+      padding-left: 24px;
+    }
+
+    /* --- メインコンテンツ --- */
+    .content-container {
+      flex: 1;
+      padding: 60px 40px 100px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .nav-buttons {
+      margin-bottom: 40px;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 8px 16px;
+      border: 1.5px solid var(--primary);
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+
+    .btn-back:hover {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(57, 197, 187, 0.3);
+    }
+
+    .toc-back {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .btn-back-sidebar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 10px;
+      border: 1.5px solid var(--primary);
+      border-radius: 12px;
+      transition: all 0.2s;
+      background: #fff;
+    }
+
+    .btn-back-sidebar:hover {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(57, 197, 187, 0.2);
+    }
+
+    h1 {
+      scroll-margin-top: 40px;
+      margin-top: 60px;
+      margin-bottom: 24px;
+      line-height: 1.4;
+    }
+
+    h3 {
+      scroll-margin-top: 40px;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    p {
+      margin-bottom: 20px;
+      font-size: 1.05rem;
+    }
+
+    pre {
+      background: #1e1e1e !important;
+      padding: 20px !important;
+      border-radius: 12px !important;
+      overflow-x: auto;
+      margin: 24px 0 !important;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      border: 1px solid #333;
+    }
+
+    code {
+      font-family: 'Consolas', 'Monaco', monospace;
+      color: #e6e6e6 !important;
+    }
+
+    p code, li code {
+      background: rgba(0,0,0,0.05);
+      padding: 3px 6px;
+      border-radius: 4px;
+      color: #d63384 !important;
+      font-size: 0.95em;
+    }
+
+    blockquote {
+      background: #fff8f0;
+      border-left: 5px solid var(--secondary);
+      padding: 16px 20px;
+      margin: 24px 0;
+      border-radius: 0 8px 8px 0;
+      color: #7a5c2d;
+    }
+
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+
+      .toc-container {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      }
+
+      .content-container {
+        padding: 40px 20px 80px;
+      }
+
+      h1 { font-size: 1.3em !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOCエリア（JavaScriptで自動生成） -->
+  <aside class="toc-container">
+    <!-- サイドバー最上部の戻るボタン -->
+    <div class="toc-back">
+      <a href="./" class="btn-back-sidebar">‹ ブック一覧へ戻る</a>
+    </div>
+    <div class="toc-title">📚 目次</div>
+    <ul class="toc-list" id="toc-list"></ul>
+  </aside>
+
+  <!-- メインコンテンツエリア -->
+  <main class="content-container">
+    <div class="nav-buttons">
+      <a href="./" class="btn-back">‹ ブック一覧へ戻る</a>
+    </div>
+
+    <!-- 本文コンテンツ -->
+    <div id="guide-content">
+こんにちは!!もりもりです!!<br /><br />
+今回はAI協働のため【実践編：AIエージェントを活用したVue.jsアプリ開発のガイドブック】をお届けします!!<br /><br />
+<figure style="margin: 24px 0; text-align: center;">
+  <img
+    src="images/basicGuide_Vue.png"
+    alt=""
+    loading="lazy"
+    style="max-width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.12);"
+  />
+</figure>
+<hr
+    style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0)); margin: 40px 0;">
+
+<h1 id="実践編aiエージェント開発実践ガイドブック---vueルート" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white;
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em;
+    font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px;
+    letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">
+    【実践編】AIエージェント開発実践ガイドブック - Vueルート</h1><br /><br />
+
+<span style="font-size:1.2em">📚</span>
+本ガイドブックは、AIエージェントを活用して「Vue.js」によるWebアプリケーションを開発するための実践的なノウハウをまとめたものです。プログラミングの深い知識がなくても、<b><b>***「AIに的確な指示を出し、出力を検証する」***</b></b>スキルを磨くことで、高品質なモダンWebアプリを構築できるようになります。<br /><br />
+
+実は、Vue.jsはその構造の分かりやすさから、AIとのペアプログラミングにおいて非常に相性がいいフレームワークなんです！<br /><br />
+
+---
+
+<h1 id="目次" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white;
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em;
+    font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px;
+    letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">目次</h1>
+<br /><br />
+
+1. [Vue.js開発におけるAIとの協業メリット](#vuejs開発におけるaiとの協業メリット)<br /><br />
+2. [Vue.jsアプリケーションの基本構造（AIに指示を出すための共通言語）](#vuejsアプリケーションの基本構造aiに指示を出すための共通言語)<br /><br />
+3. [【共通付録】AIエージェントへの依頼テンプレート](#共通付録aiエージェントへの依頼テンプレート)<br /><br />
+4. [【共通付録】AIの出力を検証するチェックリスト](#共通付録aiの出力を検証するチェックリスト)<br /><br />
+5. [【共通付録】修正依頼の書き方例](#共通付録修正依頼の書き方例)<br /><br />
+
+---
+
+<h1 id="vuejs開発におけるaiとの協業メリット" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white;
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em;
+    font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px;
+    letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">
+    Vue.js開発におけるAIとの協業メリット</h1><br /><br />
+
+Vue.jsは「HTML/CSS形式のテンプレート」と「JavaScriptのロジック」をひとつのファイル（`.vue`）にまとめることができる特徴を持ちます（SFC：単一ファイルコンポーネント）。<br /><br />
+
+この直感的な構造は、<b><b>***AIにとっても非常に文脈を理解しやすい***</b></b>ため、以下のような強力なシナジーを生み出します。<br /><br />
+
+- <b><b>***UIデザインとロジックの同時生成***</b></b>：AIが「見た目」と「動き」を一度に矛盾なく出力できます。<br /><br />
+- <b><b>***エラーの特定が容易***</b></b>：エラーが発生した際、コンポーネント単位で切り分けができるため、AIに「このファイルのこの部分でエラーが出た」と伝えやすくなります。<br /><br />
+
+人間が一つのファイルを見れば全体像が掴めるように、AIも一つのファイルから多くの情報を受け取れるのがVue.jsの素晴らしいところですね！<br /><br />
+
+---
+
+<h1 id="vuejsアプリケーションの基本構造aiに指示を出すための共通言語" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white;
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em;
+    font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px;
+    letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">
+    Vue.jsアプリケーションの基本構造（AIに指示を出すための共通言語）</h1><br /><br />
+
+AIエージェントに正確な指示を出すには、以下の<b><b>***3つの要素***</b></b>を「共通言語」として知っておく必要があります。これらを用いて要件を伝えると、AIの出力精度が飛躍的に向上します。<br /><br />
+
+<h3 id="1-テンプレートtemplate見た目ui"
+    style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">1.
+    テンプレート（Template）＝「見た目・UI」</h3><br /><br />
+
+HTMLをベースとした画面の表示部分です。<br /><br />
+- <b><b>***AIへの指示例***</b></b>：「ボタンを3つ並べて、Tailwind CSSで青色に装飾して」<br /><br />
+- <b><b>***AIが生成するコードのイメージ***</b></b>：`&lt;template&gt;` タグの中に書かれます。<br /><br />
+
+    <h3 id="2-スクリプトscript--composition-api動きデータ"
+        style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">2. スクリプト（Script /
+        Composition API）＝「動き・データ」</h3><br /><br />
+
+JavaScript（TypeScript）で書かれた、アプリの頭脳・データ（State）を管理する部分です。現在は `&lt;script setup&gt;` という簡潔な記法が主流です。<br/><br/>
+- <b><b>***AIへの指示例***</b></b>：「ボタンを押した回数を数えるカウンターの変数（State）を用意して」<br/><br/>
+- <b><b>***AIが生成するコードのイメージ***</b></b>：`&lt;script setup&gt;` タグの中に書かれます。<br/><br/>
+
+<h3 id="3-スタイルstyleデザインの微調整" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">3. スタイル（Style）＝「デザインの微調整」</h3><br/><br/>
+
+コンポーネント専用のCSSです。<br/><br/>
+- <b><b>***AIへの指示例***</b></b>：「このコンポーネント内にだけ適用される、独自のふわっとしたアニメーションを追加して」<br/><br/>
+- <b><b>***AIが生成するコードのイメージ***</b></b>：`&lt;style scoped&gt;` タグの中に書かれます。<br/><br/>
+
+> [!TIP]
+> AIに依頼を出す際「どこに書くべきか」を人間が悩む必要はありません。<b><b>***「見た目はこうしたい」「こんなデータを持たせたい」***</b></b>と日本語で伝えるだけで、AIが適切に3つの要素に振り分けてコードを書いてくれます。<br/><br/>
+
+---
+
+<h1 id="共通付録aiエージェントへの依頼テンプレート" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white;
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em;
+    font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px;
+    letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">【共通付録】AIエージェントへの依頼テンプレート</h1><br/><br/>
+
+AIエージェントに新規機能の開発や、新しいコンポーネントの作成を依頼する際に、そのままコピー＆ペーストして使えるテンプレートです。ぜひ活用してみてくださいね。<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# 開発依頼：【機能名やコンポーネント名を入力】の作成
+
+## 1. 概要
+- 作成したい機能の目的：（例：ユーザーがタスクを追加・削除できるToDoリスト）
+- 期待する最終的な動作：（例：追加ボタンを押すとリストが増え、ロード時はlocalStorageからデータを読み込む）
+
+## 2. デザイン・UIの要件
+- 必要な画面要素：（例：テキスト入力欄、送信ボタン、タスク一覧リスト）
+- 見た目の希望：（例：モダンでクリーンなデザイン。余白を広めに取り、角を丸くする）
+- 使用するCSSフレームワーク/ライブラリ：（例：Tailwind CSSを使用して、直書きのCSSは避ける）
+
+## 3. データとロジック（State）の要件
+- 保持すべきデータ：（例：タスクの文字列、完了/未完了のステータス）
+- 必要なアクション：（例：タスクの追加機能、削除機能、完了状態の切り替え機能）
+- （Vue特記）：Composition API (`&lt;script setup&gt;`) を使用すること。
+
+## 4. 制約事項や「ここは絶対に守って」というルール
+- プロジェクトの既存コードの書き方に合わせること。
+- 不要なコメントアウトは残さないこと。
+- レスポンシブ対応（スマホで見ても崩れないこと）を担保すること。
+</code>
+</pre>
+</div><br/><br/>
+
+---
+
+<h1 id="共通付録aiの出力を検証するチェックリスト" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white;
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em;
+    font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px;
+    letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">【共通付録】AIの出力を検証するチェックリスト</h1><br/><br/>
+
+AIがコードを出力し、手元のPC（ブラウザ）で動作確認をする際のセルフチェックリストです。これらを一つずつ確認し、問題があれば次の「修正依頼」に繋げます。<br/><br/>
+
+<h3 id="動作ロジックの確認" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">動作（ロジック）の確認</h3><br/><br/>
+- [ ] 依頼した機能が、期待した通りの手順で動作するか？<br/><br/>
+- [ ] 画面を再読み込み（F5）しても、致命的なエラー画面にならないか？<br/><br/>
+- [ ] エラーになるような操作（空のままボタンを押す等）をした時、適切に防がれるか、あるいは親切なメッセージが出るか？<br/><br/>
+
+<h3 id="画面uiuxの確認" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">画面（UI/UX）の確認</h3><br/><br/>
+- [ ] ブラウザの開発者ツール（F12）のConsoleタブに、赤文字のエラー（Error）や黄色の警告（Warning）が出ていないか？<br/><br/>
+- [ ] 画面の幅をスマホサイズまで狭めたとき、文字やボタンが画面外にはみ出して崩れていないか？<br/><br/>
+- [ ] ボタンを押したときに、一瞬色が変わるなどの「押した感（フィードバック）」があるか？<br/><br/>
+
+<h3 id="コードの全体感ベテラン向け" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">コードの全体感（ベテラン向け）</h3><br/><br/>
+- [ ] ひとつの `.vue` ファイルが長すぎないか？（数百行になる場合は、AIに「コンポーネントを2つに分割して」と依頼するタイミングです）<br/><br/>
+
+---
+
+<h1 id="共通付録修正依頼の書き方例" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white;
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em;
+    font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px;
+    letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">【共通付録】修正依頼の書き方例</h1><br/><br/>
+
+AIの出力がうまくいかなかったり、エラーが出たりした場合に、どのようにAIに伝えればスムーズに解決できるかの例文集です。<br/><br/>
+
+<h3 id="ケース1エラー画面が出たまたはコンソールに赤文字が出た場合" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ケース1：エラー画面が出た（またはコンソールに赤文字が出た）場合</h3><br/><br/>
+
+<b><b>***悪い依頼例***</b></b>：「動きません。直して」<br/><br/>
+<b><b>***良い依頼例***</b></b>：「ブラウザで実行したところ、以下のエラーが表示されて画面が真っ白になりました。原因を特定し、修正案を提示してください。<br/><br/>
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+Uncaught TypeError: Cannot read properties of undefined (reading 'length')
+</code>
+</pre>
+</div><br/><br/>
+> **ポイント**：実行結果（エラー文のコピペ）を<b><b>***必ずそのまま***</b></b>渡すことが解決への最短ルートです。<br/><br/>
+
+<h3 id="ケース2動きはするがデザインが少し理想と違う場合" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ケース2：動きはするが、デザインが少し理想と違う場合</h3><br/><br/>
+
+<b><b>***悪い依頼例***</b></b>：「なんかダサいです」<br/><br/>
+<b><b>***良い依頼例***</b></b>：「機能の動作は完璧です！ただ、見た目をもう少しモダンにしたいです。<br/><br/>
+1. ボタンの色を濃い青から、ミントグリーン系のグラデーションに変更してください。<br/><br/>
+2. クリックした時に、ボタンが少し沈み込むようなアニメーション（CSS）を追加してください。」<br/><br/>
+> **ポイント**：「何色に」「どんな動きを」という具体的な表現でパスを出すと、AIは素晴らしいデザインを返してくれます。<br/><br/>
+
+<h3 id="ケース3aiが複雑なコードを書いてきて意図がわからない場合" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ケース3：AIが複雑なコードを書いてきて、意図がわからない場合</h3><br/><br/>
+
+<b><b>***依頼例***</b></b>：「書いてもらった〇〇という関数の処理（ロジック）が、初心者には少し難しくて理解できませんでした。何をしているのか、ステップバイステップで日本語で解説してください。また、もし可能ならもっとシンプルな構文に書き直せますか？」<br/><br/>
+> **ポイント**：AIのコードを「ブラックボックス」のままにせず、自分の学習ツールとして解説を求める姿勢が、今後の開発力向上に直結します。<br/><br/>
+
+---
+
+<h1 id="まとめ" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white;
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em;
+    font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px;
+    letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">まとめ</h1><br/><br/>
+
+Vue.jsを用いたモダンWeb開発において、AIエージェントは非常に優秀な「プログラマー」であり「先生」でもあります。<br/><br/>
+
+あなたはプログラミングの文法を丸暗記する必要はありません。その代わり、<b><b>***「人間が何を求めているのかを言語化する力（要件定義）」***</b></b>と<b><b>***「出来上がったものが正しいかテストする力（品質保証）」***</b></b>に注力してください。本ガイドブックのテンプレートやチェックリストを活用し、AIとの「ペアプログラミング」をとことん楽しんでください！<br/><br/>
+
+---
+
+**更新日時**：2026 年 03 月 24 日<br/><br/>
+
+<b><b>***本ガイドブックは、AIエージェントと共に成長していくための羅針盤として作成されています。何度でもこのテンプレートとチェックリストに立ち返り、あなた自身の開発スタイルを確立していってください。***</b></b><br/><br/>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0)); margin: 40px 0;">
+それではまた次の記事でお会いしましょう!!<br/><br/>
+    </div>
+  </main>
+
+  <script>
+    // 目次（TOC）の自動生成と、スクロールに連動したアクティブ強調
+    document.addEventListener("DOMContentLoaded", () => {
+      const content = document.getElementById("guide-content");
+      const tocList = document.getElementById("toc-list");
+
+      // guide-content 内の h1, h3 を抽出（「目次」見出しおよびTOC内の要素は除外）
+      const headings = Array.from(content.querySelectorAll("h1, h3")).filter(h => {
+        return h.textContent.trim() !== "目次" && !h.closest(".toc-container");
+      });
+
+      if (headings.length === 0) return;
+
+      headings.forEach((heading, index) => {
+        // id が無い場合は自動付与
+        if (!heading.id) {
+          heading.id = "heading-" + index;
+        }
+
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = "#" + heading.id;
+        a.textContent = heading.textContent;
+        a.className = "toc-link" + (heading.tagName.toLowerCase() === "h3" ? " level-h3" : "");
+
+        li.appendChild(a);
+        tocList.appendChild(li);
+
+        // スムーズスクロール
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          heading.scrollIntoView({ behavior: "smooth", block: "start" });
+          history.pushState(null, null, "#" + heading.id);
+        });
+      });
+
+      // スクロール位置に応じてTOCのアクティブ項目を変更
+      const tocLinks = document.querySelectorAll('.toc-link');
+
+      window.addEventListener('scroll', () => {
+        let current = '';
+
+        headings.forEach(heading => {
+          const headingTop = heading.getBoundingClientRect().top;
+          if (headingTop <= 100) {
+            current = heading.id;
+          }
+        });
+
+        tocLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href').includes(current) && current !== '') {
+            link.classList.add('active');
+          }
+        });
+      }, { passive: true });
+    });
+  </script>
+</body>
+</html>

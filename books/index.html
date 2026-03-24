@@ -139,8 +139,58 @@
       animation: fadeUp 0.6s cubic-bezier(.22, 1, .36, 1) both;
     }
 
-    .menu-list li:nth-child(1) { animation-delay: 0.10s; }
-    .menu-list li:nth-child(2) { animation-delay: 0.18s; }
+    .menu-list li:nth-child(1) { animation-delay: 0.08s; }
+    .menu-list li:nth-child(2) { animation-delay: 0.14s; }
+    .menu-list li:nth-child(3) { animation-delay: 0.20s; }
+    .menu-list li:nth-child(4) { animation-delay: 0.26s; }
+    .menu-list li:nth-child(5) { animation-delay: 0.32s; }
+    .menu-list li:nth-child(6) { animation-delay: 0.38s; }
+
+    /* ページング */
+    .pager {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .pager-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 80px;
+      height: 34px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      color: #fff;
+      background: linear-gradient(135deg, var(--miku-teal), var(--miku-light));
+      box-shadow: 0 2px 8px rgba(57, 197, 187, 0.3);
+      border: none;
+      cursor: pointer;
+      transition: filter 0.2s, transform 0.2s;
+    }
+
+    .pager-btn:hover {
+      filter: brightness(1.1);
+      transform: scale(1.04);
+    }
+
+    .pager-btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+      transform: none;
+      filter: none;
+    }
+
+    .pager-info {
+      font-size: 0.78rem;
+      color: rgba(200, 250, 247, 0.8);
+      letter-spacing: 0.05em;
+    }
 
     .book-item {
       display: flex;
@@ -254,7 +304,8 @@
     </div>
 
     <div class="card-body">
-      <ul class="menu-list">
+      <!-- 全メニュー項目: JavaScriptで表示/非表示を制御 -->
+      <ul class="menu-list" id="menu-list">
 
         <li>
           <div class="book-item">
@@ -288,7 +339,7 @@
 
         <li>
           <div class="book-item">
-            <span class="book-title">【基礎】モダンWeb & AI用語辞典</span>
+            <span class="book-title">【基礎】モダンWeb &amp; AI用語辞典</span>
             <div class="link-group">
               <span class="badge-link"></span>
               <a href="basicGuide_Glossary.html" class="badge-link badge-html">HTML</a>
@@ -316,18 +367,67 @@
           </div>
         </li>
 
+        <!-- ページ 2（新規追加） -->
+        <li>
+          <div class="book-item">
+            <span class="book-title">【実践】モダンWebアプリ開発の第一歩 Vite セットアップガイド</span>
+            <div class="link-group">
+              <span class="badge-link"></span>
+              <a href="basicGuide_Vite.html" class="badge-link badge-html">HTML</a>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <div class="book-item">
+            <span class="book-title">【実践】AIエージェント開発実践ガイドブック - Vue ルート</span>
+            <div class="link-group">
+              <span class="badge-link"></span>
+              <a href="basicGuide_Vue.html" class="badge-link badge-html">HTML</a>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <div class="book-item">
+            <span class="book-title">【実践】AIエージェント開発実践ガイドブック - React ルート</span>
+            <div class="link-group">
+              <span class="badge-link"></span>
+              <a href="basicGuide_React.html" class="badge-link badge-html">HTML</a>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <div class="book-item">
+            <span class="book-title">【実践】AIエージェント開発実践ガイドブック - Next.js ルート</span>
+            <div class="link-group">
+              <span class="badge-link"></span>
+              <a href="basicGuide_nextJs.html" class="badge-link badge-html">HTML</a>
+            </div>
+          </div>
+        </li>
+
       </ul>
 
+      <!-- ページング -->
+      <div class="pager" id="pager">
+        <button class="pager-btn" id="btn-prev" onclick="changePage(-1)">&#8249; 前へ</button>
+        <span class="pager-info" id="pager-info"></span>
+        <button class="pager-btn" id="btn-next" onclick="changePage(1)">次へ &#8250;</button>
+      </div>
+
       <div class="back-btn-container">
-        <a href="../" class="back-btn">‹ トップメニューへ戻る</a>
+        <a href="../" class="back-btn">&#8249; トップメニューへ戻る</a>
       </div>
     </div>
 
-    <div class="card-footer">© もりもり</div>
+    <div class="card-footer">&#169; もりもり</div>
 
   </div>
 
   <script>
+    /* ===== ドラッグ機能 ===== */
     const card = document.querySelector('.card');
     const handle = document.querySelector('.card-header');
 
@@ -369,6 +469,51 @@
       card.style.left = Math.min(l, window.innerWidth - card.offsetWidth) + 'px';
       card.style.top = Math.min(t, window.innerHeight - card.offsetHeight) + 'px';
     });
+
+    /* ===== ページング機能 ===== */
+    const ITEMS_PER_PAGE = 6;
+    let currentPage = 1;
+    const items = Array.from(document.querySelectorAll('#menu-list > li'));
+    const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
+
+    function renderPage(page) {
+      items.forEach((li, i) => {
+        li.style.display = (i >= (page - 1) * ITEMS_PER_PAGE && i < page * ITEMS_PER_PAGE) ? '' : 'none';
+      });
+      document.getElementById('pager-info').textContent = page + ' / ' + totalPages;
+      document.getElementById('btn-prev').disabled = (page <= 1);
+      document.getElementById('btn-next').disabled = (page >= totalPages);
+    }
+
+    function changePage(delta) {
+      currentPage = Math.max(1, Math.min(totalPages, currentPage + delta));
+      renderPage(currentPage);
+      centerCard();
+    }
+
+    // ブックリンクをクリックした時に href を sessionStorage に保存
+    // → ガイドブックから戻ってきた時に正しいページへ復元できる
+    document.getElementById('menu-list').addEventListener('click', (e) => {
+      const link = e.target.closest('a.badge-link');
+      if (link && link.getAttribute('href')) {
+        sessionStorage.setItem('booksLastHref', link.getAttribute('href'));
+      }
+    });
+
+    // 初期表示（前回開いていたブックのページに復元する）
+    const lastHref = sessionStorage.getItem('booksLastHref');
+    if (lastHref) {
+      // href と一致するリンクがどの li に属しているか探す
+      const matchedIndex = items.findIndex(li => {
+        const links = li.querySelectorAll('a.badge-link');
+        return Array.from(links).some(a => a.getAttribute('href') === lastHref);
+      });
+      if (matchedIndex >= 0) {
+        // 該当アイテムが含まれるページに移動
+        currentPage = Math.floor(matchedIndex / ITEMS_PER_PAGE) + 1;
+      }
+    }
+    renderPage(currentPage);
   </script>
 </body>
 

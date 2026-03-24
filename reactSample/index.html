@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React 学習用サンプル（Todoアプリ）</title>
+    <!-- 全体共通スタイルやフォントなどがあればここで読み込み可能。今回は専用スタイルを作成 -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- 1. React本体の読み込み (CDN経由) -->
+    <!-- 注意: 開発用のバージョンを読み込んでいます。本番環境ではproductionバージョンを使用します -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <!-- 2. Babelの読み込み (CDN経由) -->
+    <!-- JSX(JavaScriptの中にHTMLを書ける構文)をブラウザが理解できる通常のJavaScriptに変換するツールです -->
+    <!-- 注意: 本来はビルド時に変換すべきですが、学習の手軽さのためにブラウザ上で変換させています -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="root">
+        <!-- ここにReactアプリケーションが描画されます。今は空ですが、Reactが書き換えます -->
+    </div>
+
+    <!-- 3. Reactアプリケーションのコードを読み込み -->
+    <!-- type="text/babel" を付けることで、Babelがこのファイルを変換して実行してくれます -->
+    <!-- app.jsxという外部ファイルからコードをロードします -->
+    <script type="text/babel" src="app.jsx"></script>
+</body>
+</html>

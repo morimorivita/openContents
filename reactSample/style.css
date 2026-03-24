@@ -1,0 +1,194 @@
+/* ======================================================================
+   React 学習用サンプル用スタイルシート
+   モダンなデザイン(Glassmorphismベース)を取り入れています
+====================================================================== */
+
+/* 1. 全体の設定（リセットとベーススタイル） */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Meiryo, system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #f0f4ff 0%, #e2e8f0 100%);
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* 2. アプリ全体のコンテナ */
+.app-container {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    width: 100%;
+    max-width: 500px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* 3. ヘッダー部分 */
+.header {
+    background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    padding: 24px 20px;
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.header p {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 15px;
+}
+
+.back-link {
+    display: inline-block;
+    color: white;
+    text-decoration: none;
+    font-size: 0.85rem;
+    padding: 4px 12px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    transition: background 0.2s ease;
+}
+
+.back-link:hover {
+    background: rgba(255,255,255,0.4);
+}
+
+/* 4. メインコンテンツ領域 */
+.main-content {
+    padding: 24px 20px;
+}
+
+/* 5. フォーム (タスク追加UI) */
+.todo-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.todo-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.todo-input:focus {
+    border-color: #4facfe;
+    box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.2);
+}
+
+.add-button {
+    background: #4facfe;
+    color: white;
+    border: none;
+    padding: 0 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.add-button:hover {
+    background: #00f2fe;
+}
+
+.add-button:active {
+    transform: scale(0.95);
+}
+
+/* 6. リストとアイテム */
+.todo-list {
+    list-style: none;
+}
+
+.todo-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-left: 4px solid transparent;
+}
+
+.todo-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+}
+
+/* 完了状態のアイテム */
+.todo-item.completed {
+    background: #f8fafc;
+    border-left-color: #10b981; /* 緑色 */
+    opacity: 0.7;
+}
+
+.todo-item.completed .todo-text {
+    text-decoration: line-through;
+    color: #94a3b8;
+}
+
+.todo-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    flex: 1;
+}
+
+.checkbox {
+    font-size: 1.2rem;
+}
+
+.todo-text {
+    font-size: 1rem;
+    transition: color 0.2s;
+}
+
+/* 削除ボタン */
+.delete-button {
+    background: none;
+    border: none;
+    color: #ef4444; /* 赤色 */
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.delete-button:hover {
+    background: #fee2e2;
+}
+
+/* 7. 空の状態のメッセージ */
+.empty-message {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.95rem;
+    padding: 20px 0;
+}

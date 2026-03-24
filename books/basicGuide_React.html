@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>(BOOK)AIエージェント開発実践ガイドブック - Reactルート</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #39C5BB;
+      --secondary: #FFC778;
+      --bg: #fdfdfd;
+      --text-main: #2c3e50;
+      --text-muted: #666;
+      --border: #e0e0e0;
+      --highlight: rgba(57, 197, 187, 0.1);
+      --font-main: "Noto Sans JP", sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-main);
+      color: var(--text-main);
+      background-color: var(--bg);
+      line-height: 1.8;
+      display: flex;
+    }
+
+    /* --- サイドバー目次 (TOC) --- */
+    .toc-container {
+      width: 300px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      background: #fff;
+      border-right: 1px solid var(--border);
+      padding: 24px 20px;
+      overflow-y: auto;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+      flex-shrink: 0;
+    }
+
+    .toc-title {
+      font-size: 1.1rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toc-list {
+      list-style: none;
+    }
+
+    .toc-list li {
+      margin-bottom: 8px;
+    }
+
+    .toc-link {
+      display: block;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+
+    .toc-link:hover {
+      background: var(--highlight);
+      color: var(--primary);
+    }
+
+    .toc-link.active {
+      background: var(--highlight);
+      color: var(--primary);
+      border-left-color: var(--primary);
+      font-weight: 700;
+    }
+
+    .toc-link.level-h3 {
+      font-size: 0.85rem;
+      padding-left: 24px;
+    }
+
+    /* --- メインコンテンツ --- */
+    .content-container {
+      flex: 1;
+      padding: 60px 40px 100px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .nav-buttons {
+      margin-bottom: 40px;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 8px 16px;
+      border: 1.5px solid var(--primary);
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+
+    .btn-back:hover {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(57, 197, 187, 0.3);
+    }
+
+    .toc-back {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .btn-back-sidebar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 10px;
+      border: 1.5px solid var(--primary);
+      border-radius: 12px;
+      transition: all 0.2s;
+      background: #fff;
+    }
+
+    .btn-back-sidebar:hover {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(57, 197, 187, 0.2);
+    }
+
+    h1 {
+      scroll-margin-top: 40px;
+      margin-top: 60px;
+      margin-bottom: 24px;
+      line-height: 1.4;
+    }
+
+    h3 {
+      scroll-margin-top: 40px;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    p {
+      margin-bottom: 20px;
+      font-size: 1.05rem;
+    }
+
+    pre {
+      background: #1e1e1e !important;
+      padding: 20px !important;
+      border-radius: 12px !important;
+      overflow-x: auto;
+      margin: 24px 0 !important;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      border: 1px solid #333;
+    }
+
+    code {
+      font-family: 'Consolas', 'Monaco', monospace;
+      color: #e6e6e6 !important;
+    }
+
+    p code, li code {
+      background: rgba(0,0,0,0.05);
+      padding: 3px 6px;
+      border-radius: 4px;
+      color: #d63384 !important;
+      font-size: 0.95em;
+    }
+
+    blockquote {
+      background: #fff8f0;
+      border-left: 5px solid var(--secondary);
+      padding: 16px 20px;
+      margin: 24px 0;
+      border-radius: 0 8px 8px 0;
+      color: #7a5c2d;
+    }
+
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+
+      .toc-container {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      }
+
+      .content-container {
+        padding: 40px 20px 80px;
+      }
+
+      h1 { font-size: 1.3em !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOCエリア（JavaScriptで自動生成） -->
+  <aside class="toc-container">
+    <!-- サイドバー最上部の戻るボタン -->
+    <div class="toc-back">
+      <a href="./" class="btn-back-sidebar">‹ ブック一覧へ戻る</a>
+    </div>
+    <div class="toc-title">📚 目次</div>
+    <ul class="toc-list" id="toc-list"></ul>
+  </aside>
+
+  <!-- メインコンテンツエリア -->
+  <main class="content-container">
+    <div class="nav-buttons">
+      <a href="./" class="btn-back">‹ ブック一覧へ戻る</a>
+    </div>
+
+    <!-- 本文コンテンツ -->
+    <div id="guide-content">
+こんにちは!!もりもりです!!<br/><br/>
+今回は【実践編：AIエージェントを活用したReactアプリ開発のガイドブック】をお届けします!!<br/><br/>
+<figure style="margin: 24px 0; text-align: center;">
+  <img
+    src="images/basicGuide_React.png"
+    alt=""
+    loading="lazy"
+    style="max-width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.12);"
+  />
+</figure>
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0)); margin: 40px 0;">
+
+<h1 id="実践編aiエージェント開発実践ガイドブック---reactルート" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white;
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em;
+    font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px;
+    letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">
+    実践編：AIエージェント開発実践ガイドブック - Reactルート
+</h1><br/><br/>
+
+<span style="font-size:1.2em">📚</span> 本ガイドブックは、AIエージェントを活用して「Vite + React」によるWebアプリケーションを開発するための実践的なノウハウをまとめたものです。到来した新時代に合わせて、プログラミングの深い知識がなくても、<b><b>***「AIに的確な指示を出し、出力を検証する」***</b></b>スキルを磨くことで、世界標準であるReactを用いた高品質なモダンWebアプリを構築できるようになります。<br/><br/>
+
+最近は特にAI技術の進化が目覚ましく、ちょっとした癒やしの空き時間でも、AIに手伝ってもらうことにより欲しかったページやアプリの片鱗をある程度すぐに!!味わうことが出来るものすごい時代になりました！そんな時、この「共通言語」としてのReactの知識を持っていると、本当に作業が「童話の七人の小人」に夢見たようにな感じで進みます!<span style="font-size:1.2em">😊</span> ぜひ、この記事を通じてAIとの「ペアプログラミング」の楽しさに触れてみてください。<br/><br/>
+
+---
+
+<h1 id="目次" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white;
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em;
+    font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px;
+    letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">
+    目次
+</h1><br/><br/>
+
+1. [React開発におけるAIとの協業メリット](#react開発におけるaiとの協業メリット)<br/><br/>
+2. [Reactアプリケーションの基本構造（AIに指示を出すための共通言語）](#reactアプリケーションの基本構造aiに指示を出すための共通言語)<br/><br/>
+3. [Vite+ReactとNext.jsの違い（次のステップを知る）](#vitereactとnextjsの違い次のステップを知る)<br/><br/>
+4. [【共通付録】AIエージェントへの依頼テンプレート](#共通付録aiエージェントへの依頼テンプレート)<br/><br/>
+5. [【共通付録】AIの出力を検証するチェックリスト](#共通付録aiの出力を検証するチェックリスト)<br/><br/>
+6. [【共通付録】修正依頼の書き方例](#共通付録修正依頼の書き方例)<br/><br/>
+
+---
+
+<h1 id="react開発におけるaiとの協業メリット" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white;
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em;
+    font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px;
+    letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">
+    React開発におけるAIとの協業メリット
+</h1><br/><br/>
+
+Reactは現在世界で最も使われているUIライブラリであり、すべての見た目とロジックを「JavaScript (JSX)」という一つの言語体系で記述する特徴を持ちます。<br/><br/>
+
+実は、この「全てがJavaScriptの関数である」という構造は、<b><b>***AIにとって非常に論理的で学習データが豊富に存在する最高の領域***</b></b>なのです。<br/><br/>
+そのため、以下のような強力なシナジーを生み出します。<br/><br/>
+
+- <b><b>***世界最高峰の精度***</b></b>：学習データが圧倒的に多いため、AIが提示するReactのコードは非常に精度が高く、業界のベストプラクティス（最善の手法）が反映されやすいです。<br/><br/>
+- <b><b>***柔軟なコンポーネント分割***</b></b>：UIの部品（コンポーネント）化が容易なため、「この複雑な画面を、3つのファイルに分割して作って」といった高度な指示にも的確に応えてくれます。人間が管理しやすい構造をAIが最初から提示してくれるのは、本当に助かりますね！<br/><br/>
+
+※ 本ガイドでは、私もりもりの学習の深度と愛用機材の`Surface Go2`で試す都合上、サーバー側の処理を含まない、純粋なフロントエンド機能の構築（Viteベース）を前提としています。<br/><br/>
+
+---
+
+<h1 id="reactアプリケーションの基本構造aiに指示を出すための共通言語" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white;
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em;
+    font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px;
+    letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">
+    Reactアプリケーションの基本構造（AIに指示を出すための共通言語）
+</h1><br/><br/>
+
+AIエージェントに正確な指示を出すには、以下の<b><b>***3つの要素***</b></b>を「共通言語」として知っておく必要があります。ここさえ押さえれば、大半の開発依頼はスムーズに進みますよ！<br/><br/>
+
+<h3 id="1-コンポーネントcomponentuiの部品" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">1. コンポーネント（Component）＝「UIの部品」</h3><br/><br/>
+
+Reactでは、画面のすべての要素を「関数」として定義します。パズルのピースを作るイメージですね。<br/><br/>
+
+- <b><b>***AIへの指示例***</b></b>：「ユーザーのプロフィール画像と名前を表示する `UserProfile` コンポーネントを作って」<br/><br/>
+- <b><b>***AIが生成するコードのイメージ***</b></b>：`function UserProfile() { ... }` というJavaScriptの関数が作られます。<br/><br/>
+
+<h3 id="2-jsx見た目の定義htmlのようなもの" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">2. JSX（見た目の定義）＝「HTMLのようなもの」</h3><br/><br/>
+
+JavaScriptの中に直接HTMLのようなタグを記述する構文です。初めて見ると少し不思議に感じるかもしれませんが、すぐに慣れます！<br/><br/>
+
+- <b><b>***AIへの指示例***</b></b>：「ボタンを3つ並べて、Tailwind CSSで装飾して」<br/><br/>
+- <b><b>***AIが生成するコードのイメージ***</b></b>：関数の `return` の中に `<button className="bg-blue-500">` といった形式で書かれます。<br/><br/>
+
+<h3 id="3-フックhooks動きデータstate" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">3. フック（Hooks）＝「動き・データ（State）」</h3><br/><br/>
+
+React特有の機能で、データを記憶したり（useState）、画面の表示直後に何か処理をしたり（useEffect）します。現代的なReactではこれが主役と言っても過言ではありません。<br/><br/>
+
+- <b><b>***AIへの指示例***</b></b>：「ボタンを押した回数を数えるカウンターのデータ（State）を用意して」<br/><br/>
+- <b><b>***AIが生成するコードのイメージ***</b></b>：`const [count, setCount] = useState(0);` というコードが追加されます。<br/><br/>
+
+> [!TIP]<br/><br/>
+> AIに依頼を出す際は、文脈に「JSXで書いて」「Hooksを使って」と専門用語を添える必要は通常ありません。**「こんな見た目で」「こんなデータを持たせたい」**と伝えるだけで、AIが自動的に最適なHooksやJSXを選択してくれます。AIの賢さを信じて、やりたい事に集中しましょう！<br/><br/>
+
+---
+
+<h1 id="vitereactとnextjsの違い次のステップを知る" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white;
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em;
+    font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px;
+    letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">
+    Vite+ReactとNext.jsの違い（次のステップを知る）
+</h1><br/><br/>
+
+Reactを学ぶ上で、必ず「Next.jsという名前も聞いたことがある」という場面に直面しますよね。両者の関係を正確に理解しておくことで、今後のステップアップが劇的にスムーズになります！<br/><br/>
+
+<h3 id="一言で言うと" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">一言で言うと</h3><br/><br/>
+
+<div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 20px 0; border: 1px solid #e0e0e0;"><table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">比較ポイント</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">Vite + React</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">Next.js</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>役割</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">純粋なフロントエンド（画面）専用</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">フロントエンド＋バックエンドの両方</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>動く場所</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">ユーザーのブラウザの中だけ</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">サーバー上＋ユーザーのブラウザ</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>データ取得</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">別途APIを用意する必要がある</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">アプリ内に直接書ける</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>SEO対策</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">工夫が必要</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">標準で非常に強い</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>公開先</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">GitHub Pages など静的ホスティングで十分</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">Vercel など専用サーバー環境が必要</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><b>難易度</b></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">★★☆ 比較的シンプル</td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">★★★ 概念が増える（サーバーサイドの知識も要求される）</td></tr></tbody></table></div><br/><br/>
+
+<h3 id="どちらを使うべきか" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">どちらを使うべきか？</h3><br/><br/>
+
+<b><b>***Vite + React を選ぶ場面***</b></b>：<br/><br/>
+- 画面（UI）の構築がメインで、データはすでに別のAPIから取得できる<br/><br/>
+- 手軽にGitHub Pagesなどの静的ホスティングで公開し、共有したい<br/><br/>
+- まずはReact特有のライフサイクルや状態管理など、フロントエンドの基礎をしっかり固めたい<br/><br/>
+
+<b><b>***Next.jsを選ぶ場面***</b></b>：<br/><br/>
+- データベースへのアクセスやユーザー認証など「サーバー側の処理」も不可欠<br/><br/>
+- 検索エンジンに正しく認識されるSEO対策が最重要な、本番向けの商用サービスを作りたい<br/><br/>
+- フロントエンドとバックエンドを1つのプロジェクトでシームレスに完結させたい<br/><br/>
+
+> [!TIP]<br/><br/>
+> <b><b>***Reactの基礎（コンポーネント・JSX・Hooks）は、Next.jsでもそのまま完全に活きます。***</b></b> Vite+Reactで学んだことは決して無駄になりません。「まず手元で動くものを作る」という成功体験を積んでから、さらなる高みを目指して必要に応じてNext.jsへ進む、という順番が最も理にかなっており、かつ効率的です。<br/><br/>
+
+<h3 id="vite-react-ではできないことnextjsが必要な例" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">Vite + React ではできないこと（Next.jsが必要な例）</h3><br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# 【例】ブログ記事をデータベースから取得して表示したい場合
+
+# Vite + React の場合：
+#   → ブラウザが読み込まれた「後」に、別途用意したAPIサーバーへ問い合わせる
+#   → APIサーバー（バックエンド）を別に作って、セキュリティを考慮しつつ運用する必要がある。
+
+# Next.js の場合：
+#   → アプリのフォルダ内に「データ取得処理」を直接書ける
+#   → サーバーとフロントエンドが1つのプロジェクトに見事に収まり、連携が圧倒的に簡単になる。
+</code>
+</pre>
+</div><br/><br/>
+
+---
+
+<h1 id="共通付録aiエージェントへの依頼テンプレート" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white;
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em;
+    font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px;
+    letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">
+    【共通付録】AIエージェントへの依頼テンプレート
+</h1><br/><br/>
+
+AIに新規機能の開発や、新しいUIコンポーネントの作成を依頼する際に、そのままコピー＆ペーストして使えるテンプレートです。これを使うだけで、AIの出力精度が飛躍的にアップします！<br/><br/>
+
+<div style="width:100%;overflow:scroll;">
+<pre style="color:Green;">
+<code>
+# 開発依頼：【機能名やコンポーネント名を入力】の作成
+
+## 1. 概要
+- 作成したい機能の目的：（例：ユーザーがタスクを追加・削除できるToDoリスト）
+- 期待する最終的な動作：（例：追加ボタンを押すとリストが増え、ロード時はlocalStorageからデータを読み込む）
+
+## 2. デザイン・UIの要件
+- 必要な画面要素：（例：テキスト入力欄、送信ボタン、タスク一覧リスト）
+- 見た目の希望：（例：モダンでクリーンなデザイン。余白を広めに取り、角を丸くする）
+- 使用するCSSフレームワーク/ライブラリ：（例：Tailwind CSSとLucideアイコンを使ってください）
+
+## 3. データとロジック（State）の要件
+- 保持すべきデータ：（例：タスクのオブジェクト配列 `{id, text, completed}`）
+- 必要なアクション：（例：タスクの追加機能、削除機能、完了状態の切り替え機能）
+- （React特記）：関数コンポーネントとReact Hooks（useState等）を使用すること。クラスコンポーネントは使用しないでください。
+
+## 4. 制約事項や「ここは絶対に守って」というルール
+- 1つのファイル（.jsx）に全て詰め込まず、見通しが悪くなるならコンポーネントを分割して提案すること。
+- 不要なコメントアウトは残さないこと。
+- レスポンシブ対応（スマホで見ても崩れないこと）を担保すること。
+</code>
+</pre>
+</div><br/><br/>
+
+---
+
+<h1 id="共通付録aiの出力を検証するチェックリスト" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white;
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em;
+    font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px;
+    letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">
+    【共通付録】AIの出力を検証するチェックリスト
+</h1><br/><br/>
+
+AIがコードを出力し、手元のPCのブラウザで動作確認をする際のセルフチェックリストです。これらを一つずつ確認し、もし問題が見つかれば次の「修正依頼」に繋げましょう。<br/><br/>
+
+<h3 id="動作ロジックの確認" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">動作（ロジック）の確認</h3><br/><br/>
+
+- [ ] 依頼した機能が、期待した通りの手順で動作するか？<br/><br/>
+- [ ] 画面を再読み込み（F5）しても、致命的なエラー画面にならないか？<br/><br/>
+- [ ] 状態（State）が変わったとき、画面の表示が即座に、スムーズに更新されるか？<br/><br/>
+
+<h3 id="画面uiuxの確認" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">画面（UI/UX）の確認</h3><br/><br/>
+
+- [ ] ブラウザの開発者ツール（F12キー）のConsoleタブに、赤文字のエラー（Error）や黄色の警告（Warning）が出ていないか？<br/><br/>
+  - ※特にReactによくある警告「`Each child in a list should have a unique "key" prop.`」が出ていないか確認してください。<br/><br/>
+- [ ] 画面の幅をスマホサイズまで狭めたとき、意図しない崩れがないか？<br/><br/>
+- [ ] ボタンのホバー効果やクリック状態など「押した感（フィードバック）」が適切にあるか？<br/><br/>
+
+<h3 id="コードの全体感ベテラン向け" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">コードの全体感（ベテラン向け）</h3><br/><br/>
+
+- [ ] `useEffect` フックが無駄に何度も実行されていないか？（依存配列が誤っていると無限ループの温床になります）<br/><br/>
+
+---
+
+<h1 id="共通付録修正依頼の書き方例" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white;
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em;
+    font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px;
+    letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">
+    【共通付録】修正依頼の書き方例
+</h1><br/><br/>
+
+AIの出力がうまくいかなかったり、エラーが出たりした場合に、どのようにAIに伝えれば最速で解決できるか。実践的な例文集です！<br/><br/>
+
+<h3 id="ケース1エラー画面が出たまたはコンソールに赤文字が出た場合" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ケース1：エラー画面が出た（またはコンソールに赤文字が出た）場合</h3><br/><br/>
+
+<b><b>***悪い依頼例***</b></b>：「動きません。直して」<br/><br/>
+<b><b>***良い依頼例***</b></b>：「ブラウザで実行したところ、以下のエラーが表示されました。原因を特定し、修正案を提示してください。<br/>
+`Warning: Each child in a list should have a unique "key" prop. Check the render method of TodoList.`」<br/><br/>
+
+> [!TIP]<br/><br/>
+> **ポイント**：Reactはエラーメッセージが非常に親切で、原因を具体的に教えてくれます。実行結果（エラー文のコピペ）を<b><b>***必ずそのまま***</b></b>渡すことが、問題解決への最短ルートです。<br/><br/>
+
+<h3 id="ケース2動きはするがデザインが少し理想と違う場合" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ケース2：動きはするが、デザインが少し理想と違う場合</h3><br/><br/>
+
+<b><b>***悪い依頼例***</b></b>：「なんかダサいです」<br/><br/>
+<b><b>***良い依頼例***</b></b>：「機能の動作は完璧です！ただ、見た目をもう少しモダンにしたいです。
+1. `Tailwind CSS` のクラスを使って、ボタンを青からミントグリーン系のグラデーションに変更してください。
+2. クリックした時に、ボタンが少し沈み込むようなアニメーションを追加してください。」<br/><br/>
+
+> [!TIP]<br/><br/>
+> **ポイント**：ReactではデザインもJSX内にクラス名として直接書き込むため、CSSフレームワーク名（Tailwindなど）を明記すると、意図を汲み取った的確なコードが返ってきます。<br/><br/>
+
+<h3 id="ケース3aiが複雑なコードを書いてきて意図がわからない場合" style="color: #2c3e50; border-left: 5px solid #39C5BB; padding-left: 10px; margin-top: 30px;">ケース3：AIが複雑なコードを書いてきて、意図がわからない場合</h3><br/><br/>
+
+<b><b>***良い依頼例***</b></b>：「書いてもらった `useEffect` の中の処理（ロジック）が、初心者には少し難しくて理解できませんでした。何をしているのか、ステップバイステップで日本語で解説してくれますか？また、もし可能ならもっとシンプルな構文に書き直せますか？」<br/><br/>
+
+> [!TIP]<br/><br/>
+> **ポイント**：Reactのフック（Hooks）は仕組みが独特で、一見すると直感的ではないかもしれません。AIのコードをブラックボックス化せず、「なぜこう書いたのか」を解説させることで、後から見返した時のあなた自身のReact理解度が格段に上がります！<br/><br/>
+
+---
+
+<h1 id="まとめ" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white;
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em;
+    font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px;
+    letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">
+    まとめ
+</h1><br/><br/>
+
+Reactを用いたモダンWeb開発において、AIエージェントは非常に強力な味方となります。<br/>
+特にReactは世界で最も情報量が多いため、AIの強みを最大限に引き出せる素晴らしい領域です。<br/><br/>
+
+Vite+Reactで培った「コンポーネント化」と「状態（State）」の考え方は、将来Next.jsへステップアップする際にもそのまま活きる、エンジニアにとっての一生モノの知識となります。まずは「AIと一緒にシンプルな構成で動くものを作る」楽しさを存分に味わい、「もっとサーバーサイドの機能が必要だ」と感じたタイミングでNext.jsへ移行するのが最も自然な流れです。<br/><br/>
+
+ぜひ、本ガイドブックのテンプレートやチェックリストを活用し、AIとの「ペアプログラミング」を大いに楽しんでくださいね！<br/><br/>
+
+**更新日時**：2026 年 03 月 24 日<br/><br/>
+
+<b><b>***本ガイドブックは、AIエージェントと共に成長していくための羅針盤として作成されています。何度でもこのテンプレートとチェックリストに立ち返り、あなた自身の開発スタイルを確立していってください。***</b></b><br/><br/>
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0)); margin: 40px 0;">
+それではまた次の記事でお会いしましょう!!<br/><br/>
+
+    </div>
+  </main>
+
+  <script>
+    // 目次（TOC）の自動生成と、スクロールに連動したアクティブ強調
+    document.addEventListener("DOMContentLoaded", () => {
+      const content = document.getElementById("guide-content");
+      const tocList = document.getElementById("toc-list");
+
+      // guide-content 内の h1, h3 を抽出（「目次」見出しおよびTOC内の要素は除外）
+      const headings = Array.from(content.querySelectorAll("h1, h3")).filter(h => {
+        return h.textContent.trim() !== "目次" && !h.closest(".toc-container");
+      });
+
+      if (headings.length === 0) return;
+
+      headings.forEach((heading, index) => {
+        // id が無い場合は自動付与
+        if (!heading.id) {
+          heading.id = "heading-" + index;
+        }
+
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = "#" + heading.id;
+        a.textContent = heading.textContent;
+        a.className = "toc-link" + (heading.tagName.toLowerCase() === "h3" ? " level-h3" : "");
+
+        li.appendChild(a);
+        tocList.appendChild(li);
+
+        // スムーズスクロール
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          heading.scrollIntoView({ behavior: "smooth", block: "start" });
+          history.pushState(null, null, "#" + heading.id);
+        });
+      });
+
+      // スクロール位置に応じてTOCのアクティブ項目を変更
+      const tocLinks = document.querySelectorAll('.toc-link');
+
+      window.addEventListener('scroll', () => {
+        let current = '';
+
+        headings.forEach(heading => {
+          const headingTop = heading.getBoundingClientRect().top;
+          if (headingTop <= 100) {
+            current = heading.id;
+          }
+        });
+
+        tocLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href').includes(current) && current !== '') {
+            link.classList.add('active');
+          }
+        });
+      }, { passive: true });
+    });
+  </script>
+</body>
+</html>
