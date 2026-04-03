@@ -107,6 +107,11 @@
           </div>
           <div class="tree-item folder">
             <span class="icon">📁</span>
+            <span class="name">.history/</span>
+            <span class="role tag" style="background:rgba(99,102,241,0.18);color:#a5b4fc;">履歴</span>
+          </div>
+          <div class="tree-item folder">
+            <span class="icon">📁</span>
             <span class="name">.brainstorming/</span>
             <span class="role tag" style="background:rgba(236,72,153,0.18);color:#f472b6;">手紙</span>
           </div>
@@ -226,26 +231,28 @@
           </div>
         </div>
  
-        <!-- 04 .requestHistory -->
+        <!-- 04 .history -->
         <div class="folder-card" id="card-history" tabindex="0" role="button" aria-expanded="false"
-          aria-label=".requestHistoryフォルダの詳細を表示">
+          aria-label=".historyフォルダの詳細を表示">
           <div class="folder-card-header">
             <div class="folder-seq-num">04</div>
             <div class="folder-icon" style="background: rgba(99,102,241,0.12);">📜</div>
             <div>
-              <div class="folder-card-name">.requestHistory</div>
-              <div class="folder-card-path">累積の会話履歴</div>
+              <div class="folder-card-name">.history</div>
+              <div class="folder-card-path">作業の履歴一式</div>
             </div>
           </div>
           <div class="folder-card-desc">
-            依頼が複数回の会話にわたる場合の<strong>累積履歴</strong>ファイルです。成果物の再現性を担保します。
+            依頼の会話履歴・AIの思考ログ・コード使用履歴が格納されます。リスタート時のAIの<strong>思考負荷の軽減</strong>が目的です。
           </div>
           <div class="folder-detail">
             <ul>
-              <li><strong>requestHistory.md</strong> — 会話の流れと判断記録</li>
+              <li><strong>requestHistory.md</strong> — 会話の流れと依頼の時系列記録</li>
+              <li><strong>reasoning.md</strong> — AIの思考・判断ログの時系列記録</li>
+              <li><strong>codeHistory.md</strong> — 使用したコマンド・スクリプトの履歴</li>
             </ul>
-            <p style="margin-top:8px; color:var(--color-text-dim); font-size:0.78rem;">このファイルと request.md
-              があれば、成果物が再現できます。</p>
+            <p style="margin-top:8px; color:var(--color-text-dim); font-size:0.78rem;">この3ファイルと request.md
+              があれば、成果物の再現とリスタートが可能です。</p>
           </div>
         </div>
  
@@ -418,7 +425,7 @@
  
             subgraph RECORD["📝 記録フェーズ"]
             direction TB
-            C1["📜 requestHistory.md を更新"]
+            C1["📜 .history/ の3ファイルを更新<br/>requestHistory / reasoning / codeHistory"]
             C2["💡 feedback.md に教訓を記録"]
             C3[/"✅ .output/ へ成果物を格納"/]
             C4["✉️ letter.{連番}.md を自由に執筆<br/>.brainstorming/ へ出力"]
@@ -561,6 +568,7 @@
               participant R AS 📋 .request
               participant M AS 📦 .main
               participant O AS ✅ .output
+              participant HI AS 📜 .history
               participant F AS 💡 .feedback
               participant B AS ✉️ .brainstorming
  
@@ -576,7 +584,7 @@
               AI ->> O : 成果物を生成・格納
               O -->> H : レビュー依頼
               H ->> AI : 追加の依頼・修正指示
-              AI ->> F : requestHistory.md を更新
+              AI ->> HI : requestHistory / reasoning / codeHistory を更新
               end
  
               AI ->> F : feedback.md に教訓を記録
@@ -806,7 +814,7 @@
  
               <span class="c-h2">## 会話の内容を履歴として累積する（セーフティ）</span>
               <span class="c-list">- 作業が複数回の会話にわたった場合、内容を</span>
-              <span class="c-code"> .requestHistory/requestHistory.md</span> に記録してください。
+              <span class="c-code"> .history/requestHistory.md</span> に記録してください。
               <span class="c-list">- 目的：成果物を紛失しても再現できるようにするため。</span>
  
               <span class="c-h2">## 今回の依頼で得られた教訓を記録する（成長）</span>
@@ -876,7 +884,7 @@
           <div class="sample-statusbar">
             <span>📄 Markdown</span>
             <span>🔡 UTF-8</span>
-            <span>📍 会話の累積履歴 — .requestHistory/requestHistory.md</span>
+            <span>📍 会話の累積履歴 — .history/requestHistory.md</span>
           </div>
         </div>
  
