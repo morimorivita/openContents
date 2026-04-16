@@ -234,26 +234,32 @@
     </div>
 
     <div id="guide-content">
-<h1>【Concept】コンポーネント指向と状態管理の基本</h1>
-
-<figure style="margin: 24px 0; text-align: center;">
-  <img
-    src="images/basicGuide_Concept.png"
-    alt="basicGuide_Concept"
-    loading="lazy"
-    style="max-width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.12);"
-  />
-</figure>
-
+<h1 id="【Concept】コンポーネント指向と状態管理の基本" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">【Concept】コンポーネント指向と状態管理の基本</h1>
 
 📚 本ガイドブックは、モダンWeb開発の中核をなす<strong>*コンポーネント指向</strong>*と<strong>*状態管理（State Management）</strong>*の概念を理解し、従来のページ単位の開発から部品単位の開発へと設計思考を転換することを目的としています。jQueryなどを用いた直接的なDOM操作から、データ駆動型の宣言的UIへの変革をマスターしましょう。
 
 <hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
 
 
+<h1 id="目次" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">目次</h1>
+<ol style="margin-left: 20px; margin-bottom: 20px; line-height: 1.8;">
+  <li style="margin-bottom: 8px;"><a href="#1-コンポーネント指向とはuiを部品で考える" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">コンポーネント指向とは：UIを部品で考える</a></li>
+  <li style="margin-bottom: 8px;"><a href="#2-比較ページ単位旧vsコンポーネント単位新" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">比較：ページ単位（旧）vs コンポーネント単位（新）</a></li>
+  <li style="margin-bottom: 8px;"><a href="#3-状態stateのメカニズム画面が動く仕組み" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">「状態（State）」のメカニズム：画面が動く仕組み</a></li>
+  <li style="margin-bottom: 8px;"><a href="#4-実践コンポーネントの分解と実装例" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">実践：コンポーネントの分解と実装例</a></li>
+  <li style="margin-bottom: 8px;"><a href="#5-副作用useeffect画面の外で起きることを管理する" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">副作用（useEffect）：画面の外で起きることを管理する</a></li>
+  <li style="margin-bottom: 8px;"><a href="#6-グローバルな状態管理stateをコンポーネントの外で管理する" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">グローバルな状態管理：Stateをコンポーネントの外で管理する</a></li>
+  <li style="margin-bottom: 8px;"><a href="#7-jquery時代との決定的違いと保守性の向上" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">jQuery時代との決定的違いと保守性の向上</a></li>
+  <li style="margin-bottom: 8px;"><a href="#8-よくある質問とトラブルシューティング" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">よくある質問とトラブルシューティング</a></li>
+</ol>
 
 
-<h1>1. コンポーネント指向とは：UIを部品で考える</h1>
+
+
+<hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
+
+
+<h1 id="1. コンポーネント指向とは：UIを部品で考える" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">1. コンポーネント指向とは：UIを部品で考える</h1>
 
 <h3>概要・説明</h3>
 
@@ -274,7 +280,7 @@
 <hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
 
 
-<h1>2. 比較：ページ単位（旧）vs コンポーネント単位（新）</h1>
+<h1 id="2. 比較：ページ単位（旧）vs コンポーネント単位（新）" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">2. 比較：ページ単位（旧）vs コンポーネント単位（新）</h1>
 
 従来のWeb開発（JSP, ASP, jQuery等）とモダンWeb（React, Next.js等）での設計思想の違いを整理します。
 
@@ -317,7 +323,7 @@ graph TD
 <hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
 
 
-<h1>3. 「状態（State）」のメカニズム：画面が動く仕組み</h1>
+<h1 id="3. 「状態（State）」のメカニズム：画面が動く仕組み" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">3. 「状態（State）」のメカニズム：画面が動く仕組み</h1>
 
 モダンWebにおいて、画面の表示内容を決定するのは<strong>*状態（State）</strong>*と呼ばれるデータです。
 
@@ -371,7 +377,7 @@ sequenceDiagram
 <hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
 
 
-<h1>4. 実践：コンポーネントの分解と実装例</h1>
+<h1 id="4. 実践：コンポーネントの分解と実装例" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">4. 実践：コンポーネントの分解と実装例</h1>
 
 具体的に、「お気に入りボタン付きの商品カード」を例に考えてみましょう。
 
@@ -486,7 +492,7 @@ export default function App() {
 <hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
 
 
-<h1>5. 副作用（useEffect）：画面の外で起きることを管理する</h1>
+<h1 id="5. 副作用（useEffect）：画面の外で起きることを管理する" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">5. 副作用（useEffect）：画面の外で起きることを管理する</h1>
 
 <h3>副作用とは</h3>
 
@@ -555,7 +561,7 @@ export function OrderList() {
 <hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
 
 
-<h1>6. グローバルな状態管理：Stateをコンポーネントの外で管理する</h1>
+<h1 id="6. グローバルな状態管理：Stateをコンポーネントの外で管理する" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">6. グローバルな状態管理：Stateをコンポーネントの外で管理する</h1>
 
 <h3>Props のバケツリレー問題</h3>
 
@@ -633,7 +639,7 @@ export function UserMenu() {
 <hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
 
 
-<h1>7. jQuery時代との決定的違いと保守性の向上</h1>
+<h1 id="7. jQuery時代との決定的違いと保守性の向上" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">7. jQuery時代との決定的違いと保守性の向上</h1>
 
 <h3>1. 命令的プログラミングの限界</h3>
 
@@ -695,7 +701,7 @@ function LikeButton() {
 <hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
 
 
-<h1>8. よくある質問とトラブルシューティング</h1>
+<h1 id="8. よくある質問とトラブルシューティング" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">8. よくある質問とトラブルシューティング</h1>
 
 <h3>Q1. 全てのボタンをコンポーネントにするべきですか？</h3>
 
@@ -743,7 +749,7 @@ setItems([...items, newItem]);
 
 <pre style="color:Green;">
 <code>
-<h1>React Hooksのルールを強制するESLintプラグイン</h1>
+<h1 id="React Hooksのルールを強制するESLintプラグイン" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">React Hooksのルールを強制するESLintプラグイン</h1>
 npm install --save-dev eslint-plugin-react-hooks
 </code>
 </pre>
@@ -759,7 +765,7 @@ npm install --save-dev eslint-plugin-react-hooks
 <hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
 
 
-<h1>まとめ</h1>
+<h1 id="まとめ" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">まとめ</h1>
 
 本ガイドブックでは、モダンWeb開発の心臓部である <strong>*コンポーネント指向</strong>* と <strong>*状態管理</strong>* を解説しました。
 
@@ -783,7 +789,7 @@ npm install --save-dev eslint-plugin-react-hooks
 <hr style="border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)); margin: 30px 0;">
 
 
-<h1>参考リンク一覧</h1>
+<h1 id="参考リンク一覧" style="background: linear-gradient(to right, #39C5BB, #FFC778);color: white; font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;font-size: 1.5em; font-weight: 700;text-align: center;padding: 0.55em 1.5em;border-radius: 10px; letter-spacing: 0.08em;margin: 0; text-shadow: 0 0 8px #39C5BB, 0 0 20px #39C5BBaa, 0 0 40px #39C5BB55;">参考リンク一覧</h1>
 
 <table style="width: 100%; border-collapse: collapse; font-family: sans-serif; min-width: 600px;"><thead><tr style="background: linear-gradient(to right, #39C5BB, #FFC778); color: white;"><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">リンク</th><th style="padding: 15px; text-align: left; font-weight: 600; border-bottom: 2px solid rgba(255,255,255,0.2);">詳細</th></tr></thead><tbody><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><a href="https://ja.react.dev/" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">React 公式ドキュメント（日本語）</a></strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">useState・useEffect・Contextの真髄を学べます</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><a href="https://tanstack.com/query/latest" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">TanStack Query（React Query）</a></strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">サーバーデータのフェッチ・キャッシュ管理の定番</td></tr><tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#f9f9f9'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><a href="https://github.com/pmndrs/zustand" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">Zustand（状態管理）</a></strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">シンプルなグローバルState管理ライブラリ</td></tr><tr style="background-color: #ffffff; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#f0fcfb'" onmouseout="this.style.backgroundColor='#ffffff'"><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;"><strong><a href="https://developer.mozilla.org/ja/docs/Learn/Tools_and_testing/Client-side_JavaScript_frameworks/React_getting_started" style="color: #39C5BB; text-decoration: none; font-weight: bold; border-bottom: 1px dashed #39C5BB; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">MDN: 状態管理の概念</a></strong></td><td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #444; line-height: 1.6;">技術的な深掘り</td></tr></tbody></table>
 
@@ -798,12 +804,12 @@ npm install --save-dev eslint-plugin-react-hooks
     </div>
   </main>
 
-  <script>
+    <script>
     document.addEventListener("DOMContentLoaded", () => {
       const content = document.getElementById("guide-content");
       const tocList = document.getElementById("toc-list");
       
-      const headings = Array.from(content.querySelectorAll("h1, h3")).filter(h => {
+      const headings = Array.from(content.querySelectorAll("h1, h2, h3")).filter(h => {
         return h.textContent.trim() !== "目次" && !h.closest(".toc-container");
       });
 
@@ -818,7 +824,11 @@ npm install --save-dev eslint-plugin-react-hooks
         const a = document.createElement("a");
         a.href = "#" + heading.id;
         a.textContent = heading.textContent;
-        a.className = "toc-link" + (heading.tagName.toLowerCase() === "h3" ? " level-h3" : "");
+        // Adjust indentation for h2 or h3
+        let linkClass = "toc-link";
+        if (heading.tagName.toLowerCase() === "h2") linkClass += " level-h2";
+        if (heading.tagName.toLowerCase() === "h3") linkClass += " level-h3";
+        a.className = linkClass;
         
         li.appendChild(a);
         tocList.appendChild(li);

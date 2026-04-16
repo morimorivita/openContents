@@ -1,0 +1,2211 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="【SQL Server】現場で笑顔になるための応用ガイドブック">
+  <title>【SQL Server】現場で笑顔になるための応用ガイドブック</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+
+:root {
+  --color-bg:          #0f1117;
+  --color-surface:     #1a1d27;
+  --color-surface-alt: #1e2130;
+  --color-border:      #2a2d3e;
+  --color-border-accent: #3d4266;
+  --color-text:        #e2e4f0;
+  --color-text-muted:  #8b8fa8;
+  --color-text-faint:  #4a4d66;
+  --color-accent:      #7c8cff;
+  --color-accent-glow: rgba(124, 140, 255, 0.15);
+  --color-accent-2:    #4ecdc4;
+  --color-success:     #4ade80;
+  --color-warning:     #fbbf24;
+  --color-danger:      #f87171;
+  --color-code-bg:     #141720;
+  --color-code-text:   #a9b1d6;
+
+  --font-sans:  'Noto Sans JP', sans-serif;
+  --font-mono:  'JetBrains Mono', monospace;
+
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg:  12px;
+
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md:  0 4px 16px rgba(0,0,0,0.5);
+  --shadow-lg:  0 8px 32px rgba(0,0,0,0.6);
+
+  --transition: 0.2s ease;
+
+  --max-width:  860px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.8;
+  min-height: 100vh;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.page-wrapper {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 48px 32px 120px;
+}
+
+.page-header {
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 32px;
+  margin-bottom: 48px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  font-size: 2rem;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+h1::after {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2));
+  border-radius: 2px;
+  margin-top: 12px;
+}
+
+h2 {
+  font-size: 1.375rem;
+  color: var(--color-text);
+  margin-top: 56px;
+  margin-bottom: 20px;
+  padding-left: 14px;
+  border-left: 3px solid var(--color-accent);
+  position: relative;
+}
+
+h3 {
+  font-size: 1.125rem;
+  color: var(--color-text);
+  margin-top: 36px;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+h4 {
+  font-size: 1rem;
+  color: var(--color-accent);
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
+h5, h6 {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+p {
+  margin-bottom: 16px;
+  color: var(--color-text);
+}
+
+ul, ol {
+  margin: 0 0 20px 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+ul li, ol li {
+  position: relative;
+  padding: 5px 0 5px 24px;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+}
+
+ul li:last-child, ol li:last-child {
+  border-bottom: none;
+}
+
+ul li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--color-accent);
+  font-size: 0.8em;
+  top: 7px;
+}
+
+ol {
+  counter-reset: list-counter;
+}
+
+ol li::before {
+  counter-increment: list-counter;
+  content: counter(list-counter);
+  position: absolute;
+  left: 0;
+  top: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  background: var(--color-accent-glow);
+  border: 1px solid var(--color-accent);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+li ul, li ol {
+  margin-top: 4px;
+  margin-bottom: 0;
+  padding-left: 16px;
+}
+
+li ul li::before {
+  content: '–';
+  color: var(--color-text-muted);
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--color-code-bg);
+  color: var(--color-accent);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+.code-block-wrapper {
+  margin: 24px 0;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.code-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-surface);
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.code-block-lang {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+pre {
+  background: var(--color-code-bg);
+  padding: 20px 24px;
+  overflow-x: auto;
+  margin: 0;
+}
+
+pre code {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  background: none;
+  color: var(--color-code-text);
+  padding: 0;
+  border: none;
+  border-radius: 0;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  margin: 24px 0;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+thead {
+  background: var(--color-surface);
+}
+
+thead th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-accent);
+  border-bottom: 2px solid var(--color-border-accent);
+  white-space: nowrap;
+}
+
+tbody tr {
+  border-bottom: 1px solid var(--color-border);
+  transition: background var(--transition);
+}
+
+tbody tr:last-child {
+  border-bottom: none;
+}
+
+tbody tr:hover {
+  background: var(--color-surface-alt);
+}
+
+tbody td {
+  padding: 11px 16px;
+  color: var(--color-text);
+  vertical-align: top;
+}
+
+tbody tr:nth-child(even) {
+  background: rgba(255,255,255,0.02);
+}
+
+blockquote {
+  margin: 24px 0;
+  padding: 16px 20px;
+  background: var(--color-surface);
+  border-left: 4px solid var(--color-accent);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+blockquote p {
+  margin-bottom: 0;
+  color: inherit;
+}
+
+hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-border-accent),
+    transparent
+  );
+  margin: 48px 0;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition), color var(--transition);
+}
+
+a:hover {
+  color: var(--color-accent-2);
+  border-bottom-color: var(--color-accent-2);
+}
+
+strong, b {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+em, i {
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+.mermaid-wrapper {
+  margin: 32px 0;
+  padding: 32px 24px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+}
+
+.mermaid-wrapper svg {
+  max-width: 100%;
+  height: auto;
+}
+
+@media print {
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body {
+    background: #ffffff;
+    color: #1a1a2e;
+    font-size: 11pt;
+  }
+
+  :root {
+    --color-bg:          #ffffff;
+    --color-surface:     #f4f5f9;
+    --color-surface-alt: #eef0f6;
+    --color-border:      #d0d4e8;
+    --color-border-accent: #a0a8cc;
+    --color-text:        #1a1a2e;
+    --color-text-muted:  #4a4f6e;
+    --color-text-faint:  #9097b8;
+    --color-accent:      #3d52d5;
+    --color-accent-glow: rgba(61, 82, 213, 0.08);
+    --color-accent-2:    #0ea5a0;
+    --color-code-bg:     #f0f2fa;
+    --color-code-text:   #2d3561;
+  }
+
+  .page-wrapper {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+
+  table, pre, blockquote, .mermaid-wrapper {
+    page-break-inside: avoid;
+  }
+
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: var(--color-text-muted);
+  }
+
+  nav, .no-print {
+    display: none;
+  }
+}
+
+  </style>
+  <!--
+    [PDF変換の推奨設定]
+    用紙サイズ: A4
+    向き: 縦
+    余白: 上20mm / 下20mm / 左15mm / 右15mm
+    背景のグラフィック: 有効にする
+    倍率: 100%
+    ブラウザの印刷機能 (Ctrl+P) を使用してください。
+  -->
+</head>
+<body>
+  <div class="page-wrapper">
+    <header class="page-header">
+      <h1>【SQL Server】現場で笑顔になるための応用ガイドブック</h1>
+    </header>
+    <main>
+<p><span style="font-size:1.2em">📚</span> 本ガイドブックは、<b><em><strong>SQL Server</strong></em></b> をすでに使っている方、または開発現場にいきなり投入された方に向けた「あやふやをなくし、やってはいけないことを知る」ための実践書です。単なる機能説明ではなく、<strong>知らないと痛い目に遭う落とし穴</strong>と、<strong>ゲーム開発並みのチューニング思想</strong>を軸に解説します。あくまで個人環境での自己学習の結果をガイドブックにしていますので、サンプルはあくまでも雰囲気を見る用として捉えていただければ幸いです。</p>
+<img src="images/basicGuide_Sqlserver.png"
+
+<hr>
+<h2>目次</h2>
+<ol>
+<li><a href="#%E5%AE%9F%E8%A1%8C%E7%92%B0%E5%A2%83%E3%81%A8%E5%89%8D%E6%8F%90%E6%9D%A1%E4%BB%B6">実行環境と前提条件</a></li>
+<li><a href="#%E3%82%A4%E3%83%B3%E3%83%87%E3%83%83%E3%82%AF%E3%82%B9%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6">インデックスについて</a></li>
+<li><a href="#%E3%83%88%E3%83%A9%E3%83%B3%E3%82%B6%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6">トランザクションについて</a></li>
+<li><a href="#tempdb-%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6">tempdb について</a></li>
+<li><a href="#%E3%83%86%E3%83%BC%E3%83%96%E3%83%AB%E5%90%8D%E3%81%AE%E6%8E%A5%E9%A0%AD%E8%BE%9E--%E3%81%A8--%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6">テーブル名の接頭辞 <code>#</code> と <code>##</code> について</a></li>
+<li><a href="#%E9%AC%BC%E9%96%80%E3%81%AE%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%81%BE%E3%81%9F%E3%81%8C%E3%82%8A%E3%81%AE%E3%82%AF%E3%82%A8%E3%83%AA%E3%83%BC%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6">鬼門のサーバーまたがりのクエリーについて</a></li>
+<li><a href="#%E3%82%B3%E3%83%A9%E3%83%A0msdtc%E3%81%AF%E7%B4%A0%E3%81%AE%E3%83%8D%E3%83%83%E3%83%88%E3%83%AF%E3%83%BC%E3%82%AF%E3%82%92%E6%84%9B%E3%81%99%E3%82%8B">コラム：MSDTCは「素のネットワーク」を愛する</a></li>
+<li><a href="#%E5%88%86%E9%9B%A2%E3%83%AC%E3%83%99%E3%83%AB%E3%81%A8-withnolock%E3%81%AE%E7%BD%A0">分離レベルと <code>WITH(NOLOCK)</code> の罠</a></li>
+<li><a href="#%E3%82%88%E3%81%8F%E3%81%82%E3%82%8B%E8%B3%AA%E5%95%8F%E3%81%A8%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E3%82%B7%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0">よくある質問とトラブルシューティング</a></li>
+<li><a href="#sql-server-%E3%83%81%E3%83%A5%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E3%81%AE%E7%8F%BE%E5%AE%9F%E3%81%A8%E6%9C%AA%E6%9D%A5">SQL Server チューニングの現実と未来</a></li>
+</ol>
+<hr>
+<h2>実行環境と前提条件</h2>
+<p>本ガイドブックのサンプルコードは以下を前提とします。</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>項目</th>
+<th>前提条件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>SQL Server バージョン</strong></td>
+<td>SQL Server 2016 以上（一部 2019 以上の機能を明記）</td>
+</tr>
+<tr>
+<td><strong>データベース</strong></td>
+<td><code>TestDB</code> という名前のデータベースが存在すること</td>
+</tr>
+<tr>
+<td><strong>テーブル</strong></td>
+<td>後述のサンプルDDLで作成した <code>Orders</code>・<code>Accounts</code>・<code>Customers</code> テーブル</td>
+</tr>
+<tr>
+<td><strong>ツール</strong></td>
+<td>SSMS（SQL Server Management Studio）または Azure Data Studio</td>
+</tr>
+</tbody></table></div>
+<h3>サンプルテーブルDDL</h3>
+<p>本ガイドブック全体を通して使用するサンプルテーブルです。まずこれを作成してからサンプルを実行してください。</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>USE TestDB;
+GO
+
+-- Customers テーブル
+CREATE TABLE Customers (
+    CustomerId  INT           IDENTITY(1,1) PRIMARY KEY,
+    Name        NVARCHAR(100) NOT NULL,
+    Email       NVARCHAR(200) NOT NULL
+);
+
+-- Orders テーブル（主要なサンプル対象）
+CREATE TABLE Orders (
+    OrderId     INT            IDENTITY(1,1) PRIMARY KEY,
+    OrderDate   DATE           NOT NULL,
+    CustomerId  INT            NOT NULL,
+    Amount      DECIMAL(10, 2) NOT NULL,
+    Status      NVARCHAR(50)   NOT NULL DEFAULT &#39;New&#39;,
+    CONSTRAINT FK_Orders_Customers FOREIGN KEY (CustomerId) REFERENCES Customers(CustomerId)
+);
+
+-- Accounts テーブル（トランザクションサンプル用）
+CREATE TABLE Accounts (
+    AccountId   INT            IDENTITY(1,1) PRIMARY KEY,
+    Balance     DECIMAL(18, 2) NOT NULL DEFAULT 0
+);
+
+-- 動作確認用のサンプルデータ
+INSERT INTO Customers (Name, Email)
+VALUES (N&#39;山田太郎&#39;, N&#39;yamada@example.com&#39;),
+       (N&#39;佐藤花子&#39;, N&#39;sato@example.com&#39;);
+
+INSERT INTO Orders (OrderDate, CustomerId, Amount, Status)
+VALUES (&#39;2025-01-01&#39;, 1, 1000.00, &#39;New&#39;),
+       (&#39;2025-01-15&#39;, 2, 2500.00, &#39;Shipped&#39;),
+       (&#39;2025-02-01&#39;, 1, 800.00,  &#39;New&#39;);
+
+INSERT INTO Accounts (Balance)
+VALUES (100000), (50000);
+GO
+</code></pre></div>
+<blockquote>
+<p><strong>⚠️ 注意</strong>：本番データベースでは上記DDLを実行しないでください。必ず開発・検証用の環境で使用してください。</p>
+</blockquote>
+<hr>
+<h2>インデックスについて</h2>
+<h3>インデックスとは何か</h3>
+<p><b><em><strong>インデックス（Index）</strong></em></b> とは、テーブル上のデータを高速に検索するための「索引」です。書籍の巻末索引と同じ仕組みで、特定の列の値に対してどのページ（ページ＝SQL Serverのデータ格納単位）にデータがあるかを記録しています。</p>
+<p>インデックスがない状態で検索を行うと、SQL Server はテーブルの全ページを先頭から末尾まで順番に読む <strong>テーブルスキャン（Table Scan）</strong> を行います。データ件数が少ないうちは問題になりませんが、数百万件・数千万件のテーブルになると、これが致命的なボトルネックになります。</p>
+<blockquote>
+<p><strong>なぜインデックスが重要なのか</strong>：ゲームのロードが遅い原因の大半がディスクのランダムアクセスであるように、SQLの遅さの大半は「どこを読むべきかわからない」ことによる全ページ読み込みです。インデックスはその「カーナビ」の役割を果たします。</p>
+</blockquote>
+<hr>
+<h3>インデックスの種類と使用するシーン</h3>
+<p>SQL Server には複数のインデックス種類があります。種類を誤ると、むしろパフォーマンスが悪化する場合があります。</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>インデックス種別</th>
+<th>説明</th>
+<th>適したシーン</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>クラスター化インデックス</strong></td>
+<td>データ行そのものを物理的に並び替えて格納</td>
+<td>主キー（1テーブルに1つのみ）</td>
+</tr>
+<tr>
+<td><strong>非クラスター化インデックス</strong></td>
+<td>データとは別に索引を作成</td>
+<td>検索・絞り込みに使う列</td>
+</tr>
+<tr>
+<td><strong>複合インデックス</strong></td>
+<td>複数列を組み合わせたインデックス</td>
+<td>WHERE句で複数列を組み合わせる検索</td>
+</tr>
+<tr>
+<td><strong>カバリングインデックス</strong></td>
+<td>SELECT対象列もインデックスに含める</td>
+<td>SELECT列とWHERE列が固定されているクエリ</td>
+</tr>
+<tr>
+<td><strong>フィルターインデックス</strong></td>
+<td>WHERE条件を付けて一部のデータのみ対象</td>
+<td>NULL以外・特定フラグのみを頻繁に検索する場合</td>
+</tr>
+<tr>
+<td><strong>列ストアインデックス</strong></td>
+<td>列単位で圧縮格納（DWH向き）</td>
+<td>集計・分析クエリ（OLAP）</td>
+</tr>
+</tbody></table></div>
+<h4><span style="font-size:1.2em">🖥️</span> ローカルサーバー（自サーバー）での影響</h4>
+<p>ローカルサーバー上のテーブルへのクエリでは、インデックスが適切に利用されれば<b><em><strong>劇的な速度改善</strong></em></b>が見込めます。</p>
+<p><strong>実例比較</strong>：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- インデックスなし：OrderDate で絞り込む（全件スキャン発生）
+SELECT * FROM Orders WHERE OrderDate = &#39;2025-01-01&#39;;
+
+-- インデックスあり：OrderDate に非クラスター化インデックスを作成済み
+CREATE INDEX IX_Orders_OrderDate ON Orders (OrderDate);
+SELECT * FROM Orders WHERE OrderDate = &#39;2025-01-01&#39;;
+</code></pre></div>
+<p><b><em><strong>実行計画の確認方法</strong></em></b>：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- 実行計画を確認する（Ctrl+M または先頭に SET SHOWPLAN_ALL ON を付加）
+SET SHOWPLAN_ALL ON;
+GO
+SELECT * FROM Orders WHERE OrderDate = &#39;2025-01-01&#39;;
+GO
+SET SHOWPLAN_ALL OFF;
+</code></pre></div>
+<p><b><em><strong>出力例（インデックスなし）</strong></em></b>：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">TEXT</span></div><pre><code>Table Scan  (Object: dbo.Orders) ... Estimated Rows: 1500000
+</code></pre></div>
+<p><b><em><strong>出力例（インデックスあり）</strong></em></b>：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">TEXT</span></div><pre><code>Index Seek  (IX_Orders_OrderDate) ... Estimated Rows: 120
+</code></pre></div>
+<p><code>Table Scan</code> → <code>Index Seek</code> に変わっていれば、インデックスが使われています。<code>Index Scan</code> だった場合は、インデックスは使われているが全体スキャンになっているため、WHERE条件や複合インデックスの見直しが必要です。</p>
+<h4><span style="font-size:1.2em">🌐</span> サーバーまたがり（リモートサーバー）クエリでの影響</h4>
+<p>ここが<b><em><strong>最大の落とし穴</strong></em></b>です。</p>
+<p>リモートサーバー（後述の4部構成名や <code>OPENQUERY</code> 等でアクセス）に対してクエリを発行する際、<strong>リモート側のインデックスが必ずしも活用されるとは限りません</strong>。</p>
+<p>特に4部構成名（<code>リンクサーバー名.データベース.スキーマ.テーブル</code>）を使用した場合、SQL Server の最適化エンジンはリモート側のインデックス情報を十分に把握できず、<strong>ローカル側で全件フェッチしてからフィルタリングを行う</strong>という最悪のシナリオが発生することがあります。</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- NG例：リモートのテーブルから絞り込み（全件フェッチ後にフィルタが起きる危険性あり）
+SELECT * FROM [RemoteServer].[SalesDB].[dbo].[Orders]
+WHERE OrderDate = &#39;2025-01-01&#39;;
+</code></pre></div>
+<p>これは、数百万件のデータをネットワーク越しに転送してから WHERE を適用するという、<strong>ネットワーク帯域の大量消費</strong>を引き起こします。</p>
+<blockquote>
+<p><strong>対策</strong>：リモートサーバー側にストアドプロシージャを用意し、絞り込み済みの結果だけをローカルに引き込む（後述の「サーバーまたがりのクエリー」セクションで詳述）。</p>
+</blockquote>
+<hr>
+<h3>トランザクションでのインデックスの影響</h3>
+<h4><span style="font-size:1.2em">🖥️</span> ローカルサーバーでの影響</h4>
+<p>インデックスはSELECTを高速化しますが、<b><em><strong>INSERT / UPDATE / DELETE には逆効果になる</strong></em></b>場合があります。</p>
+<p>なぜなら、データを変更するたびにインデックスも更新しなければならないからです。インデックスが多いテーブルほど、書き込み処理のコストが高くなります。</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- インデックスが多いテーブルへの大量INSERT（遅くなる可能性あり）
+INSERT INTO Orders (OrderDate, CustomerId, Amount)
+VALUES (&#39;2025-01-01&#39;, 1001, 5000.00);
+-- → Orders テーブルに10個のインデックスがあれば、10個全部を更新する
+</code></pre></div>
+<blockquote>
+<p><strong>チューニングの方針</strong>：バッチ処理（大量INSERT/UPDATE）を行う前にインデックスを一時的に無効化し、処理が終わったら再構築するアプローチが有効です。</p>
+</blockquote>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- インデックスを無効化
+ALTER INDEX IX_Orders_OrderDate ON Orders DISABLE;
+
+-- 大量INSERTを実行（例：別テーブルからのデータ移行）
+INSERT INTO Orders (OrderDate, CustomerId, Amount, Status)
+SELECT OrderDate, CustomerId, Amount, Status
+FROM SourceOrders
+WHERE MigrationFlag = 1;
+
+-- インデックスを再構築
+ALTER INDEX IX_Orders_OrderDate ON Orders REBUILD;
+</code></pre></div>
+<blockquote>
+<p><strong>⚠️ 注意</strong>：<code>DISABLE</code> 中はそのインデックスを使うクエリが実行できません（クラスター化インデックスを無効化するとテーブル全体がアクセス不能になります）。<strong>クラスター化インデックスは絶対に DISABLE しないでください</strong>。</p>
+</blockquote>
+<h4><span style="font-size:1.2em">🌐</span> サーバーまたがりのトランザクション中でのインデックスの影響</h4>
+<p>リモートサーバーを跨いだトランザクション（分散トランザクション）のなかでリモートテーブルへのアクセスが発生すると、インデックスが使われているかどうかに関係なく、<strong>ロックがリモートサーバー上に長時間残留する</strong>可能性があります。これがデッドロックや著しいパフォーマンス低下の原因になります。</p>
+<blockquote>
+<p><strong>後述の「サーバーまたがりのトランザクション」セクションで詳しく説明します。</strong></p>
+</blockquote>
+<hr>
+<h3>このように使ってはいけない（インデックスのNG集）</h3>
+<h4>❌ NG①：インデックス列を関数で加工してWHEREに使う</h4>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- ❌ インデックスが無効化される！
+SELECT * FROM Orders WHERE YEAR(OrderDate) = 2025;
+
+-- ✅ 範囲指定に書き直すとインデックスが使われる
+SELECT * FROM Orders WHERE OrderDate &gt;= &#39;2025-01-01&#39; AND OrderDate &lt; &#39;2026-01-01&#39;;
+</code></pre></div>
+<p><strong>理由</strong>：<code>YEAR()</code> のような関数を列に適用すると、SQL Server はインデックスを使って絞り込むことができず、全件スキャンに戻ります。これを「SARGable でない条件」と言います（SARGable = Search ARGument ABLE）。</p>
+<h4>❌ NG②：LIKE の先頭ワイルドカード</h4>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- ❌ 前方ワイルドカードはインデックスが使えない
+SELECT * FROM Customers WHERE Name LIKE &#39;%山田%&#39;;
+
+-- ✅ 前方一致ならインデックスが使われる
+SELECT * FROM Customers WHERE Name LIKE &#39;山田%&#39;;
+</code></pre></div>
+<h4>❌ NG③：インデックスを作りすぎる</h4>
+<p>SELECT だけを高速化しようとしてインデックスを乱造すると、INSERT / UPDATE / DELETE が著しく遅くなります。また、インデックスはディスクスペースも消費します。<strong>目安は1テーブル5〜7個以下</strong>を意識してください。</p>
+<blockquote>
+<p><strong>💡 コラム：使われていないインデックスを発見する</strong></p>
+<p>運用中のサーバーに「本当に使われているのか分からないインデックス」が積み重なっていることは珍しくありません。以下のDMVクエリで、SQL Server 起動後に一度も使われていないインデックスを洗い出せます。</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- 使われていない（またはほとんど使われていない）インデックスを確認
+SELECT
+    OBJECT_NAME(i.object_id) AS table_name,
+    i.name AS index_name,
+    i.type_desc,
+    ISNULL(u.user_seeks, 0)   AS user_seeks,
+    ISNULL(u.user_scans, 0)   AS user_scans,
+    ISNULL(u.user_lookups, 0) AS user_lookups,
+    ISNULL(u.user_updates, 0) AS user_updates  -- 更新のたびにこのインデックスを維持しているコスト
+FROM sys.indexes i
+LEFT JOIN sys.dm_db_index_usage_stats u
+    ON i.object_id = u.object_id
+    AND i.index_id = u.index_id
+    AND u.database_id = DB_ID()
+WHERE i.object_id &gt; 100  -- システムテーブルを除外
+  AND i.type_desc = &#39;NONCLUSTERED&#39;
+  AND (u.user_seeks IS NULL OR u.user_seeks + u.user_scans + u.user_lookups = 0)
+ORDER BY ISNULL(u.user_updates, 0) DESC;
+</code></pre></div>
+<p><code>user_seeks / user_scans / user_lookups</code> がすべて 0 なのに <code>user_updates</code> が大きい場合、そのインデックスは「読まれずに更新コストだけ払っている」状態です。削除の候補になります。</p>
+<p>⚠️ ただし、このDMVは SQL Server の再起動でリセットされます。再起動後間もない時期の結果で判断しないようにしてください。</p>
+</blockquote>
+<h4>❌ NG④：断片化放置</h4>
+<p>インデックスは時間の経過とともに断片化（フラグメンテーション）します。断片化が進むと、インデックスがあっても遅くなります。定期的なメンテナンスを怠らないようにしてください。</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- インデックス断片化の確認
+SELECT
+    index_id,
+    avg_fragmentation_in_percent,
+    page_count
+FROM sys.dm_db_index_physical_stats(DB_ID(), OBJECT_ID(&#39;Orders&#39;), NULL, NULL, &#39;LIMITED&#39;);
+
+-- 断片化が30%未満 → REORGANIZE（オンラインで実行可能）
+ALTER INDEX IX_Orders_OrderDate ON Orders REORGANIZE;
+
+-- 断片化が30%以上 → REBUILD（ロック発生・オフラインが原則）
+ALTER INDEX IX_Orders_OrderDate ON Orders REBUILD;
+</code></pre></div>
+<hr>
+<h2>トランザクションについて</h2>
+<h3>トランザクションとは何か？</h3>
+<p><b><em><strong>トランザクション（Transaction）</strong></em></b> とは、「複数の処理をひとまとまりとして扱い、全部成功するか全部失敗するかのどちらかにする」仕組みです。</p>
+<p>代表例として「銀行振込」が挙げられます。「A口座から引き落とす」と「B口座に入金する」は、どちらか一方だけ成功するとお金が消えたり増えたりします。この2つは必ずセットで成功・失敗しなければなりません。これがトランザクションの本質です。</p>
+<p>SQL Serverでは、この整合性を <strong>ACID特性</strong> と呼びます：</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>正式名称</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>A</strong></td>
+<td>Atomicity（原子性）</td>
+<td>全部成功か全部失敗か</td>
+</tr>
+<tr>
+<td><strong>C</strong></td>
+<td>Consistency（一貫性）</td>
+<td>常にデータの整合性が保たれる</td>
+</tr>
+<tr>
+<td><strong>I</strong></td>
+<td>Isolation（独立性）</td>
+<td>他のトランザクションの影響を受けない</td>
+</tr>
+<tr>
+<td><strong>D</strong></td>
+<td>Durability（永続性）</td>
+<td>コミット済みのデータは消えない</td>
+</tr>
+</tbody></table></div>
+<hr>
+<h3>SQL Server のトランザクションについて</h3>
+<p>SQL Server のトランザクションには3種類あります：</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>種類</th>
+<th>特徴</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>自動コミットトランザクション</strong></td>
+<td>各DML文が1つのトランザクションとして即座にコミットされる</td>
+<td><strong>SQL Server のデフォルト動作</strong>。単独のINSERT/UPDATE/DELETE</td>
+</tr>
+<tr>
+<td><strong>明示的トランザクション</strong></td>
+<td><code>BEGIN TRAN</code> ～ <code>COMMIT / ROLLBACK</code> で明示的に制御</td>
+<td>複数の処理をひとまとまりにしたい場合</td>
+</tr>
+<tr>
+<td><strong>暗黙的トランザクション</strong></td>
+<td><code>SET IMPLICIT_TRANSACTIONS ON</code> で有効になる。DML/DDL文の実行開始時に自動で <code>BEGIN TRAN</code> が発行され、明示的な <code>COMMIT</code> / <code>ROLLBACK</code> が必要になる</td>
+<td>レガシーシステムや特定の互換性要件がある特殊なケース（通常は使わない）</td>
+</tr>
+</tbody></table></div>
+<blockquote>
+<p><strong>⚠️ よくある誤解</strong>：「暗黙的トランザクション」はSQL Serverのデフォルト動作ではありません。デフォルトは「自動コミット」です。暗黙的トランザクションは<code>SET IMPLICIT_TRANSACTIONS ON</code>を明示的に設定した場合のみ有効になります。他のDBMSからの移行者が混乱しやすいポイントです。</p>
+</blockquote>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- 明示的トランザクションの基本構文
+BEGIN TRANSACTION;
+
+    UPDATE Accounts SET Balance = Balance - 10000 WHERE AccountId = 1;
+    UPDATE Accounts SET Balance = Balance + 10000 WHERE AccountId = 2;
+
+    -- エラーがなければコミット
+    IF @@ERROR = 0
+        COMMIT TRANSACTION;
+    ELSE
+        ROLLBACK TRANSACTION;
+</code></pre></div>
+<blockquote>
+<p><strong>現代的な書き方</strong>：<code>@@ERROR</code> よりも <code>TRY...CATCH</code> 構文を使うほうが安全で推奨されます：</p>
+</blockquote>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>BEGIN TRANSACTION;
+BEGIN TRY
+    UPDATE Accounts SET Balance = Balance - 10000 WHERE AccountId = 1;
+    UPDATE Accounts SET Balance = Balance + 10000 WHERE AccountId = 2;
+    COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+    -- エラー発生時にロールバック
+    ROLLBACK TRANSACTION;
+    THROW; -- エラーを呼び出し元に再スロー
+END CATCH;
+</code></pre></div>
+<hr>
+<h3>ローカルサーバーのトランザクションの動き</h3>
+<p>ローカルサーバー（自サーバー）内でのトランザクションでは、SQL Server の<strong>ロックマネージャー</strong>がリソースを管理します。</p>
+<p>ロックには以下の粒度があります（小→大）：</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>ロック粒度</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>行ロック（Row Lock）</strong></td>
+<td>特定の行だけをロック</td>
+</tr>
+<tr>
+<td><strong>ページロック（Page Lock）</strong></td>
+<td>8KBのページ単位でロック</td>
+</tr>
+<tr>
+<td><strong>テーブルロック（Table Lock）</strong></td>
+<td>テーブル全体をロック</td>
+</tr>
+<tr>
+<td><strong>データベースロック（DB Lock）</strong></td>
+<td>データベース全体をロック</td>
+</tr>
+</tbody></table></div>
+<p>SQL Server は最初は行ロックで始まり、ロック数が多くなると自動的に粒度を上げる <strong>ロックエスカレーション</strong> を行います。これが意図せずテーブルロックを引き起こし、他のユーザーを長時間ブロックする原因になります。</p>
+<p><strong>デッドロック発生のメカニズム</strong>：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- セッション1
+BEGIN TRANSACTION;
+UPDATE Orders SET Status = &#39;Shipped&#39; WHERE OrderId = 1;
+-- この時点でOrderId=1の行をロック取得
+
+-- セッション2（同時実行）
+BEGIN TRANSACTION;
+UPDATE Orders SET Status = &#39;Cancelled&#39; WHERE OrderId = 2;
+-- この時点でOrderId=2の行をロック取得
+
+-- セッション1（続き）
+UPDATE Orders SET Status = &#39;Shipped&#39; WHERE OrderId = 2;
+-- OrderId=2はセッション2がロック中 → 待機
+
+-- セッション2（続き）
+UPDATE Orders SET Status = &#39;Cancelled&#39; WHERE OrderId = 1;
+-- OrderId=1はセッション1がロック中 → 待機
+-- → お互いが相手を待つ「デッドロック」発生！
+</code></pre></div>
+<p>SQL Server は約5秒でデッドロックを検知し、片方を「デッドロックの犠牲者」としてロールバックします。</p>
+<blockquote>
+<p><strong>デッドロック防止策</strong>：複数テーブル/行を更新する場合は、<strong>常に同じ順序でアクセスする</strong>ことが基本です。</p>
+</blockquote>
+<hr>
+<h3>サーバーまたがり（リモートサーバー）のトランザクションの動き</h3>
+<p>ここが<b><em><strong>最も危険な地帯</strong></em></b>です。</p>
+<p>ローカルサーバーとリモートサーバーにまたがるトランザクションは「<strong>分散トランザクション</strong>」になります。SQL Server はこれを処理するために <strong>Microsoft Distributed Transaction Coordinator（MS DTC）</strong> を使用します。</p>
+<p>分散トランザクションは以下の「2相コミット（Two-Phase Commit）」で動作します：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">TEXT</span></div><pre><code>フェーズ1（準備）：
+  → ローカルサーバー: 「コミットできますか？」
+  → リモートサーバー: 「準備OK」
+
+フェーズ2（確定）：
+  → ローカルサーバー: 「コミットしてください」
+  → リモートサーバー: 「コミット完了」
+</code></pre></div>
+<p>この2段階の確認のために、<strong>ロックがネットワーク往復分だけ長く保持される</strong>ことになります。これはデッドロックのリスクを著しく高めます。</p>
+<blockquote>
+<p><strong>重要な落とし穴</strong>：MS DTC が設定されていない環境では、分散トランザクションが <code>BEGIN TRANSACTION</code> のブロック内でリモートサーバーにアクセスした時点で<strong>エラーになります</strong>：</p>
+</blockquote>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">TEXT</span></div><pre><code>エラー メッセージ:
+サーバー &#39;RemoteServer&#39; ではリモート アクセスが許可されていないか、
+サービス &#39;msdtc&#39; が開始されていません。
+</code></pre></div>
+<hr>
+<h3>このように使ってはいけない（トランザクションのNG集）</h3>
+<h4>❌ NG①：トランザクションを長くかけすぎる</h4>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- ❌ トランザクション内でユーザー入力待ちをするような設計
+BEGIN TRANSACTION;
+    SELECT * FROM Customers; -- この結果をユーザーに見せて、次の操作を待つ
+    -- ← ここで数分間ロックが保持される
+    UPDATE Orders SET Status = &#39;Confirmed&#39; WHERE CustomerId = 1;
+COMMIT TRANSACTION;
+</code></pre></div>
+<p>トランザクション中はロックが保持されます。長時間のトランザクションは他のユーザーをブロックし続けます。</p>
+<h4>❌ NG②：TRY-CATCH の外側でトランザクションを開始する</h4>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- ❌ 不完全なエラーハンドリング
+BEGIN TRANSACTION;
+    UPDATE Accounts SET Balance = Balance - 1000 WHERE AccountId = 1;
+    -- ここでエラーが起きてもROLLBACKが呼ばれない
+    UPDATE Accounts SET Balance = Balance + 1000 WHERE AccountId = 2;
+COMMIT;
+</code></pre></div>
+<blockquote>
+<p><strong>必ず TRY...CATCH でラップし、CATCH ブロック内で ROLLBACK を行う</strong>ことを徹底してください。</p>
+</blockquote>
+<h4>❌ NG③：ネストしたトランザクションを誤解する</h4>
+<p>SQL Server の <code>BEGIN TRANSACTION</code> はネストできますが、<strong>内側の COMMIT は外側のトランザクションを確定しません</strong>：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>BEGIN TRANSACTION; -- トランザクションカウント: 1
+    BEGIN TRANSACTION; -- トランザクションカウント: 2
+    COMMIT TRANSACTION; -- カウントが2→1になるだけ（データは確定していない！）
+ROLLBACK TRANSACTION; -- カウントが1→0 → 全部ロールバック！
+</code></pre></div>
+<p><code>@@TRANCOUNT</code> で現在のネスト深さを確認できます。</p>
+<h4>❌ NG④：分散トランザクション内での大量データ操作</h4>
+<p>リモートサーバーへの UPDATE や INSERT を <code>BEGIN TRANSACTION</code> の中で大量に行うと、MS DTC のタイムアウトが発生したり、ネットワーク障害時にどちらのサーバーの状態が正となるか不定になる「インダウトトランザクション」が発生します。これは非常に厄介です。</p>
+<hr>
+<h2>tempdb について</h2>
+<h3>tempdb とは何か？</h3>
+<p><b><em><strong>tempdb</strong></em></b> は、SQL Server インスタンス内の<strong>すべてのデータベースが共有する特殊なシステムデータベース</strong>です。SQL Server が再起動するたびに中身は自動的にリセットされます（永続化されません）。</p>
+<p>tempdb が使われる主なシーン：</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>用途</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>一時テーブル（<code>#</code> / <code>##</code>）</strong></td>
+<td>セッション/グローバルスコープの一時テーブル</td>
+</tr>
+<tr>
+<td><strong>テーブル変数（<code>@table</code>）</strong></td>
+<td>内部的に tempdb を使う場合がある</td>
+</tr>
+<tr>
+<td><strong>スピル（Spill to Disk）</strong></td>
+<td>ソート・ハッシュ結合などがメモリに収まらない場合の作業領域</td>
+</tr>
+<tr>
+<td><strong>スナップショット分離</strong></td>
+<td>RCSI（行バージョン管理）の行バージョン格納</td>
+</tr>
+<tr>
+<td><strong>カーソル</strong></td>
+<td>カーソルの作業領域</td>
+</tr>
+</tbody></table></div>
+<blockquote>
+<p><strong>重要点</strong>：tempdb は全ユーザー・全データベースが共有します。1つのクエリが tempdb を大量に使うと、<strong>他の全ユーザーのクエリが遅くなる</strong>という影響が出ます。</p>
+</blockquote>
+<p><strong>tempdb のサイズと空き確認</strong>：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- tempdb の現在の使用量を確認
+SELECT
+    DB_NAME(database_id) AS DBName,
+    type_desc,
+    name,
+    size * 8 / 1024 AS size_MB,
+    CASE max_size
+        WHEN -1 THEN &#39;ディスク上限まで使用可（実質的なディスク容量が上限）&#39;
+        ELSE CAST(max_size * 8 / 1024 AS VARCHAR) + &#39; MB&#39;
+    END AS max_size_desc
+FROM sys.master_files
+WHERE database_id = DB_ID(&#39;tempdb&#39;);
+</code></pre></div>
+<p><b><em><strong>出力例</strong></em></b>：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">TEXT</span></div><pre><code>DBName   type_desc  name      size_MB  max_size_desc
+tempdb   ROWS       tempdev   1024     ディスク上限まで使用可（実質的なディスク容量が上限）
+tempdb   LOG        templog   512      ディスク上限まで使用可（実質的なディスク容量が上限）
+</code></pre></div>
+<blockquote>
+<p><strong>⚠️ <code>-1</code> の意味に注意</strong>：<code>max_size = -1</code> は「無制限」ではなく、「ディスクの空き容量がなくなるまで使う」という意味です。つまりディスクが満杯になると SQL Server 全体が停止します。本番環境では最大サイズを明示的に制限することを強く推奨します。</p>
+</blockquote>
+<hr>
+<h3>このように使ってはいけない（tempdb のNG集）</h3>
+<h4>❌ NG①：tempdb に大量データを長時間保持する</h4>
+<p>tempdb は全ユーザー共有のリソースです。大きな一時テーブルを長時間放置すると、他のユーザーに影響します。使い終わったら <code>DROP TABLE #TempTable;</code> で明示的に削除してください。</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- ❌ 使い終わっても消えるのを「SQL Serverに任せる」設計
+CREATE TABLE #WorkData (Id INT, Value NVARCHAR(200));
+INSERT INTO #WorkData
+SELECT CustomerId, CAST(Amount AS NVARCHAR(200)) FROM Orders;
+-- 何かの処理
+-- → セッションが終わるまで tempdb を占有し続ける
+
+-- ✅ 使い終わったらすぐに削除
+DROP TABLE IF EXISTS #WorkData;
+</code></pre></div>
+<h4>❌ NG②：ループ内で毎回テーブルを作成・削除する</h4>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- ❌ ループ内での繰り返しCREATE/DROP（tempdbへの負荷大）
+DECLARE @i INT = 1;
+WHILE @i &lt;= 10000
+BEGIN
+    CREATE TABLE #Temp (Val INT);
+    INSERT INTO #Temp VALUES (@i);
+    -- 何かの処理
+    DROP TABLE #Temp;
+    SET @i = @i + 1;
+END
+
+-- ✅ ループの外でTRUNCATE+再利用
+DECLARE @i INT = 1;
+CREATE TABLE #Temp (Val INT);
+WHILE @i &lt;= 10000
+BEGIN
+    TRUNCATE TABLE #Temp;
+    INSERT INTO #Temp VALUES (@i);
+    -- 何かの処理
+    SET @i = @i + 1;
+END
+DROP TABLE #Temp;
+</code></pre></div>
+<h4>❌ NG③：テーブル変数として使ったほうがいい場面で一時テーブルを使う（逆も然り）</h4>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>比較項目</th>
+<th>テーブル変数（<code>@table</code>）</th>
+<th>一時テーブル（<code>#table</code>）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>統計情報</strong></td>
+<td>なし（推定行数が常に1件）</td>
+<td>あり</td>
+</tr>
+<tr>
+<td><strong>インデックス</strong></td>
+<td>作成できない（主キーのみ）</td>
+<td>追加可能</td>
+</tr>
+<tr>
+<td><strong>適したデータ量</strong></td>
+<td>数百件以下の小さなデータ</td>
+<td>数千件以上のデータ</td>
+</tr>
+<tr>
+<td><strong>スコープ</strong></td>
+<td>バッチが終われば消える</td>
+<td>セッションが終われば消える</td>
+</tr>
+<tr>
+<td><strong>ログ書き込み</strong></td>
+<td>最小限</td>
+<td>あり（ロールバック可能）</td>
+</tr>
+</tbody></table></div>
+<blockquote>
+<p><strong>判断基準</strong>：少量データで使い捨てなら <code>@table</code>、大量データや複雑な処理には <code>#table</code> を選択してください。</p>
+</blockquote>
+<h4>❌ NG④：tempdb のファイルが1つしかない（パフォーマンス問題）</h4>
+<p>SQL Server の tempdb はデフォルトで1ファイルですが、複数ファイルに分割することで**並列アクセスの競合（PFS/GAM/SGAM ページの競合）**を減らすことができます。</p>
+<blockquote>
+<p><strong>推奨設定</strong>：論理CPUコア数に応じて、最大8ファイルまで増やすことが Microsoft の公式推奨です。</p>
+</blockquote>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- tempdb にデータファイルを追加（4コアの例：4ファイルに）
+ALTER DATABASE tempdb
+ADD FILE (
+    NAME = &#39;tempdev2&#39;,
+    FILENAME = &#39;D:\SQLData\tempdb2.ndf&#39;,
+    SIZE = 1024MB,
+    FILEGROWTH = 256MB
+);
+</code></pre></div>
+<hr>
+<h2>テーブル名の接頭辞 <code>#</code> と <code>##</code> について</h2>
+<h3>これは何か</h3>
+<p>SQL Server では、テーブル名の先頭に特殊な記号を付けることで、<strong>格納場所とスコープを変える</strong>ことができます。</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>記号</th>
+<th>名称</th>
+<th>格納先</th>
+<th>スコープ</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>#テーブル名</code></td>
+<td>ローカル一時テーブル</td>
+<td>tempdb</td>
+<td>作成したセッションのみ（セッション終了で削除）</td>
+</tr>
+<tr>
+<td><code>##テーブル名</code></td>
+<td>グローバル一時テーブル</td>
+<td>tempdb</td>
+<td>全セッション共有（全員が参照を終えたら削除）</td>
+</tr>
+<tr>
+<td>なし</td>
+<td>永続テーブル</td>
+<td>通常のデータベース</td>
+<td>明示的にDROPするまで存在</td>
+</tr>
+</tbody></table></div>
+<p><strong>使用例</strong>：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- ローカル一時テーブル（自分のセッションだけに見える）
+CREATE TABLE #MyTemp (Id INT, Name NVARCHAR(100));
+INSERT INTO #MyTemp VALUES (1, N&#39;山田太郎&#39;);
+SELECT * FROM #MyTemp;
+-- セッション終了（接続が切れる）と自動削除
+
+-- グローバル一時テーブル（全セッションから見える）
+CREATE TABLE ##SharedTemp (Id INT, Name NVARCHAR(100));
+INSERT INTO ##SharedTemp VALUES (1, N&#39;共有データ&#39;);
+SELECT * FROM ##SharedTemp; -- 別のセッションからも参照できる
+-- 全セッションが参照を終えると自動削除
+</code></pre></div>
+<blockquote>
+<p><strong>内部の話</strong>：<code>#TempTable</code> は tempdb 内では <code>#TempTable___________00000000001A</code> のようなシステムが付加したサフィックス付きの名前で格納されています。これにより、複数セッションが同名の <code>#</code> テーブルを作っても競合しない仕組みになっています。</p>
+</blockquote>
+<hr>
+<h3>このように使ってはいけない</h3>
+<h4>❌ NG①：グローバル一時テーブル（<code>##</code>）を業務データの受け渡しに使う</h4>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- ❌ 危険な使い方：セッション間のデータ共有に ## を使う
+CREATE TABLE ##TransferData (Id INT, Status NVARCHAR(50));
+-- ← セッションAがデータを入れて、セッションBが読む設計
+
+-- 問題1：セッションAが切れたら ##TransferData は消える
+-- 問題2：他の人も同じ名前で作ろうとするとエラーになる
+-- 問題3：複数のユーザーが同時に使う場合の排他制御がない
+</code></pre></div>
+<p><strong>セッション間のデータ共有には永続テーブルやキューテーブルを使ってください。</strong></p>
+<h4>❌ NG②：<code>IF OBJECT_ID(&#39;tempdb..#Temp&#39;) IS NOT NULL</code> チェックを忘れる</h4>
+<p>バッチを再実行する際に、前回の実行で一時テーブルが残っているとエラーになります：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- ❌ 再実行でエラーになるコード
+CREATE TABLE #Temp (Id INT); -- 既に存在するとエラー: オブジェクト &#39;#Temp&#39; はすでに存在します
+
+-- ✅ 安全なコード（SQL Server 2016以降）
+DROP TABLE IF EXISTS #Temp;
+CREATE TABLE #Temp (Id INT);
+
+-- ✅ SQL Server 2014以前の書き方
+IF OBJECT_ID(&#39;tempdb..#Temp&#39;) IS NOT NULL DROP TABLE #Temp;
+CREATE TABLE #Temp (Id INT);
+</code></pre></div>
+<h4>❌ NG③：ストアドプロシージャ内の一時テーブルに統計情報が古い問題</h4>
+<p>ストアドプロシージャ内で一時テーブルを作成してデータを入れると、最初のコンパイル時の統計情報でプランがキャッシュされます。2回目以降の実行でデータ量が大きく変わっても、古い実行計画が使われ続ける（<strong>パラメータスニッフィング問題</strong>の一時テーブル版）ことがあります。</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- 解決策：統計情報を明示的に更新する
+DROP TABLE IF EXISTS #TempWork;
+CREATE TABLE #TempWork (Id INT, Amount DECIMAL(10, 2));
+INSERT INTO #TempWork
+SELECT OrderId, Amount FROM Orders WHERE CustomerId = 1;
+
+-- 統計情報を更新してからクエリを実行
+UPDATE STATISTICS #TempWork;
+
+SELECT o.OrderId, t.Amount
+FROM Orders o
+JOIN #TempWork t ON o.OrderId = t.Id;
+</code></pre></div>
+<hr>
+<h2>鬼門のサーバーまたがりのクエリーについて</h2>
+<h3>サーバーまたがりとは</h3>
+<p><b><em><strong>サーバーまたがりのクエリー（Cross-Server Query）</strong></em></b> とは、ローカルサーバー（以下「自サーバー」）から、ネットワーク上の別の SQL Server（以下「リモートサーバー」）のデータにアクセスするクエリのことです。</p>
+<p>SQL Server でリモートサーバーにアクセスする主な方法は以下の3種類です：</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>形式</th>
+<th>特性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>4部構成名</strong></td>
+<td><code>[サーバー].[DB].[スキーマ].[テーブル]</code></td>
+<td>リンクサーバー経由。最も直感的だが危険も多い</td>
+</tr>
+<tr>
+<td><strong>OPENROWSET</strong></td>
+<td><code>OPENROWSET(&#39;SQLNCLI17&#39;, &#39;接続文字列&#39;, &#39;クエリ&#39;)</code></td>
+<td>アドホック接続。リンクサーバー不要</td>
+</tr>
+<tr>
+<td><strong>OPENQUERY</strong></td>
+<td><code>OPENQUERY(リンクサーバー名, &#39;クエリ&#39;)</code></td>
+<td>リモート側でクエリを実行してから結果を返す</td>
+</tr>
+</tbody></table></div>
+<blockquote>
+<p><strong>用語について</strong>：「ローカル」「リモート」が標準的な用語です。以降は自サーバー（ローカル）・リモートサーバー（リモート）と呼びます。</p>
+</blockquote>
+<hr>
+<h3>高速なデータ取得のセオリー</h3>
+<h4><span style="font-size:1.2em">🔑</span> 大原則：「データを引き込む」のではなく「加工してから引き込む」</h4>
+<p>ネットワーク越しのデータ転送がボトルネックになります。リモートの全データをローカルに持ってきてからフィルタをかけるのは最悪のパターンです。</p>
+<p><strong>理想のフロー</strong>：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">TEXT</span></div><pre><code>リモートサーバー：ストアドプロシージャで絞り込み・集計
+     ↓ （絞り込み済みの少量データだけがネットワークを流れる）
+自サーバー：受け取ったデータを使って以降の処理
+</code></pre></div>
+<h4><span style="font-size:1.2em">💡</span> 私の実践経験から：リモートSTORED PROCEDUREを自サーバーで呼び出す手法について</h4>
+<blockquote>
+<p>「リモートサーバーに設置したストアドプロシージャから結果を自サーバーに引き込む」という手法。<strong>これが非常に妥当かつ正攻法の手法です</strong>。</p>
+</blockquote>
+<p>この手法の優れた点：</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>観点</th>
+<th>評価</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>パフォーマンス</strong></td>
+<td><span style="font-size:1.2em">⚡</span> 優秀</td>
+<td>リモート側でフィルタ・集計が完了してから転送されるため、ネットワーク転送量が最小</td>
+</tr>
+<tr>
+<td><strong>インデックス活用</strong></td>
+<td><span style="font-size:1.2em">⚡</span> 優秀</td>
+<td>リモートのストアドはリモートのインデックスを最大活用できる</td>
+</tr>
+<tr>
+<td><strong>ロック影響</strong></td>
+<td><span style="font-size:1.2em">✅</span> 良好</td>
+<td>ストアド単独の実行はMSDTCを使わず、自サーバーのロック影響を最小化</td>
+</tr>
+<tr>
+<td><strong>保守性</strong></td>
+<td><span style="font-size:1.2em">✅</span> 良好</td>
+<td>リモート側のロジック変更が自サーバー側に影響しない</td>
+</tr>
+</tbody></table></div>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- リモートのストアドプロシージャを呼び出して結果をテーブル変数に入れる
+DECLARE @Results TABLE (
+    OrderId    INT,
+    Name       NVARCHAR(200),
+    Amount     DECIMAL(18, 2)
+);
+
+INSERT INTO @Results
+EXEC [RemoteServer].[SalesDB].[dbo].[usp_GetMonthlyOrders]
+    @Year  = 2025,
+    @Month = 1;
+
+-- 取得したデータをローカルのデータと結合
+SELECT r.*, c.Email
+FROM @Results r
+JOIN Customers c ON r.OrderId = c.CustomerId;
+</code></pre></div>
+<blockquote>
+<p><strong>注意点</strong>：リモートのストアドを <code>EXEC</code> で呼んで結果を <code>INSERT...EXEC</code> で受け取る際、<strong>自サーバー側も <code>BEGIN TRANSACTION</code> 内にいる場合はMSDTCが必要になる</strong>ことがあります。<code>BEGIN TRANSACTION</code> の外側で実行するか、設計を工夫してください。</p>
+</blockquote>
+<hr>
+<h3>4部構成名、OPENROWSET、OPENQUERY の説明と特性</h3>
+<h4><span style="font-size:1.2em">📋</span> 4部構成名（Four-Part Name）</h4>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- 構造：[リンクサーバー名].[データベース名].[スキーマ名].[テーブル名]
+SELECT * FROM [RemoteServer].[SalesDB].[dbo].[Orders];
+</code></pre></div>
+<p><strong>特性</strong>：</p>
+<ul>
+<li>最もシンプルに書けるが、最も危険</li>
+<li>SQL Server はクエリ最適化のためにリモートテーブルの統計情報を活用しようとするが、統計情報の収集にリモートアクセスが発生し、かえって遅くなることがある</li>
+<li>WHERE句の条件が<strong>ローカルで評価される場合がある</strong>（つまりリモートのフルスキャン後にローカルフィルタ）</li>
+</ul>
+<p><strong>実際のトラブル事例</strong>（実体験）：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- リモートの数百万件テーブルから絞り込みしようとした例
+SELECT *
+FROM [RemoteServer].[SalesDB].[dbo].[Orders]
+WHERE OrderDate BETWEEN &#39;2025-01-01&#39; AND &#39;2025-01-31&#39;;
+
+-- → リモートの Orders 全件（数百万件）がネットワーク転送された後に
+--    ローカル側で WHERE フィルタが適用
+-- → ネットワーク帯域の大量消費、処理時間が数十分に
+-- → タイムアウトやブロックが発生し、他の処理まで影響
+</code></pre></div>
+<h4><span style="font-size:1.2em">📋</span> OPENROWSET</h4>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- 解決策は、OPENROWSET はアドホック接続（リンクサーバー設定不要）
+SELECT *
+FROM OPENROWSET(
+    &#39;SQLNCLI17&#39;,
+    &#39;Server=RemoteServer;Database=SalesDB;Trusted_Connection=Yes;&#39;,
+    &#39;SELECT Id, Amount FROM dbo.Orders WHERE OrderDate &gt;= &#39;&#39;2025-01-01&#39;&#39;&#39;
+);
+</code></pre></div>
+<p><strong>特性</strong>：</p>
+<ul>
+<li>リンクサーバーを事前設定する必要がない</li>
+<li>クエリ文字列を直接渡すため、<strong>リモートサーバー上でそのクエリが実行される</strong>（フィルタがリモートで行われる）</li>
+<li>ただし、文字列の中にSQLを書くため可読性が下がりやすい</li>
+<li>セキュリティポリシーで <code>Ad Hoc Distributed Queries</code> の有効化が必要</li>
+</ul>
+<blockquote>
+<p><strong>⚠️ 文字列内のシングルクォートに注意</strong>：OPENROWSET / OPENQUERY の内側クエリで文字列リテラルを使う場合、シングルクォートを <code>&#39;&#39;</code> と二重にする必要があります。これはミスが発生しやすいポイントです。</p>
+</blockquote>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- ❌ NG：シングルクォートが1つだと構文エラー
+SELECT * FROM OPENROWSET(..., &#39;SELECT * FROM Orders WHERE Status = &#39;New&#39;&#39;);
+
+-- ✅ OK：シングルクォートを &#39;&#39; と二重にする
+SELECT * FROM OPENROWSET(..., &#39;SELECT * FROM Orders WHERE Status = &#39;&#39;New&#39;&#39;&#39;);
+</code></pre></div>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- Ad Hoc Distributed Queries の有効化（要管理者権限）
+EXEC sp_configure &#39;show advanced options&#39;, 1;
+RECONFIGURE;
+EXEC sp_configure &#39;Ad Hoc Distributed Queries&#39;, 1;
+RECONFIGURE;
+</code></pre></div>
+<h4><span style="font-size:1.2em">📋</span> OPENQUERY（推奨）</h4>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- リンクサーバーを使ったOPENQUERY
+SELECT *
+FROM OPENQUERY([RemoteServer], 
+    &#39;SELECT Id, Amount FROM SalesDB.dbo.Orders WHERE OrderDate &gt;= &#39;&#39;2025-01-01&#39;&#39;&#39;
+);
+</code></pre></div>
+<p><strong>特性</strong>：</p>
+<ul>
+<li>クエリがリモートサーバー側で実行されてから結果がローカルに返る（パススルークエリ）</li>
+<li>リモートのインデックスが最大限に活用される</li>
+<li>4部構成名と比べて<strong>劇的にパフォーマンスが良い</strong>場合がある</li>
+</ul>
+<hr>
+<h3>4部構成名 vs OPENQUERY：実体験の失敗談から学ぶ</h3>
+<blockquote>
+<p>「リモートサーバーの tempdb を利用する時、OPENQUERY だと高速で、4部構成名だとブロックの嵐で処理を打ち切るしかなかった」という経験について</p>
+</blockquote>
+<p>これは非常に重要な実体験です。<strong>なぜそうなったのか</strong>を解説します：</p>
+<p><strong>4部構成名のケース（地獄の始まり）</strong>：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- ❌ NG：リモートの大きな一時テーブルを4部構成名で参照
+SELECT *
+FROM [RemoteServer].[tempdb].[dbo].[SharedWork]
+WHERE SomeColumn = &#39;TargetValue&#39;;
+
+-- 内部で起きていること：
+-- 1. SQL Server がリモートの SharedWork にアクセス
+-- 2. クエリオプティマイザーがローカルでのフィルタリングを決定
+-- 3. SharedWork の全件（数百万行）がローカルに転送開始
+-- 4. ネットワーク・tempdb の両方に対して重いロックがかかり続ける
+-- 5. 他のプロセスが tempdb やネットワークリソースを使えなくなる
+-- 6. タイムアウト・ブロックが続出し、最終的に処理を強制終了するしかない
+</code></pre></div>
+<blockquote>
+<p><strong>⚠️ さらに重要な注意</strong>：グローバル一時テーブル（<code>##</code>）は、作成したセッションが終了すると自動的に削除されます。Linked Server 経由でのアクセスは別セッション扱いになるため、<strong>もとのセッションが生きている間しか参照できません</strong>。また、4部構成名で <code>tempdb</code> の <code>##</code> テーブルを参照するパターンは動作が不安定なため、実テーブルや OPENQUERY の使用を強く推奨します。</p>
+</blockquote>
+<p><strong>OPENQUERY のケース（解決の鍵）</strong>：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- ✅ 推奨：同じことをOPENQUERYで行う
+SELECT *
+FROM OPENQUERY([RemoteServer],
+    &#39;SELECT * FROM tempdb.dbo.SharedWork WHERE SomeColumn = &#39;&#39;TargetValue&#39;&#39;&#39;
+);
+
+-- 内部で起きていること：
+-- 1. フィルタリングがリモートサーバー内で実行される
+-- 2. WHERE 条件に合致した少ない行だけがネットワークを流れる
+-- 3. tempdb のロック時間は最小限
+-- 4. 処理が高速に完了する
+</code></pre></div>
+<p><strong>まとめると</strong>：</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>比較項目</th>
+<th>4部構成名</th>
+<th>OPENQUERY</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>WHERE の実行場所</strong></td>
+<td>ローカル（危険）</td>
+<td>リモート（安全）</td>
+</tr>
+<tr>
+<td><strong>ネットワーク転送量</strong></td>
+<td>テーブル全件</td>
+<td>条件一致分のみ</td>
+</tr>
+<tr>
+<td><strong>リモートインデックス活用</strong></td>
+<td>不確実</td>
+<td>確実</td>
+</tr>
+<tr>
+<td><strong>tempdb ロック影響</strong></td>
+<td>長時間・広範囲</td>
+<td>最小限</td>
+</tr>
+<tr>
+<td><strong>使い時</strong></td>
+<td>小さなテーブルのみ</td>
+<td>基本はこちらを使う</td>
+</tr>
+</tbody></table></div>
+<hr>
+<h3>このように使ってはいけない（サーバーまたがりのNG集）</h3>
+<h4>❌ NG①：トランザクション内でリモートサーバーに大量書き込みをする</h4>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- ❌ 分散トランザクション内での大量書き込み
+BEGIN TRANSACTION;
+    INSERT INTO [RemoteServer].[SalesDB].[dbo].[OrderLog]
+        (OrderDate, CustomerId, Amount)
+    SELECT OrderDate, CustomerId, Amount
+    FROM Orders
+    WHERE Status = &#39;New&#39;;  -- 万件レベル
+COMMIT;
+-- → MS DTC のタイムアウト・ロック嵐・インダウトトランザクションのリスク大
+</code></pre></div>
+<h4>❌ NG②：サーバーまたがりのJOINを複数テーブルスケールで行う</h4>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- ❌ ローカルとリモートの複数テーブルを複雑にJOINする
+SELECT a.*, b.*, c.*
+FROM [RemoteServer1].[DB1].[dbo].[TableA] a
+JOIN [RemoteServer2].[DB2].[dbo].[TableB] b ON a.Id = b.AId
+JOIN Orders c ON b.Id = c.CustomerId;
+-- → 最適化が効かず、最悪のプランで動く可能性
+</code></pre></div>
+<p><strong>対策</strong>：リモートのデータをローカルの一時テーブルに取得してから JOIN する。</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- ✅ 段階的に取得してから JOIN
+DROP TABLE IF EXISTS #StageA;
+DROP TABLE IF EXISTS #StageB;
+
+CREATE TABLE #StageA (Id INT, Val NVARCHAR(100));
+INSERT INTO #StageA
+SELECT Id, Val
+FROM OPENQUERY([RemoteServer1], &#39;SELECT Id, Val FROM DB1.dbo.TableA WHERE IsActive = 1&#39;);
+
+CREATE TABLE #StageB (AId INT, Val NVARCHAR(100));
+INSERT INTO #StageB
+SELECT AId, Val
+FROM OPENQUERY([RemoteServer2], &#39;SELECT AId, Val FROM DB2.dbo.TableB WHERE IsActive = 1&#39;);
+
+SELECT a.*, b.*, c.*
+FROM #StageA a
+JOIN #StageB b ON a.Id = b.AId
+JOIN Orders c ON b.AId = c.CustomerId;
+
+DROP TABLE #StageA;
+DROP TABLE #StageB;
+</code></pre></div>
+<h4>❌ NG③：リンクサーバーの接続タイムアウトを考慮しない</h4>
+<p>リンクサーバー経由でのクエリには、デフォルトのタイムアウト設定があります。長時間かかるクエリでは途中で切断されることがあります。</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- リンクサーバーの接続タイムアウト確認
+SELECT name, connect_timeout, query_timeout
+FROM sys.servers
+WHERE is_linked = 1;
+</code></pre></div>
+<p><b><em><strong>出力例</strong></em></b>：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">TEXT</span></div><pre><code>name          connect_timeout  query_timeout
+RemoteServer  0                0
+</code></pre></div>
+<p><code>0</code> は「タイムアウトなし（無制限）」です。本番環境では適切な値を設定することを検討してください。</p>
+<h4>❌ NG④：OPENROWSET/OPENQUERY にパスワードを平文で書く</h4>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- ❌ パスワードを平文でクエリに書く（ログに残る）
+SELECT *
+FROM OPENROWSET(&#39;SQLNCLI17&#39;, &#39;Server=Remote;Database=DB;User=sa;Password=P@ssw0rd!&#39;, 
+&#39;SELECT * FROM Orders&#39;);
+</code></pre></div>
+<p>パスワードが SQL ログやクエリプランキャッシュに残ります。Windows 認証（Trusted_Connection=Yes）を使うか、資格情報は適切に管理してください。</p>
+<hr>
+<h2>コラム：MSDTCは「素のネットワーク」を愛する</h2>
+<h3>MSDTCとは何か</h3>
+<p><b><em><strong>MSDTC（Microsoft Distributed Transaction Coordinator）</strong></em></b> は、複数のサーバーにまたがる <strong>分散トランザクション</strong> を調整するWindowsのシステムサービスです。サーバーAとサーバーBに対して「どちらの更新も両方コミット、または両方ロールバック」というACIDの原子性を保証します。</p>
+<p>前章の「サーバーまたがりのクエリー」において、<code>BEGIN TRANSACTION</code> の中からリモートサーバーへの書き込みを行うと、SQL Server は自動的にMSDTCへ分散トランザクションの調整を依頼します。</p>
+<blockquote>
+<p><strong>「なぜ急に出てくるのか」</strong>：リモートへの参照（SELECT）だけならMSDTCは起動しません。リモートへの更新（INSERT / UPDATE / DELETE）、または <code>BEGIN TRANSACTION</code> の中でリモートストアドを呼び出した場合にMSDTCが必要になります。</p>
+</blockquote>
+<hr>
+<h3>MSDTCの3つの落とし穴</h3>
+<h4>落とし穴①：135番ポートだけでは動かない（RPC動的ポートの呪縛）</h4>
+<p>MSDTCの通信は2段階になっています。</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>フェーズ</th>
+<th>使用ポート</th>
+<th>役割</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>交渉フェーズ</strong></td>
+<td>TCP 135（固定）</td>
+<td>RPCエンドポイントマッパーが「実際に使うポート番号」を返す</td>
+</tr>
+<tr>
+<td><strong>通信フェーズ</strong></td>
+<td>TCP 49152～65535（動的）</td>
+<td>実際のトランザクションデータが流れる</td>
+</tr>
+</tbody></table></div>
+<p><strong>問題のメカニズム</strong>：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">TEXT</span></div><pre><code>クライアント → 135番ポートへ問い合わせ → RPCエンドポイントマッパー
+             ← 「52000番ポートを使ってください」 ←
+クライアント → 52000番ポートに直接接続 → ❌ プロキシが塞いでいて到達できない
+</code></pre></div>
+<p>nginxなどで135番ポートだけをフォワードしても、RPC エンドポイントマッパーが返した動的ポート番号への接続はプロキシを経由しません。クライアントはそのポートに <strong>直接アクセスしようとする</strong> ため、プロキシの裏側で動的ポートが遮断されていると、セッションが確立できずに失敗します。</p>
+<blockquote>
+<p><strong>ポートを固定する方法（参考）</strong>：Windowsの「コンポーネントサービス」→「MSDTCのプロパティ」→「セキュリティ」でMSDTCが使用するポートを1つに固定し、そのポートだけをファイアウォールで開けるという方法はあります。ただし、後述の「名前解決の問題」も同時に解決しなければ動きません。</p>
+</blockquote>
+<h4>落とし穴②：双方向の名前解決が必須（ホスト名の呪縛）</h4>
+<p>MSDTCのプロトコル（MS-DTCO）では、<strong>自分のホスト名を通信パケット内に埋め込んで相手に送ります</strong>。</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">TEXT</span></div><pre><code>サーバーAがサーバーBへ送るパケット内容：
+  「私はホスト名 SERVER-A です。確認応答は SERVER-A の 52000番ポートへ返してください」
+</code></pre></div>
+<p>これがnginxなどのプロキシ越しになると、次のことが起きます：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">TEXT</span></div><pre><code>サーバーA（nginx 裏） ──→ nginx ──→ サーバーB
+                          (proxy)
+
+サーバーBが受け取るパケット：「返事は SERVER-A の 52000番ポートへ」
+サーバーBの動作：SERVER-A を名前解決して直接接続しようとする
+結果：SERVER-A は nginx の裏にいるため到達不能 → トランザクション タイムアウト
+</code></pre></div>
+<p>プロキシ側のIPやホスト名で通信を中継しても、<strong>DTCプロトコル内に埋め込まれたホスト名は書き換えられません</strong>。そのため、Callback（逆方向接続）のルートが見つからず、トランザクションがタイムアウトします。</p>
+<blockquote>
+<p><strong>補足</strong>：これはHTTPのリバースプロキシとは本質的に異なります。HTTPはアプリケーション層でヘッダを書き換えることができますが、MSDTCのRPCプロトコルはTCPトランスポート上でホスト名を直接埋め込むため、透過的な中継が構造上困難です。</p>
+</blockquote>
+<h4>落とし穴③：「設定は正しいのに動かない」という最も気づきにくいパターン</h4>
+<p>上記2つの問題が組み合わさると、以下のような「どこも間違っていないのに動かない」という状況が発生します：</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>確認項目</th>
+<th>状態</th>
+<th>実際の問題</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MSDTCサービスの起動</td>
+<td>✅ 両サーバーで稼働中</td>
+<td>問題なし</td>
+</tr>
+<tr>
+<td>ファイアウォールの135番</td>
+<td>✅ 開放済み</td>
+<td><strong>動的ポートが未開放</strong></td>
+</tr>
+<tr>
+<td>ホスト名のDNS登録</td>
+<td>✅ 登録済み</td>
+<td><strong>プロキシ越しでは逆引き到達不能</strong></td>
+</tr>
+<tr>
+<td>ネットワーク疎通</td>
+<td>✅ ping 通る</td>
+<td><strong>プロキシを通るため実際のポートに届かない</strong></td>
+</tr>
+</tbody></table></div>
+<blockquote>
+<p><strong>実体験より</strong>：「設定は全部正しいはず、それなのになぜ動かないのか」という状況に陥ったとき、まずネットワーク経路にnginxなどのプロキシが介在していないかを確認してください。すべてのMSDTCトラブルの中で最も気づきにくいパターンです。</p>
+</blockquote>
+<hr>
+<h3>現実的な判断：「分散トランザクションから降りる」</h3>
+<p>クラウド、プロキシ、異なるネットワークセグメントなど、複雑なネットワーク構成が前提の企業環境では、<strong>MSDTCに頼る設計自体がリスク</strong>です。次の代替アプローチへの切り替えを早めに検討してください。</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>アプローチ</th>
+<th>概要</th>
+<th>適したシーン</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>アプリケーション層でのリトライ処理</strong></td>
+<td>更新失敗時にアプリ側でリトライ・補正処理を書く</td>
+<td>更新頻度が低く、失敗時のリカバリが容易なケース</td>
+</tr>
+<tr>
+<td><strong>結果整合性（Eventual Consistency）の許容</strong></td>
+<td>一時的な不整合を許容し、非同期で整合を取る</td>
+<td>バッチ処理・ログ系テーブルなど即時整合が不要なケース</td>
+</tr>
+<tr>
+<td><strong>更新処理をリモートストアドに委譲</strong></td>
+<td>リモートサーバー側のストアドで更新を完結させる</td>
+<td>ローカルからは結果の確認のみ行うケース</td>
+</tr>
+<tr>
+<td><strong>サーバー間の直接接続を確立</strong></td>
+<td>プロキシを廃止し、サーバー同士が直接通信できるネットワーク構成にする</td>
+<td>セキュリティ要件が許す場合の根本解決</td>
+</tr>
+</tbody></table></div>
+<blockquote>
+<p><strong>現場の知恵として</strong>：「分散トランザクションを諦めて、アプリケーション側での整合性確保に切り替える」という判断は、決して設計の敗北ではありません。<strong>複雑なネットワーク制約の中で安定稼働を優先した、現実的な最適解</strong>です。動かない環境でMSDTCに固執し続けることこそ、最大のリスクです。</p>
+</blockquote>
+<hr>
+<h3>まとめ：MSDTCが要求する「3つの素直さ」</h3>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>要求</th>
+<th>内容</th>
+<th>プロキシ環境での問題</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>ポートを隠さない</strong></td>
+<td>135番に加え、動的ポート（49152～65535）への直接アクセスが必要</td>
+<td>固定ポートしか通れない経路では動的ポートに到達できない</td>
+</tr>
+<tr>
+<td><strong>名前を隠さない</strong></td>
+<td>双方のサーバーがお互いのホスト名で直接到達できる必要がある</td>
+<td>パケット内のホスト名はプロキシが書き換えられず、Callbackが迷子になる</td>
+</tr>
+<tr>
+<td><strong>経路を曲げない</strong></td>
+<td>両サーバー間で対称な通信が成立する必要がある</td>
+<td>プロキシによる一方向の経路変換はDTCプロトコルと根本的に相性が悪い</td>
+</tr>
+</tbody></table></div>
+<p>セキュリティを強化した企業ネットワークでは、これら3つのうちどれか1つでも欠けるとMSDTCは動作しません。その場合は早期に「アプリケーション側での代替設計」へシフトすることが、現場で生き残るための最適解です。</p>
+<hr>
+<h2>分離レベルと <code>WITH(NOLOCK)</code> の罠</h2>
+<h3>分離レベルとは何か</h3>
+<p>ACID特性の「<strong>I（独立性）</strong>」を具体的にどの程度保証するかを制御するのが <strong>分離レベル（Isolation Level）</strong> です。分離レベルを下げると「他のトランザクションの影響を受けやすくなる代わりに、ロックによる待機が減る」というトレードオフがあります。</p>
+<p>SQL Server の分離レベルは以下の5段階です（上ほど厳密・遅い、下ほど緩い・速い）：</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>分離レベル</th>
+<th align="center">ダーティリード</th>
+<th align="center">反復不能読み取り</th>
+<th align="center">ファントムリード</th>
+<th>特性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>SERIALIZABLE</strong></td>
+<td align="center">❌</td>
+<td align="center">❌</td>
+<td align="center">❌</td>
+<td>最も厳密。同一トランザクション内で同じ結果が保証</td>
+</tr>
+<tr>
+<td><strong>REPEATABLE READ</strong></td>
+<td align="center">❌</td>
+<td align="center">❌</td>
+<td align="center">✅</td>
+<td>同一行の再読みは保証。新規行の挿入は防げない</td>
+</tr>
+<tr>
+<td><strong>READ COMMITTED</strong>（デフォルト）</td>
+<td align="center">❌</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td>コミット済みデータのみ読む。SQL Server の標準</td>
+</tr>
+<tr>
+<td><strong>READ UNCOMMITTED</strong></td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td>コミット前のデータも読む。最も危険</td>
+</tr>
+<tr>
+<td><strong>SNAPSHOT</strong></td>
+<td align="center">❌</td>
+<td align="center">❌</td>
+<td align="center">❌</td>
+<td>行バージョン管理で読取時ロックを回避（tempdbを使用）</td>
+</tr>
+</tbody></table></div>
+<blockquote>
+<p><strong>用語解説</strong>：</p>
+<ul>
+<li><strong>ダーティリード</strong>：他のトランザクションがまだコミットしていない（ROLLBACKされるかもしれない）データを読んでしまう</li>
+<li><strong>反復不能読み取り</strong>：同一トランザクション内で同じ行を2回読むと値が変わっている</li>
+<li><strong>ファントムリード</strong>：同一トランザクション内で同じ条件で検索すると件数が変わっている</li>
+</ul>
+</blockquote>
+<hr>
+<h3><code>WITH(NOLOCK)</code> の正体と危険性</h3>
+<p>現場では「<strong>とりあえずNOLOCKをつける</strong>」という習慣が広がっています。これは非常に危険です。</p>
+<p><code>WITH(NOLOCK)</code> は <code>READ UNCOMMITTED</code> 分離レベルをそのテーブルだけに適用するヒントです。</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- これはやっていることが同じ
+SELECT * FROM Orders WITH(NOLOCK);
+
+-- ↑ と ↓ は等価
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+SELECT * FROM Orders;
+SET TRANSACTION ISOLATION LEVEL READ COMMITTED; -- 戻すのを忘れると大惨事
+</code></pre></div>
+<h4><code>WITH(NOLOCK)</code> が引き起こす3つの問題</h4>
+<p><strong>問題① ダーティリード：存在しないデータを読む</strong></p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- セッション1（ロールバックされる予定のトランザクション）
+BEGIN TRANSACTION;
+INSERT INTO Orders (OrderDate, CustomerId, Amount, Status)
+VALUES (&#39;2025-01-01&#39;, 1, 100000.00, &#39;New&#39;);
+-- まだ COMMIT していない
+
+-- セッション2（WITH(NOLOCK) で読んでいる）
+SELECT * FROM Orders WITH(NOLOCK) WHERE Amount = 100000.00;
+-- → ロールバックされるはずのデータが見えてしまう！
+
+-- セッション1（ロールバック）
+ROLLBACK TRANSACTION;
+-- → セッション2が読んだデータは「幻のデータ」だった
+</code></pre></div>
+<p><strong>問題② 同じ行が2回返ってくる（または行が消える）</strong></p>
+<p>インデックスの再構築中など、ページの物理的な移動が発生している際に <code>WITH(NOLOCK)</code> で読むと、同じ行が重複して返ってきたり、本来あるはずの行がスキップされることがあります。これは SQL Server の公式ドキュメントにも記載されている既知の現象です。</p>
+<p><strong>問題③ 隠れた状態管理</strong></p>
+<p><code>SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED</code> でセッションレベルに設定した場合、設定を戻し忘れると<strong>そのセッションのすべてのクエリが永続的にダーティリードになります</strong>。</p>
+<hr>
+<h3>❌ <code>WITH(NOLOCK)</code> のNG集</h3>
+<h4>❌ NG①：「ロック待ちが嫌だから」の乱用</h4>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- ❌ 全テーブルにNOLOCKを貼る習慣
+SELECT o.*, c.Name
+FROM Orders o WITH(NOLOCK)
+JOIN Customers c WITH(NOLOCK) ON o.CustomerId = c.CustomerId
+WHERE o.Status = &#39;New&#39;;
+-- → 集計レポートや在庫確認に使うと、架空の数字が混入する
+</code></pre></div>
+<h4>❌ NG②：金額・在庫・ステータスなど「正確性が必要なデータ」にNOLOCKを使う</h4>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- ❌ 金額をNOLOCKで確認（コミット前の架空データが混入する恐れ）
+SELECT SUM(Amount) FROM Orders WITH(NOLOCK) WHERE CustomerId = 1;
+-- → 別のトランザクションがロールバックした変更を読んでしまう可能性
+</code></pre></div>
+<hr>
+<h3>✅ ロック競合を減らす正しいアプローチ</h3>
+<p>「NOLOCKをつけたい」という気持ちの背景には「読み取り時のロック待ちをなくしたい」というニーズがあります。これを<strong>安全に解決する方法</strong>があります。</p>
+<h4>① RCSI（Read Committed Snapshot Isolation）を有効にする</h4>
+<p>データベースレベルで設定すると、<code>READ COMMITTED</code>（デフォルト）の動作が変わり、<strong>読み取りがロックを取得しなくなります</strong>。行バージョン管理（tempdb を使用）を利用します。</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- データベースで RCSI を有効にする（要排他的アクセス）
+ALTER DATABASE TestDB
+SET READ_COMMITTED_SNAPSHOT ON;
+</code></pre></div>
+<p>RCSI を有効にすると：</p>
+<ul>
+<li><code>WITH(NOLOCK)</code> なしの通常クエリがロックをとらずに読める</li>
+<li>ダーティリードは発生しない（コミット済みの最新スナップショットを読む）</li>
+<li><strong>NOLOCKが不要になる</strong></li>
+</ul>
+<blockquote>
+<p><strong>代償</strong>：tempdbへの負荷が増えます（前述の「tempdb」セクション参照）。</p>
+</blockquote>
+<h4>② 分離レベルを明示的に指定する</h4>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- 特定のバッチのみ読み取りロックなしで実行する（使用後は必ず戻す）
+SET TRANSACTION ISOLATION LEVEL SNAPSHOT;
+
+SELECT * FROM Orders WHERE OrderDate = &#39;2025-01-01&#39;;
+
+SET TRANSACTION ISOLATION LEVEL READ COMMITTED; -- 必ず戻す
+</code></pre></div>
+<p><strong>まとめ</strong>：</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>やりたいこと</th>
+<th>正しい方法</th>
+<th>危険な方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>読み取りブロックをなくしたい</td>
+<td>データベースで RCSI を有効にする</td>
+<td><code>WITH(NOLOCK)</code> を乱用する</td>
+</tr>
+<tr>
+<td>一時的に読み取りロックなしにしたい</td>
+<td><code>SNAPSHOT</code> 分離レベルを明示指定</td>
+<td><code>READ UNCOMMITTED</code> をセッションに設定したまま放置</td>
+</tr>
+<tr>
+<td>「古くてもいいデータ」を読みたい</td>
+<td>RCSI または SNAPSHOT</td>
+<td><code>WITH(NOLOCK)</code>（架空データが混入するリスクあり）</td>
+</tr>
+</tbody></table></div>
+<hr>
+<h2>よくある質問とトラブルシューティング</h2>
+<h3>Q1. インデックスを作ったのに遅いままです。なぜですか？</h3>
+<p><strong>A</strong>. 以下の順番で確認してください：</p>
+<ol>
+<li><strong>実行計画を確認する</strong>：<code>Index Seek</code> になっているか、<code>Table Scan</code> や <code>Index Scan</code> のままか確認する（前述参照）</li>
+<li><strong>SARGable でないWHEREを使っていないか確認</strong>：列に関数を適用したり LIKE &#39;% ...&#39; にしていないか</li>
+<li><strong>インデックスの断片化を確認</strong>：<code>sys.dm_db_index_physical_stats</code> で断片化率を確認し、30%超なら <code>REBUILD</code></li>
+<li><strong>統計情報が古い可能性</strong>：<code>UPDATE STATISTICS テーブル名</code> を実行して最新化する</li>
+<li><strong>カーディナリティが低い列</strong>：Yes/No フラグのような取り得る値が少ない列はインデックスの効果が薄い</li>
+</ol>
+<blockquote>
+<p><strong>💡 コラム：統計情報とはなにか？なぜ古くなると遅くなるのか？</strong></p>
+<p>SQL Server はクエリを実行する前に「<strong>実行計画（Execution Plan）</strong>」を作成します。この計画を作る際に「このテーブルに対象データは何件あるか？」を推定するために使うのが**統計情報（Statistics）**です。</p>
+<p>統計情報が古いと、実際には100万件あるテーブルを「1000件のはず」と誤判断し、インデックスを使わない非効率な実行計画を選択することがあります。</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- 統計情報の最終更新日を確認する
+SELECT
+    OBJECT_NAME(s.object_id) AS table_name,
+    s.name AS stats_name,
+    sp.last_updated,
+    sp.rows,
+    sp.rows_sampled,
+    sp.modification_counter  -- この値が大きいほど古い
+FROM sys.stats s
+CROSS APPLY sys.dm_db_stats_properties(s.object_id, s.stats_id) sp
+WHERE OBJECT_NAME(s.object_id) = &#39;Orders&#39;
+ORDER BY sp.modification_counter DESC;
+</code></pre></div>
+<p><code>modification_counter</code> が大きい（データの変更回数が多い）のに <code>last_updated</code> が古い場合は、手動更新を検討してください。SQL Server はデフォルトで自動更新しますが、大量データのテーブルでは自動更新の閾値（20%変更）に達しにくく、古い状態が続くことがあります。</p>
+</blockquote>
+<h3>Q2. デッドロックが頻発しています。どうすればよいですか？</h3>
+<p><strong>A</strong>. デッドロックトレースを取得して根本原因を特定してください。</p>
+<blockquote>
+<p><strong>⚠️ 注意</strong>：デッドロックは SQL Server が即座に解消する（片方をロールバックする）ため、<code>sys.dm_exec_requests</code> では捕捉できません。過去に発生したデッドロックを調べるには、<strong>system_health 拡張イベント</strong> を使います。</p>
+</blockquote>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- system_health 拡張イベントからデッドロックのXMLを取得する
+SELECT
+    xdr.value(&#39;@timestamp&#39;, &#39;datetime2&#39;) AS deadlock_time,
+    xdr.query(&#39;.&#39;) AS deadlock_graph
+FROM (
+    SELECT CAST(target_data AS XML) AS target_data
+    FROM sys.dm_xe_session_targets t
+    JOIN sys.dm_xe_sessions s ON t.event_session_address = s.address
+    WHERE s.name = &#39;system_health&#39;
+      AND t.target_name = &#39;ring_buffer&#39;
+) AS data
+CROSS APPLY target_data.nodes(&#39;//RingBufferTarget/event[@name=&quot;xml_deadlock_report&quot;]&#39;) AS xdr_tab(xdr)
+ORDER BY deadlock_time DESC;
+</code></pre></div>
+<p>上記クエリで取得した XML を SSMS の「デッドロックグラフ」で視覚化すると、どのセッションがどのリソースを巡って競合したかが一目で分かります。</p>
+<p><strong>現在進行中のブロッキングを確認する場合</strong>（デッドロックではなく、待機中のセッションを見る）：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- ブロッキングセッションの確認（リアルタイム）
+SELECT
+    r.session_id,
+    r.blocking_session_id,
+    r.wait_type,
+    r.wait_time,
+    t.text AS sql_text
+FROM sys.dm_exec_requests r
+CROSS APPLY sys.dm_exec_sql_text(r.sql_handle) t
+WHERE r.blocking_session_id &gt; 0;
+</code></pre></div>
+<p>デッドロックは Extended Events（推奨）で継続的にキャプチャするか、SSMS の「拡張イベント」→「system_health」セッションから過去の履歴を確認できます。根本原因は多くの場合「テーブルアクセス順序の不一致」なので、<strong>全処理で同じ順序でテーブルに触る設計に変更する</strong>ことが最も効果的です。</p>
+<h3>Q3. tempdb が肥大化して、ディスクがいっぱいになりました。</h3>
+<p><strong>A</strong>. 原因を特定してから対処してください：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- tempdb を大量使用しているセッションを特定
+SELECT
+    t.session_id,
+    t.internal_objects_alloc_page_count * 8 / 1024 AS internal_MB,
+    t.user_objects_alloc_page_count * 8 / 1024 AS user_MB,
+    r.blocking_session_id,
+    s.text AS sql_text
+FROM sys.dm_db_task_space_usage t
+JOIN sys.dm_exec_requests r ON t.session_id = r.session_id
+CROSS APPLY sys.dm_exec_sql_text(r.sql_handle) s
+WHERE t.internal_objects_alloc_page_count + t.user_objects_alloc_page_count &gt; 0
+ORDER BY (t.internal_objects_alloc_page_count + t.user_objects_alloc_page_count) DESC;
+</code></pre></div>
+<p><b><em><strong>出力例</strong></em></b>：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">TEXT</span></div><pre><code>session_id  internal_MB  user_MB  sql_text
+58          4096         0        SELECT ... ORDER BY 30列（ソート操作で爆発）
+</code></pre></div>
+<p>この例では、セッション58が 4GB のソート作業領域を tempdb に展開しています。クエリを改善（インデックス追加やORDER BYの見直し）して対処します。</p>
+<h3>Q4. サーバーまたがりのクエリがタイムアウトします。</h3>
+<p><strong>A</strong>. 以下のチェックリストを確認してください：</p>
+<ol>
+<li><strong>OPENQUERY を使っているか</strong>：4部構成名から OPENQUERY に切り替える（前述参照）</li>
+<li><strong>リモートのインデックスが適切か</strong>：リモートサーバーに実際にログインして実行計画を確認する</li>
+<li><strong>リンクサーバーの設定</strong>：<code>query_timeout</code> の値を確認・調整する</li>
+<li><strong>ネットワーク帯域の確認</strong>：転送量が多い場合、ネットワーク自体がボトルネックの可能性</li>
+<li><strong>MS DTC の動作確認</strong>：分散トランザクションを使っている場合、MS DTC サービスが両サーバーで動作しているか確認</li>
+</ol>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- リンクサーバーの接続テスト
+EXEC sp_testlinkedserver [RemoteServer];
+</code></pre></div>
+<p><b><em><strong>成功時の出力</strong></em></b>：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">TEXT</span></div><pre><code>EXEC sp_testlinkedserver [RemoteServer] が正常に完了しました。
+</code></pre></div>
+<h3>Q5. <code>##グローバル一時テーブル</code> は削除されたはずなのに「既に存在する」エラーが出ます。</h3>
+<p><strong>A</strong>. グローバル一時テーブルは「全セッションがアクセスを終えたとき」に削除されます。他のセッションがまだ参照中の場合は削除されません。</p>
+<p>確認方法：</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- ##テーブルを参照しているセッションを調査
+SELECT
+    o.name,
+    r.session_id,
+    r.status,
+    t.text
+FROM tempdb.sys.objects o
+JOIN sys.dm_exec_requests r ON r.session_id != @@SPID
+CROSS APPLY sys.dm_exec_sql_text(r.sql_handle) t
+WHERE o.name LIKE &#39;##%&#39;
+ORDER BY o.name;
+</code></pre></div>
+<h3>Q6. GROUP BY を使ったクエリで ORDER BY がエラーになります。</h3>
+<p><strong>A</strong>. <code>GROUP BY</code> を使ったクエリでは、<code>ORDER BY</code> に指定できる列は <strong>SELECT句に含まれているものか、集計関数の結果のみ</strong>です。</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- ❌ NG：SELECT句にない OrderDate で ORDER BY しようとするとエラー
+SELECT CustomerId, SUM(Amount) AS TotalAmount
+FROM Orders
+GROUP BY CustomerId
+ORDER BY OrderDate;  -- エラー: ORDER BY 句の列 &#39;OrderDate&#39; が無効です
+
+-- ✅ OK：SELECT句に含まれる列または集計結果で並べ替える
+SELECT CustomerId, SUM(Amount) AS TotalAmount
+FROM Orders
+GROUP BY CustomerId
+ORDER BY TotalAmount DESC;  -- 集計結果で並べ替え
+
+-- または
+ORDER BY CustomerId;  -- GROUP BY 列で並べ替え
+</code></pre></div>
+<hr>
+<h2>SQL Server チューニングの現実と未来</h2>
+<h3>「これはゲーム開発並みの複雑さではないか」という問いに向き合う</h3>
+<p>本ガイドブックを通じて感じていただけたかもしれません——SQL Server を「まともに動かす」ためにやらなければならないことの多さを。インデックス設計、断片化メンテ、統計情報の鮮度管理、tempdb のファイル分割、NOLOCK を避けるためのRCSI設定、分散トランザクションの罠……。</p>
+<p>これはゲーム開発で言えば、<strong>描画最適化・メモリ管理・ネットワーク遅延補正・物理演算の精度調整をすべて手動でやれ</strong>と言われているようなものです。熟練者でなければ安定稼働すら難しい。</p>
+<blockquote>
+<p><strong>正直に言えば、これは「設計が悪い」のではありません。SQL Server がこれほどの複雑さを持つのは、30年以上の進化の中で膨大な要求仕様を詰め込み続けた結果です。しかし「それが理由だから仕方ない」と言い続けることが、この技術の未来にとって良いことかどうかは別の話です。</strong></p>
+</blockquote>
+<hr>
+<h3>若手開発者が遠ざかるリスク</h3>
+<p>これは業界全体の問題として、静かに進行しています。</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>問題</th>
+<th>現状</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>学習コストの高さ</strong></td>
+<td>インデックス・ロック・tempdb・分散トランザクションを理解するのに数年かかる</td>
+</tr>
+<tr>
+<td><strong>失敗が見えにくい</strong></td>
+<td>「動いているけど遅い」「たまにデッドロックする」はすぐにはわからない</td>
+</tr>
+<tr>
+<td><strong>エラーメッセージが不親切</strong></td>
+<td>「オブジェクト名 &#39;X&#39; は無効です」ではなぜ無効かまで教えてくれない</td>
+</tr>
+<tr>
+<td><strong>ドキュメントの深さ</strong></td>
+<td>公式ドキュメントが豊富な反面、初学者が何から読めばいいかわからない</td>
+</tr>
+<tr>
+<td><strong>「聞ける人」問題</strong></td>
+<td>SQL が得意なベテランは数少なく、職場で質問できる環境が整っていない</td>
+</tr>
+</tbody></table></div>
+<p>若手がリレーショナルデータベースよりも MongoDB・Firebase・DynamoDB などのNoSQLや、SQLを意識させない ORM に流れていく理由は明確です。<strong>「とりあえず動かせる」までの距離が圧倒的に短い</strong>からです。</p>
+<p>この流れを「嘆かわしい」と言うのは簡単ですが、現場の開発者として正直なところ、<strong>彼らの選択は合理的です</strong>。複雑なものを複雑なまま維持し続けることを、次の世代に強いるのは持続可能ではありません。</p>
+<hr>
+<h3>Microsoft と業界は何をしているか</h3>
+<p>明るい話もあります。Microsoft はこの問題を認識しており、「人間がやらなくていいことをシステムが自動化する」方向に継続的に投資しています。</p>
+<h4>① Intelligent Query Processing（IQP）— SQL Server 2019 以降</h4>
+<p>従来は「人間が実行計画を見て、インデックスを張り、クエリを書き直す」という手作業だったチューニングの一部を、SQL Server のエンジン自体が自動調整するようになっています。</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>機能</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>アダプティブ結合</strong></td>
+<td>実行中にデータ量を見て、Hash Join か Nested Loop か自動選択</td>
+</tr>
+<tr>
+<td><strong>行数推定フィードバック</strong></td>
+<td>実行後に統計情報のズレを学習し、次回の実行計画を自動修正</td>
+</tr>
+<tr>
+<td><strong>メモリ許可フィードバック</strong></td>
+<td>ソート・ハッシュ操作のメモリ不足・過剰を自動調整</td>
+</tr>
+<tr>
+<td><strong>近似COUNT DISTINCT</strong></td>
+<td>大量データの集計クエリを精度を保ちながら大幅高速化</td>
+</tr>
+</tbody></table></div>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- IQP の有効化はデータベースの互換性レベルを 150（SQL Server 2019）以上にするだけ
+ALTER DATABASE TestDB SET COMPATIBILITY_LEVEL = 160; -- SQL Server 2022
+</code></pre></div>
+<h4>② Automatic Tuning（自動チューニング）— SQL Server 2017 以降 / Azure SQL</h4>
+<p>手動での実行計画管理を自動化する機能です。</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- 自動チューニングの状態確認
+SELECT name, desired_state_desc, actual_state_desc, reason_desc
+FROM sys.database_automatic_tuning_options;
+
+-- 自動インデックス作成・削除を有効化（Azure SQL Database で特に有効）
+ALTER DATABASE TestDB
+SET AUTOMATIC_TUNING (CREATE_INDEX = ON, DROP_INDEX = ON);
+</code></pre></div>
+<blockquote>
+<p><strong>注意</strong>：オンプレミスの SQL Server では <code>FORCE_LAST_GOOD_PLAN</code>（退行した実行計画を自動で戻す機能）のみがデフォルト有効です。<code>CREATE_INDEX</code> の自動適用は主に Azure SQL Database 向けです。</p>
+</blockquote>
+<h4>③ Query Store — SQL Server 2016 以降</h4>
+<p>「なぜ急に遅くなったのか」を時系列で追跡できる機能です。実行計画の履歴を自動保存し、パラメータスニッフィングによる退行を視覚化・強制修正できます。</p>
+<div class="code-block-wrapper"><div class="code-block-header"><span class="code-block-lang">SQL</span></div><pre><code>-- Query Store の有効化
+ALTER DATABASE TestDB
+SET QUERY_STORE = ON
+(
+    OPERATION_MODE = READ_WRITE,
+    MAX_STORAGE_SIZE_MB = 500,
+    QUERY_CAPTURE_MODE = AUTO
+);
+
+-- 遅いクエリのトップ10を確認
+SELECT TOP 10
+    qt.query_sql_text,
+    qrs.avg_duration / 1000.0 AS avg_ms,
+    qrs.count_executions
+FROM sys.query_store_query_text qt
+JOIN sys.query_store_query q ON qt.query_text_id = q.query_text_id
+JOIN sys.query_store_plan qp ON q.query_id = qp.query_id
+JOIN sys.query_store_runtime_stats qrs ON qp.plan_id = qrs.plan_id
+ORDER BY qrs.avg_duration DESC;
+</code></pre></div>
+<h4>④ Azure SQL Database / Managed Instance：クラウドが吸収してくれること</h4>
+<p>オンプレミスの SQL Server で人間が手動でやっていることの多くは、Azure SQL に移行することで消えます。</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>オンプレミスで人間がやること</th>
+<th>Azure SQL での扱い</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>tempdb のファイル分割</td>
+<td>自動最適化済み</td>
+</tr>
+<tr>
+<td>インデックス断片化メンテ</td>
+<td>自動メンテナンスウィンドウ</td>
+</tr>
+<tr>
+<td>統計情報の更新</td>
+<td>自動更新（チューニング済み）</td>
+</tr>
+<tr>
+<td>バックアップ管理</td>
+<td>全自動</td>
+</tr>
+<tr>
+<td>パッチ適用</td>
+<td>自動（ダウンタイム最小化）</td>
+</tr>
+<tr>
+<td>スケールアップ/ダウン</td>
+<td>ボタン1つまたは自動スケーリング</td>
+</tr>
+</tbody></table></div>
+<p>**「その複雑さをクラウドに押し込めて、開発者は本来の業務に集中できる」**というのが Microsoft の現在の回答です。</p>
+<hr>
+<h3>現場の開発者へ：この複雑さとどう向き合うか</h3>
+<blockquote>
+<p><strong>個人的な見解として</strong>：SQL Server のチューニング知識は、まるで「車のエンジンをキャブレターレベルで理解していないと運転できない」ような状態です。現代の車はECUが自動制御してくれるように、データベースもその方向に進んでいます。</p>
+</blockquote>
+<p><strong>若手開発者の方へ</strong>：今のSQL Serverの複雑さは、あなたが「向いていない」からわからないのではありません。それは本当に難しいのです。Query Storeと実行計画の読み方、インデックスのSARGable原則、この2つを押さえるだけでも現場の大半の問題は解決できます。全部を一度に覚える必要はありません。</p>
+<p><strong>ベテランの方へ</strong>：自分が長年かけて身につけた知識が若手に伝わらないとき、それは「今の若者はやる気がない」のではなく、「学習コストが高すぎる構造になっている」可能性を考えてみてください。ドキュメントに「なぜこうなるのか」を書く文化、失敗を責めない現場の雰囲気、それが最も効果的な「育成チューニング」です。</p>
+<p><strong>システム設計者の方へ</strong>：新規プロジェクトではSQL Server の採用理由を明確にしてください。大量の同時書き込みが要件にない場合、PostgreSQL・MySQL・Azure SQL との比較検討を行うことが現代の設計責任です。SQL Server が正解のケースは確実に存在しますが、「昔からそうだったから」という理由での選択は技術的負債になります。</p>
+<hr>
+<h3>まとめ：SQL Server の現実と期待</h3>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>観点</th>
+<th>現実</th>
+<th>期待される変化</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>チューニング複雑度</strong></td>
+<td>ゲーム開発並みの専門性が必要</td>
+<td>IQP・自動チューニングで人間の介入を減らす方向</td>
+</tr>
+<tr>
+<td><strong>若手の参入障壁</strong></td>
+<td>高い。NoSQLやORMに流出</td>
+<td>クラウド移行でインフラ運用を隠蔽することで緩和可能</td>
+</tr>
+<tr>
+<td><strong>マイクロソフトの姿勢</strong></td>
+<td>Azure SQL・IQP・自動チューニングに積極投資</td>
+<td>AIとの統合（SQL Server 2025のベクター型・自然言語クエリ）で加速</td>
+</tr>
+<tr>
+<td><strong>オンプレミスの未来</strong></td>
+<td>セキュリティ・コンプライアンス要件があれば継続</td>
+<td>クラウドへの段階移行が現実的な選択肢</td>
+</tr>
+</tbody></table></div>
+<p>SQL Server は複雑です。しかしその複雑さは「難しくしてやろう」という意図ではなく、<strong>エンタープライズの現実に真剣に向き合ってきた証拠でもあります</strong>。複雑さを理解したうえで「どこを自動化し、どこを人間が管理するか」を選択できることが、現代のデータベースエンジニアに求められる素養です。</p>
+<hr>
+<h2>まとめ</h2>
+<p><span style="font-size:1.2em">📖</span> 本ガイドブックでは、SQL Server の以下のテーマについて「なぜそうなるのか」と「やってはいけない」を軸に解説しました：</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>テーマ</th>
+<th>最重要ポイント</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>インデックス</strong></td>
+<td>SARGable なクエリを書く。インデックスは多すぎてもNG。断片化を定期メンテする</td>
+</tr>
+<tr>
+<td><strong>トランザクション</strong></td>
+<td>短く・TRY-CATCH で囲む。分散トランザクションは慎重に</td>
+</tr>
+<tr>
+<td><strong>tempdb</strong></td>
+<td>全ユーザー共有の有限リソース。使い終わったら即DROP。複数ファイル化推奨</td>
+</tr>
+<tr>
+<td><strong>#・##テーブル</strong></td>
+<td>ローカル一時テーブルを積極利用。##はビジネスロジックに使わない</td>
+</tr>
+<tr>
+<td><strong>サーバーまたがり</strong></td>
+<td>4部構成名よりOPENQUERY。リモートにストアドを置いて結果を引き込む</td>
+</tr>
+<tr>
+<td><strong>MSDTC</strong></td>
+<td>プロキシ・クラウド環境では動的ポートとホスト名の問題で動作しないケースが多い。代替設計への早期シフトが現実解</td>
+</tr>
+<tr>
+<td><strong>分離レベル・NOLOCK</strong></td>
+<td><code>WITH(NOLOCK)</code> は「速いが嘘をつく」。正しい対策は RCSI の有効化</td>
+</tr>
+<tr>
+<td><strong>チューニングの現実</strong></td>
+<td>複雑さを認識しつつ、IQP・自動チューニング・クラウドで負荷を減らす方向へ</td>
+</tr>
+</tbody></table></div>
+<h3>SQL Server チューニングのゲーム開発的思想</h3>
+<ul>
+<li><p><span style="font-size:1.2em">🎮</span> <strong>ロード時間の短縮は「不要なデータの読み込みをやめること」から始まる</strong><br>→ インデックスでフルスキャンを Index Seek に変える＝必要な箇所だけ読む</p>
+</li>
+<li><p><span style="font-size:1.2em">🎮</span> <strong>ゲームのラグはネットワーク往復にある</strong><br>→ サーバーまたがりではリモートで絞り込み、少ないデータだけ転送する</p>
+</li>
+<li><p><span style="font-size:1.2em">🎮</span> <strong>シェアードリソースは「全員が影響を受ける」前提で設計する</strong><br>→ tempdb は全ユーザー共有。自分のクエリが他人のパフォーマンスを殺していないか常に意識する</p>
+</li>
+<li><p><span style="font-size:1.2em">🎮</span> <strong>プロゲーマーだけが楽しめるゲームは、普及しない</strong><br>→ チューニングの複雑さを次世代に丸投げせず、自動化・標準化・ドキュメント化で「誰でも参加できる現場」を作る</p>
+</li>
+</ul>
+<hr>
+<h2>参考リンク一覧</h2>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>リンク</th>
+<th>詳細</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://learn.microsoft.com/ja-jp/sql/relational-databases/sql-server-index-design-guide">SQL Server 公式ドキュメント（インデックスの設計ガイド）</a></td>
+<td>Microsoft 公式のインデックス設計ガイド</td>
+</tr>
+<tr>
+<td><a href="https://learn.microsoft.com/ja-jp/sql/relational-databases/sql-server-transaction-locking-and-row-versioning-guide">SQL Server トランザクション ガイド</a></td>
+<td>ロック・行バージョン管理の詳細</td>
+</tr>
+<tr>
+<td><a href="https://learn.microsoft.com/ja-jp/sql/t-sql/statements/set-transaction-isolation-level-transact-sql">トランザクション分離レベル</a></td>
+<td>分離レベルの詳細リファレンス</td>
+</tr>
+<tr>
+<td><a href="https://learn.microsoft.com/ja-jp/sql/relational-databases/sql-server-transaction-locking-and-row-versioning-guide?view=sql-server-ver16#read_committed_snapshot_isolation_level">Read Committed スナップショット分離（RCSI）</a></td>
+<td>RCSI の設定と動作の詳細</td>
+</tr>
+<tr>
+<td><a href="https://learn.microsoft.com/ja-jp/sql/relational-databases/databases/tempdb-database">tempdb データベース</a></td>
+<td>tempdb の最適化ガイド</td>
+</tr>
+<tr>
+<td><a href="https://learn.microsoft.com/ja-jp/sql/relational-databases/linked-servers/linked-servers-database-engine">リンク サーバー（SQL Server）</a></td>
+<td>リンクサーバーと分散クエリの詳細</td>
+</tr>
+<tr>
+<td><a href="https://learn.microsoft.com/ja-jp/sql/t-sql/functions/openquery-transact-sql">OPENQUERY (Transact-SQL)</a></td>
+<td>OPENQUERY 関数リファレンス</td>
+</tr>
+<tr>
+<td><a href="https://learn.microsoft.com/ja-jp/troubleshoot/windows-server/application-management/configure-dtc-to-work-through-firewall">分散トランザクション コーディネーター（MSDTC）の構成</a></td>
+<td>ファイアウォール越しのMSDTC設定ガイド</td>
+</tr>
+<tr>
+<td><a href="https://learn.microsoft.com/ja-jp/sql/relational-databases/performance/intelligent-query-processing">Intelligent Query Processing（IQP）</a></td>
+<td>SQL Server 2019以降の自動最適化機能</td>
+</tr>
+<tr>
+<td><a href="https://learn.microsoft.com/ja-jp/sql/relational-databases/automatic-tuning/automatic-tuning">自動チューニング</a></td>
+<td>自動チューニングの概要と設定方法</td>
+</tr>
+<tr>
+<td><a href="https://learn.microsoft.com/ja-jp/sql/relational-databases/performance/monitoring-performance-by-using-the-query-store">Query Store の使用</a></td>
+<td>クエリパフォーマンス履歴の管理</td>
+</tr>
+</tbody></table></div>
+<hr>
+<p><strong>更新日時</strong>：2026 年 04 月 16 日</p>
+<p><b><em><strong>本ガイドブックは、SQL Serverをすでに使っている経験者の方が「あやふやをなくし」「やってはいけないことを知る」ことを目的として作成されています。内容に関するご質問や追加テーマのご要望がございましたら、いつでもお気軽にお声がけください。</strong></em></b></p>
+<hr>
+
+
+    </main>
+  </div>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        darkMode: true,
+        background: '#1a1d27',
+        mainBkg: '#1e2130',
+        nodeBorder: '#3d4266',
+        clusterBkg: '#1a1d27',
+        titleColor: '#e2e4f0',
+        edgeLabelBackground: '#1a1d27',
+        lineColor: '#7c8cff',
+        primaryColor: '#1e2130',
+        primaryTextColor: '#e2e4f0',
+        primaryBorderColor: '#7c8cff',
+        secondaryColor: '#141720',
+        tertiaryColor: '#0f1117',
+        fontFamily: 'Noto Sans JP, sans-serif',
+        fontSize: '14px'
+      }
+    });
+  </script>
+</body>
+</html>
