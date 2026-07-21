@@ -167,11 +167,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const statusEl = document.getElementById('hero-status-text');
   if (statusEl) {
     const messages = [
-      '🤖 AIエージェントが依頼を読み込み中...',
-      '📁 資材フォルダを全て走査中...',
-      '⚙️ 成果物を生成しています...',
-      '✅ フィードバックを記録しました！',
-      '✉️ AIからの手紙を執筆中...',
+      '🤖 基本ルール・特定ルール・機序を理解中...',
+      '📋 依頼書とメイン資材を読み込み中...',
+      '🛠️ .workspace / .script のリソースを確認中...',
+      '⚙️ 成果物を .output/ に生成中...',
+      '💡 教訓を .feedback/lesson_... に記録中...',
+      '📄 ルール改善提案を出力中...',
+      '✉️ AIからの手紙を .brainstorming/ へ執筆中...',
     ];
     let msgIndex = 0;
     let charIndex = 0;
