@@ -11698,5 +11698,41 @@
     "notes": "デジタル・デラックス版:予約注文済",
     "ps_plus": "",
     "package": ""
+  },
+  {
+    "no": 598,
+    "platform": "PS5",
+    "enhanced": "◯",
+    "title": "グランドセフトオートVI/アルティメット・エディション",
+    "count": 1,
+    "notes_titles": "\"グランドセフトオートVI/アルティメット・エディション\"",
+    "publisher": "ロックスター・ゲームズ",
+    "developer": "Rockstar Studios",
+    "genre": "オープンワールド・クライムアクション",
+    "price": "12,280円",
+    "release_date": "2026年11月19日(木)",
+    "description": "シリーズ史上最大規模の進化を遂げたオープンワールド・クライムアクション。架空の都市バイスシティを舞台に、男女2人の主人公ジェイソンとルシアの運命が描かれるアルティメット・エディション。",
+    "url": "https://www.rockstargames.com/VI",
+    "notes": "予約注文済。PS5 Pro Enhanced対応。",
+    "ps_plus": "",
+    "package": ""
+  },
+  {
+    "no": 599,
+    "platform": "PS5",
+    "enhanced": "◯",
+    "title": "マーベル闘魂",
+    "count": 1,
+    "notes_titles": "\"MARVEL Tōkon: Fighting Souls\"",
+    "publisher": "ソニー・インタラクティブエンタテインメント",
+    "developer": "アークシステムワークス",
+    "genre": "対戦格闘",
+    "price": "7,980円",
+    "release_date": "2026年8月7日(金)",
+    "description": "マーベルのヒーローやヴィランが登場する、4対4のタッグ制対戦格闘ゲーム。アークシステムワークス開発による美麗なアニメ風スタイリッシュアクションと本格的な対戦格闘を実現。",
+    "url": "https://www.playstation.com/ja-jp/games/marvel-tokon-fighting-souls/",
+    "notes": "予約注文済。PS5 Pro Enhanced対応。",
+    "ps_plus": "",
+    "package": ""
   }
 ]

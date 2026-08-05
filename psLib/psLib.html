@@ -75,7 +75,8 @@
         table.dataTable {
             border-collapse: separate !important;
             border-spacing: 0 4px !important;
-            width: 100% !important;
+            width: max-content !important;
+            min-width: 100%;
             margin: 0 !important;
             background: transparent !important;
         }
@@ -89,12 +90,11 @@
             font-size: 0.7rem;
             letter-spacing: 0.08em;
             border-bottom: 2px solid var(--ps-blue) !important;
+            white-space: nowrap;
         }
 
         .table-container {
             position: relative;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
         }
 
         /* DataTables scrollY wrapper styling */
@@ -465,6 +465,168 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0, 119, 255, 0.6);
         }
+
+        /* Detail Card Modal Specific Styles */
+        .card-modal-content {
+            background: linear-gradient(145deg, rgba(0, 20, 50, 0.95), rgba(0, 40, 80, 0.95));
+            border: 1px solid rgba(0, 153, 255, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            width: 92%;
+            max-width: 650px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 119, 255, 0.25);
+            transform: scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .modal-overlay.active .card-modal-content {
+            transform: scale(1);
+        }
+
+        .card-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding-bottom: 14px;
+            margin-bottom: 16px;
+        }
+
+        .card-title-group {
+            flex-grow: 1;
+            padding-right: 12px;
+        }
+
+        .card-title {
+            margin: 0 0 6px 0;
+            font-size: 1.35rem;
+            color: #ffffff;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 119, 255, 0.6);
+            line-height: 1.3;
+        }
+
+        .card-sub-titles {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .close-icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 2px 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .close-icon-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px 16px;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 550px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card-item {
+            background: rgba(0, 102, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 8px 12px;
+        }
+
+        .card-item-full {
+            grid-column: 1 / -1;
+        }
+
+        .card-item-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #93c5fd;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .card-item-value {
+            font-size: 0.9rem;
+            color: #f8fafc;
+            word-break: break-word;
+            line-height: 1.4;
+        }
+
+        .card-nav-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            padding-top: 14px;
+            margin-top: auto;
+        }
+
+        .btn-nav {
+            background: rgba(0, 119, 255, 0.15);
+            border: 1px solid rgba(0, 119, 255, 0.4);
+            color: #93c5fd;
+            padding: 8px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-nav:hover:not(:disabled) {
+            background: var(--ps-blue);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(0, 119, 255, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .btn-nav:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .card-counter {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .clickable-no {
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .clickable-no:hover {
+            color: #38bdf8 !important;
+            text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+            background: rgba(0, 119, 255, 0.25) !important;
+        }
     </style>
 </head>
 
@@ -506,6 +668,77 @@
             </thead>
             <tbody id="libraryBody"></tbody>
         </table>
+    </div>
+
+    <!-- Detail Card Modal -->
+    <div class="modal-overlay" id="detailCardModal">
+        <div class="card-modal-content">
+            <div class="card-header-bar">
+                <div class="card-title-group">
+                    <h2 class="card-title" id="cardTitle">ソフトタイトル</h2>
+                    <p class="card-sub-titles" id="cardSubTitles">実収録タイトル</p>
+                </div>
+                <button class="close-icon-btn" id="btnCloseCardX" title="閉じる">&times;</button>
+            </div>
+            
+            <div class="modal-body" style="margin-bottom:0;">
+                <div class="card-grid">
+                    <div class="card-item">
+                        <div class="card-item-label">番号 (親No. / 子No.)</div>
+                        <div class="card-item-value" id="cardNoCount">#000 / 1</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">ハード / 強化</div>
+                        <div class="card-item-value" id="cardPlatformEnhance">-</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">ジャンル</div>
+                        <div class="card-item-value" id="cardGenre">-</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">発売年月日</div>
+                        <div class="card-item-value" id="cardReleaseDate">-</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">パブリッシャー</div>
+                        <div class="card-item-value" id="cardPublisher">-</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">開発</div>
+                        <div class="card-item-value" id="cardDeveloper">-</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">価格</div>
+                        <div class="card-item-value" id="cardPrice">-</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">PS Plus / パッケージ</div>
+                        <div class="card-item-value" id="cardPsPlusPackage">-</div>
+                    </div>
+                    <div class="card-item card-item-full">
+                        <div class="card-item-label">概要</div>
+                        <div class="card-item-value" id="cardDescription">-</div>
+                    </div>
+                    <div class="card-item card-item-full">
+                        <div class="card-item-label">公式サイト / 備考</div>
+                        <div class="card-item-value" id="cardUrlNotes">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-nav-footer">
+                <button class="btn-nav" id="btnPrevCard">
+                    <span>&larr;</span> 前のソフト
+                </button>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="card-counter" id="cardCounter">1 / 100</span>
+                    <button class="btn btn-cancel" id="btnCloseCard">閉じる</button>
+                </div>
+                <button class="btn-nav" id="btnNextCard">
+                    次のソフト <span>&rarr;</span>
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Column Visibility Modal -->
@@ -566,7 +799,7 @@
                     else if (row.platform.toLowerCase().includes('vita')) platformClass = 'vita';
 
                     tr.innerHTML = `
-                    <td style="text-align: center; color: var(--text-muted); font-size: 0.8em;">${escapeHtml(row.no)}</td>
+                    <td class="clickable-no" style="text-align: center; color: #60a5fa; font-weight: 600; font-size: 0.85em;" title="クリックして詳細カードを表示">${escapeHtml(row.no)}</td>
                     <td style="text-align: center;"><span class="badge badge-${platformClass}">${escapeHtml(row.platform)}</span></td>
                     <td style="text-align: center;">${row.enhanced ? '<span class="enhanced-mark">' + escapeHtml(row.enhanced) + '</span>' : ''}</td>
                     <th>${escapeHtml(row.title)}</th>
@@ -605,10 +838,24 @@
                     scrollX: true,
                     scrollY: '75vh',
                     scrollCollapse: true,
+                    autoWidth: false,
                     columnDefs: [
-                        { targets: [1], width: '40px' },
+                        { targets: [0], width: '50px' },
+                        { targets: [1], width: '60px' },
                         { targets: [2], width: '40px' },
-                        { targets: [11], width: '300px' }
+                        { targets: [3], width: '220px' },
+                        { targets: [4], width: '50px' },
+                        { targets: [5], width: '220px' },
+                        { targets: [6], width: '140px' },
+                        { targets: [7], width: '140px' },
+                        { targets: [8], width: '120px' },
+                        { targets: [9], width: '90px' },
+                        { targets: [10], width: '130px' },
+                        { targets: [11], width: '320px' },
+                        { targets: [12], width: '80px' },
+                        { targets: [13], width: '200px' },
+                        { targets: [14], width: '110px' },
+                        { targets: [15], width: '130px' }
                     ],
                     order: [[0, 'desc'], [4, 'asc']]
                 });
@@ -686,6 +933,129 @@
 
                     table.columns.adjust().draw(false); // Redraw once at the end
                     closeModal();
+                });
+
+                // --- Detail Card Popup Logic ---
+                const detailModal = document.getElementById('detailCardModal');
+                let currentCardFilteredIndex = -1;
+
+                function showCardAtIndex(idx) {
+                    const visibleNodes = table.rows({ search: 'applied' }).nodes().toArray();
+                    if (visibleNodes.length === 0) return;
+
+                    if (idx < 0) idx = visibleNodes.length - 1;
+                    if (idx >= visibleNodes.length) idx = 0;
+
+                    currentCardFilteredIndex = idx;
+                    const rowNode = visibleNodes[idx];
+                    const rowData = getRowDataFromNode(rowNode);
+
+                    $('#cardTitle').text(rowData.title || '-');
+                    $('#cardSubTitles').text(rowData.notes_titles ? `実収録: ${rowData.notes_titles}` : '-');
+                    $('#cardNoCount').text(`#${rowData.no || '-'} / 子No. ${rowData.count || '1'}`);
+
+                    let platformHtml = `<span class="badge badge-${rowData.platformClass}">${rowData.platform}</span>`;
+                    if (rowData.enhanced) {
+                        platformHtml += ` <span class="enhanced-mark">${rowData.enhanced}</span>`;
+                    }
+                    $('#cardPlatformEnhance').html(platformHtml);
+
+                    $('#cardGenre').text(rowData.genre || '-');
+                    $('#cardReleaseDate').text(rowData.release_date || '-');
+                    $('#cardPublisher').text(rowData.publisher || '-');
+                    $('#cardDeveloper').text(rowData.developer || '-');
+                    $('#cardPrice').text(rowData.price || '-');
+
+                    let psPlusPkgText = [];
+                    if (rowData.ps_plus) psPlusPkgText.push(`PS Plus: ${rowData.ps_plus}`);
+                    if (rowData.package) psPlusPkgText.push(`パッケージ: ${rowData.package}`);
+                    $('#cardPsPlusPackage').text(psPlusPkgText.join(' / ') || '-');
+
+                    $('#cardDescription').text(rowData.description || '-');
+
+                    let urlNotesHtml = '';
+                    if (rowData.url) {
+                        urlNotesHtml += `<a href="${rowData.url}" target="_blank" rel="noopener noreferrer">公式サイト LINK ↗</a>`;
+                    }
+                    if (rowData.notes) {
+                        if (urlNotesHtml) urlNotesHtml += '<br/>';
+                        urlNotesHtml += `<span style="color:var(--text-muted); font-size:0.85em;">備考: ${escapeHtml(rowData.notes)}</span>`;
+                    }
+                    $('#cardUrlNotes').html(urlNotesHtml || '-');
+
+                    $('#cardCounter').text(`${idx + 1} / ${visibleNodes.length}`);
+                    detailModal.classList.add('active');
+                }
+
+                function getRowDataFromNode(node) {
+                    const $tr = $(node);
+                    const $tds = $tr.children();
+                    const platformBadge = $tds.eq(1).find('.badge');
+                    let platformClass = 'ps4';
+                    if (platformBadge.hasClass('badge-ps5')) platformClass = 'ps5';
+                    else if (platformBadge.hasClass('badge-vita')) platformClass = 'vita';
+                    else if (platformBadge.hasClass('badge-vitap')) platformClass = 'vitap';
+                    else if (platformBadge.hasClass('badge-vitaa')) platformClass = 'vitaa';
+
+                    return {
+                        no: $tds.eq(0).text().trim(),
+                        platform: platformBadge.text().trim(),
+                        platformClass: platformClass,
+                        enhanced: $tds.eq(2).text().trim(),
+                        title: $tds.eq(3).text().trim(),
+                        count: $tds.eq(4).text().trim(),
+                        notes_titles: $tds.eq(5).text().trim(),
+                        publisher: $tds.eq(6).text().trim(),
+                        developer: $tds.eq(7).text().trim(),
+                        genre: $tds.eq(8).text().trim(),
+                        price: $tds.eq(9).text().trim(),
+                        release_date: $tds.eq(10).text().trim(),
+                        description: $tds.eq(11).text().trim(),
+                        url: $tds.eq(12).find('a').attr('href') || '',
+                        notes: $tds.eq(13).text().trim(),
+                        ps_plus: $tds.eq(14).text().trim(),
+                        package: $tds.eq(15).text().trim()
+                    };
+                }
+
+                // Click Parent No. Event
+                $('#psLibrary tbody').on('click', '.clickable-no', function (e) {
+                    e.stopPropagation();
+                    const tr = $(this).closest('tr');
+                    const visibleNodes = table.rows({ search: 'applied' }).nodes().toArray();
+                    const idx = visibleNodes.indexOf(tr[0]);
+                    if (idx !== -1) {
+                        showCardAtIndex(idx);
+                    }
+                });
+
+                // Navigation Events
+                $('#btnPrevCard').on('click', function () {
+                    showCardAtIndex(currentCardFilteredIndex - 1);
+                });
+
+                $('#btnNextCard').on('click', function () {
+                    showCardAtIndex(currentCardFilteredIndex + 1);
+                });
+
+                function closeDetailModal() {
+                    detailModal.classList.remove('active');
+                }
+
+                $('#btnCloseCard, #btnCloseCardX').on('click', closeDetailModal);
+                detailModal.addEventListener('click', function (e) {
+                    if (e.target === detailModal) closeDetailModal();
+                });
+
+                $(document).on('keydown', function (e) {
+                    if (!detailModal.classList.contains('active')) return;
+                    if (e.key === 'ArrowLeft') {
+                        showCardAtIndex(currentCardFilteredIndex - 1);
+                    } else if (e.key === 'ArrowRight') {
+                        showCardAtIndex(currentCardFilteredIndex + 1);
+                    } else if (e.key === 'Escape') {
+                        closeDetailModal();
+                    }
                 });
             }
         });
