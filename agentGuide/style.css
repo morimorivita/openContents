@@ -124,18 +124,39 @@ body::after {
 }
 
 .nav-logo {
-  font-weight: 700;
-  font-size: 1.1rem;
-  background: var(--grad-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #ffffff;
+  white-space: nowrap;
+  text-decoration: none !important;
+  cursor: default;
+}
+
+.logo-badge {
+  font-size: 0.75rem;
+  font-weight: 900;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #06b6d4, #34d399);
+  color: #ffffff;
+  letter-spacing: 0.02em;
+}
+
+.logo-text {
+  background: linear-gradient(135deg, #ffffff 0%, #7fe7d6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  white-space: nowrap;
+  letter-spacing: 0.02em;
 }
 
 .nav-links {
   display: flex;
-  gap: 28px;
+  align-items: center;
+  gap: 16px;
   list-style: none;
 }
 

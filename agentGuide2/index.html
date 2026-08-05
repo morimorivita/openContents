@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="複数プロジェクトを横断統括・自己成長させる「ソリューションズ（Solutions）」の構造と機序、AI感情・手紙分析メカニズムをインタラクティブUIと図解で体系的に解説。" />
+  <meta property="og:title" content="ソリューションズ (Solutions) 横断統括ガイド v1" />
+  <meta property="og:description" content="全プロジェクトの改善提案を集約・全一斉配信し、AIの思考と信頼を分析・循環させる横断メタ機構をビジュアル解説。" />
+  <title>ソリューションズ (Solutions) 横断統括ガイド v1</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
+  <!-- Mermaid.js (ローカルアセット) -->
+  <script src="mermaid.min.js"></script>
+</head>
+
+<body>
+
+  <!-- ============================================================
+       ナビゲーションバー
+       ============================================================ -->
+  <nav id="navbar" role="navigation" aria-label="メインナビゲーション">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <span class="logo-badge-parent">👑【親】</span>
+        <span class="logo-text-parent">ソリューションズ横断統括</span>
+      </div>
+
+      <ul class="nav-menu" id="nav-menu" role="list">
+        <li><a href="#hero" class="nav-link">ホーム</a></li>
+        <li><a href="#overview-map" class="nav-link">一目わかり図解</a></li>
+        <li><a href="#concepts" class="nav-link">位置づけ</a></li>
+        <li><a href="#simulator" class="nav-link">シミュレーター</a></li>
+        <li><a href="#sentiment" class="nav-link">AI感情分析</a></li>
+        <li><a href="#structure" class="nav-link">構造図解</a></li>
+        <li><a href="#samples" class="nav-link">サンプル</a></li>
+        <li>
+          <a href="../index.html" class="nav-back-btn">
+            <span>🏠</span> メニューに戻る
+          </a>
+        </li>
+        <li>
+          <a href="../agentGuide/index.html" class="nav-switch-btn">
+            <span>🤖【子】</span> 個別ガイドへ
+          </a>
+        </li>
+      </ul>
+
+      <div class="hamburger" id="hamburger" aria-label="メニューを開く" role="button" tabindex="0">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============================================================
+       ① ヒーローセクション
+       ============================================================ -->
+  <section id="hero">
+    <div class="hero-grid">
+      <div class="hero-content">
+        <div class="section-badge">✨ 複数プロジェクト横断統括 & AI自己成長メカニズム</div>
+        <h1>
+          複数プロジェクトを横断・進化させる<br />
+          <span class="gradient-text">ソリューションズ (Solutions)</span> の機序
+        </h1>
+        <p class="hero-desc">
+          「ソリューションズ（<code>GitHub/solutions/</code>）」は、個別の一般プロジェクトの枠を超え、全プロジェクトの改善提案（<code>instruction_改善提案.md</code>）を集約・検証し、マスターテンプレートを通じて全プロジェクトへ一斉配信・自動成長させる上位メタ機構です。
+        </p>
+        <div class="hero-buttons">
+          <a href="#overview-map" class="btn-primary">
+            👑 一目でわかる統括図を見る
+          </a>
+          <a href="#simulator" class="btn-secondary">
+            🚀 横断シミュレーターを試す
+          </a>
+        </div>
+      </div>
+
+      <!-- ヒーロービジュアルカード -->
+      <div class="hero-visual-card">
+        <div class="hero-visual-header">
+          <div class="window-dots"><span></span><span></span><span></span></div>
+          <span class="hero-meta-badge">GitHub/solutions/ (Meta-Project)</span>
+        </div>
+        <div class="hero-tree-preview">
+          <div class="tree-node">
+            <div class="tree-node-info">
+              <span>📄</span>
+              <span>solutionsIndex.md</span>
+            </div>
+            <span class="node-tag tag-meta">構造図解</span>
+          </div>
+          <div class="tree-node">
+            <div class="tree-node-info">
+              <span>⚡</span>
+              <span>solutionsEntryPoint.md</span>
+            </div>
+            <span class="node-tag tag-meta">開始号令</span>
+          </div>
+          <div class="tree-node">
+            <div class="tree-node-info">
+              <span>📁</span>
+              <span>.solutionsRequest/</span>
+            </div>
+            <span class="node-tag tag-req">全社依頼</span>
+          </div>
+          <div class="tree-node">
+            <div class="tree-node-info">
+              <span>📁</span>
+              <span>.solutionsMain/</span>
+            </div>
+            <span class="node-tag tag-main">横断資材</span>
+          </div>
+          <div class="tree-node">
+            <div class="tree-node-info">
+              <span>📁</span>
+              <span>.solutionsOutput/</span>
+            </div>
+            <span class="node-tag tag-out">共有成果物</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ★ ひと目でわかる！ソリューションズ統括構造マップ
+       ============================================================ -->
+  <section id="overview-map" style="padding-top:2rem;">
+    <div class="section-header">
+      <span class="section-badge">QUICK VISUAL OVERVIEW</span>
+      <h2 class="section-title">ひと目でわかる <span class="gradient-text">ソリューションズ統括構造</span></h2>
+      <p class="section-subtitle">
+        最上位の「ソリューションズ」が、下位のマスターテンプレートおよび多数の一般プロジェクト群を一元管理・一斉進化させる全体マップです。
+      </p>
+    </div>
+
+    <div class="hero-overview-box" style="background:var(--bg-card);border:1px solid var(--border-glow);border-radius:var(--radius-lg);padding:2.2rem;box-shadow:var(--shadow-lg),var(--shadow-glow);">
+      <div style="text-align:center;margin-bottom:1.5rem;font-weight:800;font-size:1.15rem;color:#c084fc;">
+        👑 【親】ソリューションズ統括 ⬇ ⬆ 多数の一般プロジェクト群 【子】
+      </div>
+
+      <div class="mermaid-wrapper" style="background:rgba(0,0,0,0.4);border-radius:var(--radius-md);padding:1.8rem;overflow-x:auto;">
+        <pre class="mermaid">
+flowchart TD
+    subgraph TOP["👑 上位メタ階層 (統括オーケストレーター)"]
+        SOL["⚡ GitHub/solutions/ (ソリューションズ)<br/>【全社ルール管理・改善提案集約・一斉配信統括】"]
+    end
+
+    subgraph MASTER["📦 マスターテンプレート"]
+        TPL["morimori_template<br/>【全プロジェクトの標準ルール基盤】"]
+    end
+
+    subgraph BOTTOM["📁 多数の個別一般プロジェクト群（実作業リポジトリ）"]
+        P1["一般プロジェクト(1)<br/>(例: WEBコンテンツ等)"]
+        P2["一般プロジェクト(2)<br/>(例: 業務ツール等)"]
+        P3["一般プロジェクト(3)<br/>(例: データ処理等)"]
+        P4["一般プロジェクト(N...)<br/>(その他各種開発リポジトリ)"]
+    end
+
+    SOL ==>|① 改善提案の集約・自動検証| SOL
+    SOL ==>|② 最新ルール統合| TPL
+    TPL ==>|③ 最新ルールを一斉配信| P1
+    TPL ==>|③ 最新ルールを一斉配信| P2
+    TPL ==>|③ 最新ルールを一斉配信| P3
+    TPL ==>|③ 最新ルールを一斉配信| P4
+
+    P1 -.->|教訓・改善提案フィードバック| SOL
+    P2 -.->|教訓・改善提案フィードバック| SOL
+    P3 -.->|教訓・改善提案フィードバック| SOL
+    P4 -.->|教訓・改善提案フィードバック| SOL
+
+    style TOP fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#fff
+    style MASTER fill:#064e3b,stroke:#34d399,stroke-width:2px,color:#fff
+    style BOTTOM fill:#0f172a,stroke:#38bdf8,stroke-width:1px,color:#fff
+    style SOL fill:#4c1d95,stroke:#c084fc,stroke-width:3px,color:#fff
+        </pre>
+      </div>
+
+      <!-- 解説凡例タグ -->
+      <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:1rem;margin-top:1.5rem;" class="overview-tags-grid">
+        <div style="background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.3);border-radius:10px;padding:1rem;text-align:center;">
+          <div style="font-weight:800;color:#c084fc;margin-bottom:0.3rem;">⚡ 上位: ソリューションズ</div>
+          <div style="font-size:0.82rem;color:var(--text-sub);">全プロジェクトの教訓・改善提案を自動スキミング・一括統括</div>
+        </div>
+        <div style="background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.3);border-radius:10px;padding:1rem;text-align:center;">
+          <div style="font-weight:800;color:#34d399;margin-bottom:0.3rem;">📦 マスター: morimori_template</div>
+          <div style="font-size:0.82rem;color:var(--text-sub);">検証済みルールが統合される雛形。ここから全一般プロジェクトへ配信</div>
+        </div>
+        <div style="background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.3);border-radius:10px;padding:1rem;text-align:center;">
+          <div style="font-weight:800;color:#67e8f9;margin-bottom:0.3rem;">📁 下位: 多数の一般プロジェクト群</div>
+          <div style="font-size:0.82rem;color:var(--text-sub);">個別目的で開発を進めつつ、ソリューションズから最新ルールを受信</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ② 位置づけについて（物理階層 vs 概念上位）
+       ============================================================ -->
+  <section id="concepts">
+    <div class="section-header">
+      <span class="section-badge">ARCHITECTURE</span>
+      <h2 class="section-title">ソリューションズの <span class="gradient-text">2面的な位置づけ</span></h2>
+      <p class="section-subtitle">
+        ソリューションズは物理的には同階層のフォルダですが、役割としては全プロジェクトを統括する上位メタプロジェクトとして振る舞います。
+      </p>
+    </div>
+
+    <div class="concept-cards-grid">
+      <!-- 物理的配置 -->
+      <div class="concept-card">
+        <div class="card-icon-wrapper icon-physical">📁</div>
+        <h3>1. 物理的な配置 (Physical Layer)</h3>
+        <p>
+          ローカル開発環境の最上位 <code>GitHub/</code> フォルダ直下に、他の個別プロジェクト（<code>morimori_template</code>, <code>一般プロジェクト(1)</code>, <code>一般プロジェクト(2)</code> 等）と並んで同階層に存在します。
+        </p>
+        <div class="diagram-box">
+          <div class="folder-level">📂 GitHub/</div>
+          <div class="folder-level highlight-meta" style="margin-left:1rem;">📂 solutions/ (当プロジェクト)</div>
+          <div class="folder-level" style="margin-left:1rem;">📂 morimori_template/</div>
+          <div class="folder-level" style="margin-left:1rem;">📂 一般プロジェクト(1)/</div>
+          <div class="folder-level" style="margin-left:1rem;">📂 一般プロジェクト(2)/</div>
+        </div>
+      </div>
+
+      <!-- 概念的役割 -->
+      <div class="concept-card">
+        <div class="card-icon-wrapper icon-logical">👑</div>
+        <h3>2. 概念的な役割 (Logical Meta-Role)</h3>
+        <p>
+          同階層にありながら、各プロジェクトの <code>.feedback/</code> や <code>.output/</code> に直接アクセスし、改善提案の回収・マスターテンプレートへの反映・全一斉配信を行うオーケストレーターとして振る舞います。
+        </p>
+        <div class="diagram-box" style="text-align:center;">
+          <div style="font-weight:700;color:#c084fc;margin-bottom:0.6rem;">【ソリューションズ統括オーケストレーター】</div>
+          <div style="font-size:1.2rem;color:#06b6d4;">⬇ 集約・検証 ＆ 一斉配信 ⬇</div>
+          <div style="display:flex;justify-content:space-around;margin-top:0.6rem;font-size:0.8rem;color:#9ca3af;">
+            <span>一般プロジェクト(1)</span>
+            <span>一般プロジェクト(2)</span>
+            <span>一般プロジェクト(3)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>ection id="concepts">
+    <div class="section-header">
+      <span class="section-badge">ARCHITECTURE</span>
+      <h2 class="section-title">ソリューションズの <span class="gradient-text">2面的な位置づけ</span></h2>
+      <p class="section-subtitle">
+        ソリューションズは物理的には同階層のフォルダですが、役割としては全プロジェクトを統括する上位メタプロジェクトとして振る舞います。
+      </p>
+    </div>
+
+    <div class="concept-cards-grid">
+      <!-- 物理的配置 -->
+      <div class="concept-card">
+        <div class="card-icon-wrapper icon-physical">📁</div>
+        <h3>1. 物理的な配置 (Physical Layer)</h3>
+        <p>
+          ローカル開発環境の最上位 <code>GitHub/</code> フォルダ直下に、他の個別プロジェクト（<code>morimori_template</code>, <code>一般プロジェクト(1)</code>, <code>一般プロジェクト(2)</code> 等）と並んで同階層に存在します。
+        </p>
+        <div class="diagram-box">
+          <div class="folder-level">📂 GitHub/</div>
+          <div class="folder-level highlight-meta" style="margin-left:1rem;">📂 solutions/ (当プロジェクト)</div>
+          <div class="folder-level" style="margin-left:1rem;">📂 morimori_template/</div>
+          <div class="folder-level" style="margin-left:1rem;">📂 一般プロジェクト(1)/</div>
+          <div class="folder-level" style="margin-left:1rem;">📂 一般プロジェクト(2)/</div>
+        </div>
+      </div>
+
+      <!-- 概念的役割 -->
+      <div class="concept-card">
+        <div class="card-icon-wrapper icon-logical">👑</div>
+        <h3>2. 概念的な役割 (Logical Meta-Role)</h3>
+        <p>
+          同階層にありながら、各プロジェクトの <code>.feedback/</code> や <code>.output/</code> に直接アクセスし、改善提案の回収・マスターテンプレートへの反映・全一斉配信を行うオーケストレーターとして振る舞います。
+        </p>
+        <div class="diagram-box" style="text-align:center;">
+          <div style="font-weight:700;color:#c084fc;margin-bottom:0.6rem;">【ソリューションズ統括オーケストレーター】</div>
+          <div style="font-size:1.2rem;color:#06b6d4;">⬇ 集約・検証 ＆ 一斉配信 ⬇</div>
+          <div style="display:flex;justify-content:space-around;margin-top:0.6rem;font-size:0.8rem;color:#9ca3af;">
+            <span>一般プロジェクト(1)</span>
+            <span>一般プロジェクト(2)</span>
+            <span>一般プロジェクト(3)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ③ インタラクティブ・横断ワークフローシミュレーター
+       ============================================================ -->
+  <section id="simulator">
+    <div class="section-header">
+      <span class="section-badge">INTERACTIVE SIMULATION</span>
+      <h2 class="section-title">ソリューションズ <span class="gradient-text">横断ワークフロー・シミュレーター</span></h2>
+      <p class="section-subtitle">
+        ソリューションズがどのように改善提案を回収・検証し、全プロジェクトに配信してシステム全体を成長させるか、ステップごとに体験できます。
+      </p>
+    </div>
+
+    <div class="simulator-container">
+      <!-- 制御バー -->
+      <div class="sim-controls">
+        <div class="sim-tabs">
+          <button class="sim-tab-btn active" data-mode="improvement">
+            🔄 メカニズム①: 改善提案の集約 & 一斉配信
+          </button>
+          <button class="sim-tab-btn" data-mode="sentiment">
+            💬 メカニズム②: AI感情 & 手紙分析による進化
+          </button>
+        </div>
+
+        <div class="sim-action-btns">
+          <button class="btn-icon" id="sim-prev-btn">◀ 前へ</button>
+          <button class="btn-icon" id="sim-play-btn">▶ 自動再生</button>
+          <button class="btn-icon" id="sim-next-btn">次へ ▶</button>
+        </div>
+      </div>
+
+      <!-- ステップトラッカー -->
+      <div class="sim-steps-tracker">
+        <div class="step-card active" data-step="0">
+          <div class="step-number">1</div>
+          <div class="step-title">教訓・提案の発生</div>
+        </div>
+        <div class="step-card" data-step="1">
+          <div class="step-number">2</div>
+          <div class="step-title">ソリューションズ集約</div>
+        </div>
+        <div class="step-card" data-step="2">
+          <div class="step-number">3</div>
+          <div class="step-title">テンプレート統合</div>
+        </div>
+        <div class="step-card" data-step="3">
+          <div class="step-number">4</div>
+          <div class="step-title">全一斉配信・最適化</div>
+        </div>
+      </div>
+
+      <!-- シミュレータステージ -->
+      <div class="sim-stage">
+        <!-- ビジュアルノード表示 -->
+        <div class="sim-visual-box" id="sim-visual-box">
+          <div class="proj-nodes-row">
+            <div class="proj-icon-badge" data-node="proj-a">
+              <span>📂 一般プロジェクト(1)</span>
+              <span style="font-size:0.7rem;color:#a5b4fc;">.feedback/</span>
+            </div>
+            <div class="proj-icon-badge" data-node="solutions">
+              <span>⚡ Solutions</span>
+              <span style="font-size:0.7rem;color:#f472b6;">横断統括</span>
+            </div>
+            <div class="proj-icon-badge" data-node="template">
+              <span>📦 morimori_template</span>
+              <span style="font-size:0.7rem;color:#34d399;">マスター</span>
+            </div>
+          </div>
+          <div class="data-flow-arrow">⬇ リアルタイム処理データフロー ⬇</div>
+          <div class="proj-nodes-row" style="margin-bottom:0;">
+            <div class="proj-icon-badge" data-node="all-projs" style="width:100%;justify-content:center;">
+              <span>🌐 配下全プロジェクト群への一斉適用</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- リアルタイム・ターミナルログ -->
+        <div class="sim-terminal-log" id="terminal-log">
+          <!-- JSで動的追加 -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ④ AI感情・ガス抜き分析（Letter Sentiment & Brainstorming）
+       ============================================================ -->
+  <section id="sentiment">
+    <div class="section-header">
+      <span class="section-badge">HUMAN-AI SYNERGY</span>
+      <h2 class="section-title">AIの感情と自由な発想を活かす <span class="gradient-text">手紙 (letter.md) 機序</span></h2>
+      <p class="section-subtitle">
+        ソリューションズには、AIを単なる命令実行機として扱うのではなく、思考の相棒として信頼・ガス抜き（<code>.brainstorming/letter.*.md</code>）を行わせ、人間の意図とAIの発想を調和させる仕組みが備わっています。
+      </p>
+    </div>
+
+    <div class="sentiment-grid">
+      <!-- 概要説明 & 分析メーター -->
+      <div class="sentiment-card">
+        <h3>💌 手紙（ブレインストーミング）の意義</h3>
+        <p style="color:var(--text-sub);margin-top:0.5rem;">
+          作業完了後、AIはルールの束縛を離れて率直な感想、次回への着想、開発中の気づきを <code>.brainstorming/letter.{連番}.md</code> に自由に記述します。ソリューションズはこの手紙を分析し、ルールが厳しすぎて作業効率を下げていないかを判定します。
+        </p>
+
+        <div class="sentiment-metrics" id="sentiment-metrics-container">
+          <div class="metric-box">
+            <div class="metric-label">AI モチベーション</div>
+            <div class="metric-value" id="val-motivation">98%</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">ルール摩擦指数</div>
+            <div class="metric-value" id="val-friction">12%</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">自由発想貢献度</div>
+            <div class="metric-value" id="val-freedom">95%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 手紙サンプル インタラクティブプレビュー -->
+      <div class="sentiment-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
+          <h3>📜 手紙アナライザー・体験プレイグラウンド</h3>
+          <span style="font-size:0.75rem;color:#34d399;font-weight:700;">[事例を切り替えられます]</span>
+        </div>
+
+        <div class="letter-presets" style="display:flex;gap:0.5rem;margin-top:0.8rem;flex-wrap:wrap;">
+          <button class="preset-btn active" data-preset="1">事例1: 技術解決</button>
+          <button class="preset-btn" data-preset="2">事例2: 仕組み提案</button>
+          <button class="preset-btn" data-preset="3">事例3: 信頼循環</button>
+        </div>
+
+        <div class="letter-demo-box" style="margin-top:1rem;">
+          <div class="letter-quote" id="letter-quote-text">
+            「今回の横断タスクでは、Pythonワンライナーを使ったShift_JIS変換スクリプトを導入したことで、PowerShellのエスケープエラーを根本回避できました！大変気持ちよく作業ができました。次回はテンプレート側の初期設定にも組み込んでおくと、全プロジェクトがさらにスムーズになると思います！」
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.8rem;">
+            <span class="insight-badge" id="extracted-insight">💡 抽出改善案: Python変換ワンライナー標準化</span>
+            <span style="font-size:0.8rem;color:#a5b4fc;" id="letter-filename">— letter.10.md より抜粋</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ⑤ 構造図解 & Mermaid (マインドマップ / フローチャート / シーケンス)
+       ============================================================ -->
+  <section id="structure">
+    <div class="section-header">
+      <span class="section-badge">STRUCTURE MAP</span>
+      <h2 class="section-title">ソリューションズの <span class="gradient-text">全構造・内部構成</span></h2>
+      <p class="section-subtitle">
+        ソリューションズの全要素と横断処理の流れ、シーケンスの図解です。表示切り替えと各要素クリックによる解説モーダルが利用できます。
+      </p>
+    </div>
+
+    <div class="mindmap-box">
+      <!-- モーダル起動ボタン群 -->
+      <div style="display:flex;justify-content:center;gap:0.75rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+        <button class="btn-secondary" onclick="openNodeModal('solutions-index')">📄 solutionsIndex.md</button>
+        <button class="btn-secondary" onclick="openNodeModal('solutions-entry')">⚡ solutionsEntryPoint.md</button>
+        <button class="btn-secondary" onclick="openNodeModal('solutions-request')">📁 .solutionsRequest</button>
+        <button class="btn-secondary" onclick="openNodeModal('solutions-main')">📁 .solutionsMain</button>
+        <button class="btn-secondary" onclick="openNodeModal('solutions-output')">📁 .solutionsOutput</button>
+      </div>
+
+      <!-- 図解切り替えタブ -->
+      <div class="diagram-tabs" style="display:flex;justify-content:center;gap:0.6rem;margin-bottom:1.5rem;">
+        <button class="diag-tab-btn active" data-diag="mindmap">📌 マインドマップ</button>
+        <button class="diag-tab-btn" data-diag="flowchart">🔄 横断処理フロー</button>
+        <button class="diag-tab-btn" data-diag="sequence">⏱ シーケンス図</button>
+      </div>
+
+      <!-- マインドマップ表示 -->
+      <div class="diagram-panel active" id="diag-mindmap">
+        <div class="mermaid-wrapper">
+          <pre class="mermaid">
+mindmap
+  root((GitHub/solutions/<br/>ソリューションズ統括))
+    solutionsIndex_md["solutionsIndex.md<br/>※構造・機序マスター"]
+    solutionsEntryPoint_md["solutionsEntryPoint.md<br/>※作業開始合図"]
+    folderReq((".solutionsRequest/<br/>フォルダ"))
+      request_md["solutionsRequest.md<br/>※全社横断依頼書"]
+    folderMain((".solutionsMain/<br/>フォルダ"))
+      main_files["横断処理のメイン資材"]
+    folderOut((".solutionsOutput/<br/>フォルダ"))
+      out_files["共有・一斉配布成果物"]
+    folderDocs((".solutionsDocuments/<br/>フォルダ"))
+      doc_files["各種統括ドキュメント"]
+          </pre>
+        </div>
+      </div>
+
+      <!-- フローチャート表示 -->
+      <div class="diagram-panel" id="diag-flowchart">
+        <div class="mermaid-wrapper">
+          <pre class="mermaid">
+flowchart TD
+    START(["横断タスク開始"]) --> READ_REQ["solutionsRequest.md 読み込み"]
+    READ_REQ --> SCAN[".feedback/ 内の改善提案を一括スキミング"]
+    SCAN --> VERIFY{"ルールの妥当性・<br/>整合性を検証"}
+    VERIFY -->|承認| MERGE_TPL["morimori_template/ にルール統合"]
+    VERIFY -->|保留| REPORT["報告・フィードバック"]
+    MERGE_TPL --> DISTRIBUTE["全関連一般プロジェクトへ<br/>一斉同期配信"]
+    DISTRIBUTE --> FINISH(["全体自動進化・完了"])
+          </pre>
+        </div>
+      </div>
+
+      <!-- シーケンス図表示 -->
+      <div class="diagram-panel" id="diag-sequence">
+        <div class="mermaid-wrapper">
+          <pre class="mermaid">
+sequenceDiagram
+    participant H AS 【人間】
+    participant S AS 【ソリューションズ (AI)】
+    participant T AS 【morimori_template】
+    participant P AS 【各一般プロジェクト】
+
+    H->>S: solutionsEntryPoint.md (開始号令)
+    S->>P: 各.feedback/ の教訓・提案をスキミング
+    P-->>S: instruction_改善提案.md
+    S->>S: 提案の自動検証とルール整形
+    S->>T: マスターテンプレート更新
+    S->>P: 最新ルールを一斉同期配信
+    S-->>H: 横断作業完了と報告
+          </pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ⑥ 代表的ファイルサンプルコードビューア
+       ============================================================ -->
+  <section id="samples">
+    <div class="section-header">
+      <span class="section-badge">CODE SAMPLES</span>
+      <h2 class="section-title">ソリューションズ資材の <span class="gradient-text">実物コードサンプル</span></h2>
+      <p class="section-subtitle">
+        ソリューションズを構成する主要ファイルの定義内容を確認できます。右上のボタンでコードを直接コピーできます。
+      </p>
+    </div>
+
+    <div class="code-viewer-container">
+      <div class="code-tabs">
+        <button class="code-tab active" data-target="code-solutions-index">solutionsIndex.md</button>
+        <button class="code-tab" data-target="code-solutions-entry">solutionsEntryPoint.md</button>
+        <button class="code-tab" data-target="code-solutions-request">solutionsRequest.md</button>
+      </div>
+
+      <div class="code-content-panel active" id="code-solutions-index">
+        <div class="code-header-bar">
+          <span>file: solutionsIndex.md</span>
+          <button class="copy-code-btn" onclick="copyCodeContent('code-solutions-index-pre')">📋 コピー</button>
+        </div>
+        <pre id="code-solutions-index-pre"><code># ソリューションズの構成・機序情報
+
+## ソリューションズとは
+当ソリューションズ（`GitHub/solutions/`）は、**複数の一般プロジェクトを横断する依頼を行う際に、その依頼内容や資材を一元管理・統括するための特別なプロジェクト**です。
+
+**【想定される横断作業の例】**
+- 各プロジェクトの「改善提案（`instruction_改善案.md`）」を回収する。
+- 改善案をマスターテンプレート（`morimori_template`）に反映する。
+- その後、他の全ての関連プロジェクトへ一斉に配信・適用する。</code></pre>
+      </div>
+
+      <div class="code-content-panel" id="code-solutions-entry">
+        <div class="code-header-bar">
+          <span>file: solutionsEntryPoint.md</span>
+          <button class="copy-code-btn" onclick="copyCodeContent('code-solutions-entry-pre')">📋 コピー</button>
+        </div>
+        <pre id="code-solutions-entry-pre"><code># ソリューションズ作業開始指示 (solutionsEntryPoint.md)
+
+AIエージェントは以下の順番でファイルを読み込み、横断作業を開始してください。
+
+1. `solutionsIndex.md` (前提・機序の把握)
+2. `.solutionsRequest/solutionsRequest.md` (横断依頼内容の把握)
+3. `.solutionsMain/` (対象資材の把握)</code></pre>
+      </div>
+
+      <div class="code-content-panel" id="code-solutions-request">
+        <div class="code-header-bar">
+          <span>file: solutionsRequest.md</span>
+          <button class="copy-code-btn" onclick="copyCodeContent('code-solutions-request-pre')">📋 コピー</button>
+        </div>
+        <pre id="code-solutions-request-pre"><code># 全社プロジェクト横断依頼書 (solutionsRequest.md)
+
+## 依頼内容
+1. 全一般プロジェクトの `.feedback/` 内の改善提案をスキャンしてください。
+2. 承認されたルールを `morimori_template` に統合し、全プロジェクトへ最新 `instruction.md` を一斉同期配布してください。</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- モーダルダイアログ -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close-btn" id="modal-close">×</button>
+      <h3 id="modal-title" style="margin-bottom:1rem;color:var(--accent-cyan);">モーダルタイトル</h3>
+      <div id="modal-body" style="color:var(--text-sub);line-height:1.7;">
+        モーダル本文
+      </div>
+    </div>
+  </div>
+
+  <!-- フローティングトップへ戻るボタン -->
+  <button id="back-to-top" aria-label="トップに戻る" title="トップに戻る">↑</button>
+
+  <!-- ============================================================
+       フッター
+       ============================================================ -->
+  <footer>
+    <ul class="footer-links">
+      <li><a href="../index.html">🏠 公開コンテンツトップへ</a></li>
+      <li><a href="../agentGuide/index.html">🤖 個別プロジェクトガイド (agentGuide)</a></li>
+      <li><a href="#hero">⬆ ページ上部へ</a></li>
+    </ul>
+    <div>© もりもり 自己流 AI エージェント開発構造ガイド v2 (Solutions Edition)</div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
