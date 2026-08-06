@@ -114,6 +114,7 @@
         table.dataTable tbody tr {
             background: var(--ps-row-bg) !important;
             transition: all 0.25s ease;
+            cursor: pointer;
         }
 
         table.dataTable tbody tr:nth-child(even) {
@@ -627,10 +628,148 @@
             text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
             background: rgba(0, 119, 255, 0.25) !important;
         }
+
+        /* Loading Overlay Styles */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 10, 26, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loading-overlay.fade-out {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loading-card {
+            background: linear-gradient(145deg, rgba(0, 20, 50, 0.9), rgba(0, 40, 80, 0.9));
+            border: 1px solid rgba(0, 119, 255, 0.4);
+            border-radius: 20px;
+            padding: 36px 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 119, 255, 0.3);
+            text-align: center;
+            max-width: 420px;
+            width: 85%;
+        }
+
+        .spinner-container {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            margin-bottom: 24px;
+        }
+
+        .ps-spinner {
+            width: 100%;
+            height: 100%;
+            border: 4px solid rgba(0, 119, 255, 0.15);
+            border-top: 4px solid #0077ff;
+            border-right: 4px solid #00d4ff;
+            border-radius: 50%;
+            animation: psSpin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+        }
+
+        .spinner-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, rgba(0, 119, 255, 0.6) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: psPulse 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes psSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes psPulse {
+            0% { opacity: 0.3; transform: translate(-50%, -50%) scale(0.8); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+        }
+
+        .loading-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+            background: linear-gradient(135deg, #ffffff 0%, #60a5fa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(0, 119, 255, 0.5);
+        }
+
+        .loading-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .loading-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loading-bar-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 40%;
+            background: linear-gradient(90deg, #0077ff, #00d4ff, #0077ff);
+            border-radius: 10px;
+            box-shadow: 0 0 12px rgba(0, 212, 255, 0.8);
+            animation: loadingMove 1.5s ease-in-out infinite;
+        }
+
+        @keyframes loadingMove {
+            0% { left: -40%; width: 40%; }
+            50% { width: 60%; }
+            100% { left: 100%; width: 40%; }
+        }
     </style>
 </head>
 
 <body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-card">
+            <div class="spinner-container">
+                <div class="ps-spinner"></div>
+                <div class="spinner-glow"></div>
+            </div>
+            <div class="loading-title">データ読み込み中です。</div>
+            <div class="loading-subtitle">少しお待ちください</div>
+            <div class="loading-bar">
+                <div class="loading-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+
     <h1>もりもりPLAYSTATION SOFT</h1>
 
     <div class="filter-buttons">
@@ -764,6 +903,17 @@
 
     <script>
         $(document).ready(function () {
+            // ローディングオーバーレイの非表示処理
+            function hideLoading() {
+                const overlay = document.getElementById('loadingOverlay');
+                if (overlay) {
+                    overlay.classList.add('fade-out');
+                    setTimeout(() => {
+                        overlay.style.display = 'none';
+                    }, 500);
+                }
+            }
+
             // JSON ファイルから POST Library データを読み込む
             fetch('psLib.json')
                 .then(response => {
@@ -776,10 +926,21 @@
                     console.log(`${data.length} 行のデータを読み込みました`);
                     populateTable(data);
                     initializeDataTable();
+                    hideLoading();
                 })
                 .catch(error => {
                     console.error('JSON ロードエラー:', error);
-                    alert('データの読み込みに失敗しました。psLib.json ファイルを確認してください。');
+                    const titleEl = document.querySelector('.loading-title');
+                    const subEl = document.querySelector('.loading-subtitle');
+                    if (titleEl && subEl) {
+                        titleEl.textContent = 'データの読み込みに失敗しました';
+                        titleEl.style.background = 'none';
+                        titleEl.style.webkitTextFillColor = '#ff4d4d';
+                        titleEl.style.color = '#ff4d4d';
+                        subEl.textContent = 'psLib.json ファイルを確認してください。';
+                    } else {
+                        alert('データの読み込みに失敗しました。psLib.json ファイルを確認してください。');
+                    }
                 });
 
             // JSON データをテーブルにポピュレート
@@ -789,6 +950,7 @@
 
                 data.forEach(row => {
                     const tr = document.createElement('tr');
+                    tr._rowData = row;
 
                     let platformClass = 'ps4';
                     if (row.platform === 'PS5') platformClass = 'ps5';
@@ -988,6 +1150,37 @@
                 }
 
                 function getRowDataFromNode(node) {
+                    if (node && node._rowData) {
+                        const row = node._rowData;
+                        let platformClass = 'ps4';
+                        if (row.platform === 'PS5') platformClass = 'ps5';
+                        else if (row.platform === 'PS4') platformClass = 'ps4';
+                        else if (row.platform === 'Vita') platformClass = 'vita';
+                        else if (row.platform === 'Vita/P') platformClass = 'vitap';
+                        else if (row.platform === 'Vita/A') platformClass = 'vitaa';
+                        else if (row.platform && row.platform.toLowerCase().includes('vita')) platformClass = 'vita';
+
+                        return {
+                            no: row.no != null ? String(row.no) : '',
+                            platform: row.platform || '',
+                            platformClass: platformClass,
+                            enhanced: row.enhanced || '',
+                            title: row.title || '',
+                            count: row.count != null ? String(row.count) : '',
+                            notes_titles: row.notes_titles || '',
+                            publisher: row.publisher || '',
+                            developer: row.developer || '',
+                            genre: row.genre || '',
+                            price: row.price || '',
+                            release_date: row.release_date || '',
+                            description: row.description || '',
+                            url: row.url || '',
+                            notes: row.notes || '',
+                            ps_plus: row.ps_plus || '',
+                            package: row.package || ''
+                        };
+                    }
+
                     const $tr = $(node);
                     const $tds = $tr.children();
                     const platformBadge = $tds.eq(1).find('.badge');
@@ -1018,12 +1211,11 @@
                     };
                 }
 
-                // Click Parent No. Event
-                $('#psLibrary tbody').on('click', '.clickable-no', function (e) {
-                    e.stopPropagation();
-                    const tr = $(this).closest('tr');
+                // Click Row Event (All Items)
+                $('#psLibrary tbody').on('click', 'tr', function (e) {
+                    if ($(e.target).closest('a').length > 0) return;
                     const visibleNodes = table.rows({ search: 'applied' }).nodes().toArray();
-                    const idx = visibleNodes.indexOf(tr[0]);
+                    const idx = visibleNodes.indexOf(this);
                     if (idx !== -1) {
                         showCardAtIndex(idx);
                     }
