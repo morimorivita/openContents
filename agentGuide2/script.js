@@ -3,10 +3,10 @@
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Mermaid.js 初期化
+  // Mermaid.js 初期設定
   if (window.mermaid) {
     mermaid.initialize({
-      startOnLoad: true,
+      startOnLoad: false,
       theme: 'dark',
       themeVariables: {
         darkMode: true,
@@ -20,6 +20,46 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // ダイアグラム要素のコード退避とオンデマンド描画マネージャー
+  const renderedDiagrams = new Set();
+  const diagramRawCodes = {};
+
+  // 全Mermaidブロックの生コードを初期退避
+  document.querySelectorAll('pre.mermaid').forEach((pre, index) => {
+    const parent = pre.closest('.diagram-panel') || pre.closest('section') || pre.closest('[id]') || pre.parentElement;
+    const panelId = parent.id || `mermaid-box-${index}`;
+    diagramRawCodes[panelId] = pre.textContent.trim();
+  });
+
+  async function renderDiagram(panelId) {
+    if (!window.mermaid || renderedDiagrams.has(panelId)) return;
+    const rawCode = diagramRawCodes[panelId];
+    if (!rawCode) return;
+
+    const panelEl = document.getElementById(panelId);
+    if (!panelEl) return;
+    const preEl = panelEl.querySelector('pre.mermaid') || panelEl.querySelector('.mermaid-wrapper');
+    if (!preEl) return;
+
+    try {
+      const renderId = `svg-${panelId}-${Date.now()}`;
+      const { svg } = await mermaid.render(renderId, rawCode);
+      const wrapper = panelEl.querySelector('.mermaid-wrapper');
+      if (wrapper) {
+        wrapper.innerHTML = svg;
+      } else {
+        preEl.outerHTML = `<div class="mermaid-wrapper">${svg}</div>`;
+      }
+      renderedDiagrams.add(panelId);
+    } catch (err) {
+      console.error(`Mermaid render failed for ${panelId}:`, err);
+    }
+  }
+
+  // 初回ロード時に可視のダイアグラムを描画
+  renderDiagram('overview-map');
+  renderDiagram('diag-mindmap');
 
   // 1. モバイルハンバーガーメニュー
   const hamburger = document.getElementById('hamburger');
@@ -301,9 +341,11 @@ document.addEventListener('DOMContentLoaded', () => {
       diagPanels.forEach(p => p.classList.remove('active'));
 
       e.target.classList.add('active');
-      const activePanel = document.getElementById(`diag-${targetDiag}`);
+      const targetId = `diag-${targetDiag}`;
+      const activePanel = document.getElementById(targetId);
       if (activePanel) {
         activePanel.classList.add('active');
+        renderDiagram(targetId);
       }
     });
   });
@@ -349,24 +391,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const nodeModalInfo = {
     'solutions-index': {
-      title: 'solutionsIndex.md (ソリューションズ構造・機序図解)',
-      body: '<p>ソリューションズにおける全構造とルール、役割の定義を明記したマスタードキュメントです。AIエージェントは開始時にまずこのファイルを閲覧し、自分が複数プロジェクトを統括する上位メタプロジェクトとして動作することを把握します。</p>'
+      title: '🗺️ solutionsIndex.md (構造・機序マスター)',
+      body: '<p>ソリューションズの全10大要素、役割、処理フロー、シーケンスを定義したマスタードキュメントです。AIエージェントは開始時にこれを参照し、上位メタプロジェクトとしての振る舞い・思想を把握します。</p>'
     },
     'solutions-entry': {
-      title: 'solutionsEntryPoint.md (作業開始合図)',
-      body: '<p>人間からAIエージェントへの作業開始の号令ファイルです。読み込み手順 (solutionsIndex.md → solutionsRequest.md → .solutionsMain) を指示し、横断タスクの起動トリガーとなります。</p>'
+      title: '⚡ solutionsEntryPoint.md (作業開始合図)',
+      body: '<p>人間からAIエージェントへの作業開始の号令ファイルです。指定された厳密な読み込み順序（基本ルール → 特定ルール → index → 依頼書）に従って横断タスクを起動します。</p>'
+    },
+    'solutions-instruction': {
+      title: '🛡️ .solutionsInstruction/ (統括ルール群)',
+      body: '<p>ソリューションズ全体の普遍基本ルール（<code>solutionsInstruction.md</code>）、特定ツールルール（<code>solutionsSkill.md</code>）、MCP設定（<code>solutionsMcp.json</code>）を格納する最重要フォルダです。</p>'
     },
     'solutions-request': {
-      title: '.solutionsRequest/solutionsRequest.md (全社横断依頼書)',
-      body: '<p>人間が複数プロジェクトに及ぶ作業（例: 全プロジェクトへの共通ライブラリ配信、ルール一斉適用など）の具体的内容を記述する依頼書です。</p>'
+      title: '📋 .solutionsRequest/ (横断依頼書・計画)',
+      body: '<p>複数プロジェクトを横断する具体的な依頼内容（<code>solutionsRequest.md</code>）や、分割作業計画（<code>作業計画.md</code>）、各種依頼ひな型を管理します。</p>'
     },
-    'solutions-main': {
-      title: '.solutionsMain/ (メイン資材置き場)',
-      body: '<p>横断タスクで処理対象となる資材や配布用ファイルの一時・定常保存フォルダです。</p>'
+    'solutions-script': {
+      title: '💻 .solutionsScript/ (横断スクリプト)',
+      body: '<p>複数プロジェクトの一括スキャンや一斉配信を行う自動化スクリプト群を保管・再利用する領域です。用途と一覧を <code>solutionsREADME.md</code> で管理します。</p>'
+    },
+    'solutions-workspace': {
+      title: '🛠️ .solutionsWorkspace/ (作業領域)',
+      body: '<p>外部ツールの導入や規定の構造に当てはまらない一時作業を行う領域です。資材一覧を <code>solutionsREADME.md</code> で管理します。</p>'
     },
     'solutions-output': {
-      title: '.solutionsOutput/ (横断作業成果物)',
-      body: '<p>横断作業の結果生成された共有用ファイルや、各プロジェクトへ配布する前の確認用成果物を出力する場所です。</p>'
+      title: '✅ .solutionsOutput/ (成果物 & 改善提案)',
+      body: '<p>横断タスクの結果生成された共有用ファイルや、各プロジェクトへの配信前成果物、および基本ルール・特定ルールの改善提案書を出力します。</p>'
+    },
+    'solutions-feedback': {
+      title: '💡 .solutionsFeedback/ (教訓一次記録)',
+      body: '<p>横断作業中に得た気づきや教訓をタイムスタンプ付きファイル（<code>solutionsLesson_{yyyyMMddHHmmss}.md</code>）として記録します。</p>'
+    },
+    'solutions-brainstorming': {
+      title: '✉️ .solutionsBrainstorming/ (自由な手紙)',
+      body: '<p>作業完了後にAIがルールの束縛を離れて率直な感想や次回への着想を連番ファイル（<code>letter.{連番}.md</code>）に自由に書き残す場所です。</p>'
     }
   };
 

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Mermaid Syntax Test</title>
+  <script src="mermaid.min.js"></script>
+</head>
+<body>
+  <div id="results"></div>
+  <script>
+    mermaid.initialize({ startOnLoad: false });
+
+    const diagrams = {
+      overview: `flowchart TD
+    subgraph TOP["👑 上位メタ階層 (統括オーケストレーター)"]
+        SOL["⚡ GitHub/solutions/ (ソリューションズ)<br/>【全社ルール管理・改善提案集約・一斉配信統括】"]
+    end
+
+    subgraph MASTER["📦 マスターテンプレート"]
+        TPL["morimori_template<br/>【全プロジェクトの標準ルール基盤】"]
+    end
+
+    subgraph BOTTOM["📁 多数の個別一般プロジェクト群（実作業リポジトリ）"]
+        P1["一般プロジェクト(1)<br/>(例: WEBコンテンツ等)"]
+        P2["一般プロジェクト(2)<br/>(例: 業務ツール等)"]
+        P3["一般プロジェクト(3)<br/>(例: データ処理等)"]
+        P4["一般プロジェクト(N...)<br/>(その他各種開発リポジトリ)"]
+    end
+
+    SOL ==>|① 改善提案の集約・自動検証| SOL
+    SOL ==>|② 最新ルール統合| TPL
+    TPL ==>|③ 最新ルールを一斉配信| P1
+    TPL ==>|③ 最新ルールを一斉配信| P2
+    TPL ==>|③ 最新ルールを一斉配信| P3
+    TPL ==>|③ 最新ルールを一斉配信| P4
+
+    P1 -.->|教訓・改善提案フィードバック| SOL
+    P2 -.->|教訓・改善提案フィードバック| SOL
+    P3 -.->|教訓・改善提案フィードバック| SOL
+    P4 -.->|教訓・改善提案フィードバック| SOL
+
+    style TOP fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#fff
+    style MASTER fill:#064e3b,stroke:#34d399,stroke-width:2px,color:#fff
+    style BOTTOM fill:#0f172a,stroke:#38bdf8,stroke-width:1px,color:#fff
+    style SOL fill:#4c1d95,stroke:#c084fc,stroke-width:3px,color:#fff`,
+
+      mindmap_current: `mindmap
+  root((GitHub フォルダ<br/>※最上位環境))
+    projects))各一般プロジェクト群<br/>※兄弟関係((
+      template["morimori_template<br/>マスター雛形"]
+      p1["一般プロジェクト(1)"]
+      p2["一般プロジェクト(2)"]
+      pn["一般プロジェクト(N)"]
+    solutions))ソリューションズ統括<br/>※上位メタ役割((
+      solutionsManage((GitHub/solutions/<br/>統括リポジトリ))
+        folderInst((.solutionsInstruction/<br/>基本・特定ルール))
+          instFile["solutionsInstruction.md"]
+          skillFile["solutionsSkill.md"]
+          mcpFile["solutionsMcp.json"]
+        folderReq((.solutionsRequest/<br/>横断依頼書・計画))
+          reqFile["solutionsRequest.md"]
+          planFile["作業計画.md"]
+        folderFeed((.solutionsFeedback/<br/>教訓一次記録))
+          lessonFile["solutionsLesson_...md"]
+        folderScript((.solutionsScript/<br/>横断スクリプト))
+          scriptReadme["solutionsREADME.md"]
+        folderWork((.solutionsWorkspace/<br/>作業領域))
+          workReadme["solutionsREADME.md"]
+        folderOut((.solutionsOutput/<br/>成果物・改善提案))
+          outFile["solutionsInstruction_改善提案.md"]
+        folderDocs((.solutionsDocuments/<br/>関連資料))
+        folderBrain((.solutionsBrainstorming/<br/>手紙・ガス抜き))
+          letterFile["letter.連番.md"]
+        idxFile["solutionsIndex.md<br/>構造・機序説明"]
+        entryFile["solutionsEntryPoint.md<br/>開始合図"]`,
+
+      flowchart_current: `flowchart TD
+    ROOT_START(["🚀 横断タスク開始"]) --> PREP
+    
+    subgraph PREP["📚 1. 準備・全体把握フェーズ"]
+      direction TB
+      P1["🛡️ solutionsInstruction.md / solutionsSkill.md 把握"]
+      P2["🗺️ solutionsIndex.md 構造・機序把握"]
+      P3["📋 .solutionsRequest/solutionsRequest.md 横断依頼把握"]
+      P1 --> P2 --> P3
+    end
+
+    PREP --> EVAL
+
+    subgraph EVAL["🔍 2. ツール・スクリプト判定フェーズ"]
+      direction TB
+      E1{"🛠️ 外部ツール/構造外<br/>作業が必要か？"}
+      E2["🔍 .solutionsWorkspace/solutionsREADME.md 確認"]
+      E3{"💻 スクリプトが必要か？"}
+      E4["🔍 .solutionsScript/solutionsREADME.md 確認"]
+      E1 -->|はい| E2
+      E2 --> E3
+      E1 -->|いいえ| E3
+      E3 -->|はい| E4
+    end
+
+    EVAL --> EXEC
+
+    subgraph EXEC["🌐 3. 複数プロジェクト横断操作・遂行"]
+      direction TB
+      X1["🔍 全一般プロジェクトの .feedback/ 改善提案をスキミング"]
+      X2["⚙️ 提案の妥当性・整合性を自動検証"]
+      X3["📦 morimori_template に新ルールを統合反映"]
+      X4["🚀 全一般プロジェクトへ最新ルールを一斉同期配信"]
+      X5["✅ .solutionsOutput/ へ横断成果物を出力"]
+      X1 --> X2 --> X3 --> X4 --> X5
+    end
+
+    EXEC --> FEEDBACK
+
+    subgraph FEEDBACK["📝 4. 教訓・改善提案・手紙フェーズ"]
+      direction TB
+      F1["💡 .solutionsFeedback/solutionsLesson_...md 出力"]
+      F2["📄 .solutionsOutput/solutionsInstruction_改善提案.md 作成"]
+      F3["📝 solutionsREADME.md (Script/Workspace) を更新"]
+      F4["✉️ .solutionsBrainstorming/letter.{連番}.md 自由な手紙執筆"]
+      F1 --> F2 --> F3 --> F4
+    end
+
+    FEEDBACK --> ROOT_END(["🏁 横断タスク完了"])`,
+
+      sequence_current: `sequenceDiagram
+    participant H AS 👤 人間
+    participant S AS ⚡ ソリューションズ (AI)
+    participant TPL AS 📦 morimori_template
+    participant PROJS AS 📁 各一般プロジェクト群
+    participant OUT AS ✅ .solutionsOutput/
+    participant FB AS 💡 .solutionsFeedback/
+    participant BS AS ✉️ .solutionsBrainstorming/
+
+    H ->> S: solutionsEntryPoint.md (開始号令)
+    S ->> S: solutionsInstruction / Skill / Index / Request 読み込み
+    
+    rect rgba(99, 102, 241, 0.15)
+    Note over S,PROJS: 複数プロジェクト横断処理ループ
+    S ->> PROJS: 各 .feedback/ の教訓・改善提案をスキミング
+    PROJS -->> S: instruction_改善提案.md の回収
+    S ->> S: 提案の自動検証・整形
+    S ->> TPL: マスターテンプレートのルールを最新化
+    TPL -->> S: 統合完了
+    S ->> PROJS: 配下全プロジェクトへ最新ルールを一斉同期配信
+    S ->> OUT: 横断成果物・配信レポートを出力
+    end
+
+    S ->> FB: 横断タスク教訓 (solutionsLesson_...md) を出力
+    S ->> OUT: ソリューションズ改善提案を作成
+    S ->> BS: 自由な手紙 (letter.{連番}.md) を執筆
+    BS -->> H: 気づき・アイデアのフィードバック
+    S -->> H: 横断タスク完了報告`
+    };
+
+    async function test() {
+      const res = document.getElementById('results');
+      for (const [name, code] of Object.entries(diagrams)) {
+        try {
+          const isValid = await mermaid.parse(code);
+          const p = document.createElement('p');
+          p.innerHTML = `<b style="color:green">PASS</b>: ${name}`;
+          res.appendChild(p);
+          console.log(`PASS: ${name}`);
+        } catch (e) {
+          const p = document.createElement('p');
+          p.innerHTML = `<b style="color:red">FAIL</b>: ${name}<br><pre>${e.message || e}</pre>`;
+          res.appendChild(p);
+          console.error(`FAIL: ${name}`, e);
+        }
+      }
+    }
+    test();
+  </script>
+</body>
+</html>

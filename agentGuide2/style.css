@@ -421,6 +421,10 @@ section {
 .tag-req { background: rgba(6, 182, 212, 0.2); color: #67e8f9; }
 .tag-main { background: rgba(52, 211, 153, 0.2); color: #6ee7b7; }
 .tag-out { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+.tag-inst { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; }
+.tag-script { background: rgba(6, 182, 212, 0.2); color: #67e8f9; }
+.tag-work { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+.tag-feed { background: rgba(236, 72, 153, 0.2); color: #f472b6; }
 
 /* ── ② 物理階層 vs 概念役割カード ── */
 .concept-cards-grid {

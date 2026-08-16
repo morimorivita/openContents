@@ -91,10 +91,10 @@
         <div class="hero-tree-preview">
           <div class="tree-node">
             <div class="tree-node-info">
-              <span>📄</span>
+              <span>🗺️</span>
               <span>solutionsIndex.md</span>
             </div>
-            <span class="node-tag tag-meta">構造図解</span>
+            <span class="node-tag tag-meta">構造機序</span>
           </div>
           <div class="tree-node">
             <div class="tree-node-info">
@@ -105,21 +105,28 @@
           </div>
           <div class="tree-node">
             <div class="tree-node-info">
-              <span>📁</span>
+              <span>🛡️</span>
+              <span>.solutionsInstruction/</span>
+            </div>
+            <span class="node-tag tag-inst">統括ルール</span>
+          </div>
+          <div class="tree-node">
+            <div class="tree-node-info">
+              <span>📋</span>
               <span>.solutionsRequest/</span>
             </div>
-            <span class="node-tag tag-req">全社依頼</span>
+            <span class="node-tag tag-req">横断依頼</span>
           </div>
           <div class="tree-node">
             <div class="tree-node-info">
-              <span>📁</span>
-              <span>.solutionsMain/</span>
+              <span>💻</span>
+              <span>.solutionsScript/</span>
             </div>
-            <span class="node-tag tag-main">横断資材</span>
+            <span class="node-tag tag-script">横断スクリプト</span>
           </div>
           <div class="tree-node">
             <div class="tree-node-info">
-              <span>📁</span>
+              <span>✅</span>
               <span>.solutionsOutput/</span>
             </div>
             <span class="node-tag tag-out">共有成果物</span>
@@ -205,50 +212,6 @@ flowchart TD
        ② 位置づけについて（物理階層 vs 概念上位）
        ============================================================ -->
   <section id="concepts">
-    <div class="section-header">
-      <span class="section-badge">ARCHITECTURE</span>
-      <h2 class="section-title">ソリューションズの <span class="gradient-text">2面的な位置づけ</span></h2>
-      <p class="section-subtitle">
-        ソリューションズは物理的には同階層のフォルダですが、役割としては全プロジェクトを統括する上位メタプロジェクトとして振る舞います。
-      </p>
-    </div>
-
-    <div class="concept-cards-grid">
-      <!-- 物理的配置 -->
-      <div class="concept-card">
-        <div class="card-icon-wrapper icon-physical">📁</div>
-        <h3>1. 物理的な配置 (Physical Layer)</h3>
-        <p>
-          ローカル開発環境の最上位 <code>GitHub/</code> フォルダ直下に、他の個別プロジェクト（<code>morimori_template</code>, <code>一般プロジェクト(1)</code>, <code>一般プロジェクト(2)</code> 等）と並んで同階層に存在します。
-        </p>
-        <div class="diagram-box">
-          <div class="folder-level">📂 GitHub/</div>
-          <div class="folder-level highlight-meta" style="margin-left:1rem;">📂 solutions/ (当プロジェクト)</div>
-          <div class="folder-level" style="margin-left:1rem;">📂 morimori_template/</div>
-          <div class="folder-level" style="margin-left:1rem;">📂 一般プロジェクト(1)/</div>
-          <div class="folder-level" style="margin-left:1rem;">📂 一般プロジェクト(2)/</div>
-        </div>
-      </div>
-
-      <!-- 概念的役割 -->
-      <div class="concept-card">
-        <div class="card-icon-wrapper icon-logical">👑</div>
-        <h3>2. 概念的な役割 (Logical Meta-Role)</h3>
-        <p>
-          同階層にありながら、各プロジェクトの <code>.feedback/</code> や <code>.output/</code> に直接アクセスし、改善提案の回収・マスターテンプレートへの反映・全一斉配信を行うオーケストレーターとして振る舞います。
-        </p>
-        <div class="diagram-box" style="text-align:center;">
-          <div style="font-weight:700;color:#c084fc;margin-bottom:0.6rem;">【ソリューションズ統括オーケストレーター】</div>
-          <div style="font-size:1.2rem;color:#06b6d4;">⬇ 集約・検証 ＆ 一斉配信 ⬇</div>
-          <div style="display:flex;justify-content:space-around;margin-top:0.6rem;font-size:0.8rem;color:#9ca3af;">
-            <span>一般プロジェクト(1)</span>
-            <span>一般プロジェクト(2)</span>
-            <span>一般プロジェクト(3)</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>ection id="concepts">
     <div class="section-header">
       <span class="section-badge">ARCHITECTURE</span>
       <h2 class="section-title">ソリューションズの <span class="gradient-text">2面的な位置づけ</span></h2>
@@ -456,11 +419,8 @@ flowchart TD
     <div class="mindmap-box">
       <!-- モーダル起動ボタン群 -->
       <div style="display:flex;justify-content:center;gap:0.75rem;margin-bottom:1.5rem;flex-wrap:wrap;">
-        <button class="btn-secondary" onclick="openNodeModal('solutions-index')">📄 solutionsIndex.md</button>
+        <button class="btn-secondary" onclick="openNodeModal('solutions-index')">🗺️ solutionsIndex.md</button>
         <button class="btn-secondary" onclick="openNodeModal('solutions-entry')">⚡ solutionsEntryPoint.md</button>
-        <button class="btn-secondary" onclick="openNodeModal('solutions-request')">📁 .solutionsRequest</button>
-        <button class="btn-secondary" onclick="openNodeModal('solutions-main')">📁 .solutionsMain</button>
-        <button class="btn-secondary" onclick="openNodeModal('solutions-output')">📁 .solutionsOutput</button>
       </div>
 
       <!-- 図解切り替えタブ -->
@@ -475,17 +435,34 @@ flowchart TD
         <div class="mermaid-wrapper">
           <pre class="mermaid">
 mindmap
-  root((GitHub/solutions/<br/>ソリューションズ統括))
-    solutionsIndex_md["solutionsIndex.md<br/>※構造・機序マスター"]
-    solutionsEntryPoint_md["solutionsEntryPoint.md<br/>※作業開始合図"]
-    folderReq((".solutionsRequest/<br/>フォルダ"))
-      request_md["solutionsRequest.md<br/>※全社横断依頼書"]
-    folderMain((".solutionsMain/<br/>フォルダ"))
-      main_files["横断処理のメイン資材"]
-    folderOut((".solutionsOutput/<br/>フォルダ"))
-      out_files["共有・一斉配布成果物"]
-    folderDocs((".solutionsDocuments/<br/>フォルダ"))
-      doc_files["各種統括ドキュメント"]
+  root((GitHub フォルダ<br/>※最上位環境))
+    projects))各一般プロジェクト群<br/>※兄弟関係((
+      template["morimori_template<br/>マスター雛形"]
+      p1["一般プロジェクト(1)"]
+      p2["一般プロジェクト(2)"]
+      pn["一般プロジェクト(N)"]
+    solutions))ソリューションズ統括<br/>※上位メタ役割((
+      solutionsManage((GitHub/solutions/<br/>統括リポジトリ))
+        folderInst((.solutionsInstruction/<br/>基本・特定ルール))
+          instFile["solutionsInstruction.md"]
+          skillFile["solutionsSkill.md"]
+          mcpFile["solutionsMcp.json"]
+        folderReq((.solutionsRequest/<br/>横断依頼書・計画))
+          reqFile["solutionsRequest.md"]
+          planFile["作業計画.md"]
+        folderFeed((.solutionsFeedback/<br/>教訓一次記録))
+          lessonFile["solutionsLesson_...md"]
+        folderScript((.solutionsScript/<br/>横断スクリプト))
+          scriptReadme["solutionsREADME.md"]
+        folderWork((.solutionsWorkspace/<br/>作業領域))
+          workReadme["solutionsREADME.md"]
+        folderOut((.solutionsOutput/<br/>成果物・改善提案))
+          outFile["solutionsInstruction_改善提案.md"]
+        folderDocs((.solutionsDocuments/<br/>関連資料))
+        folderBrain((.solutionsBrainstorming/<br/>手紙・ガス抜き))
+          letterFile["letter.連番.md"]
+        idxFile["solutionsIndex.md<br/>構造・機序説明"]
+        entryFile["solutionsEntryPoint.md<br/>開始合図"]
           </pre>
         </div>
       </div>
@@ -495,13 +472,54 @@ mindmap
         <div class="mermaid-wrapper">
           <pre class="mermaid">
 flowchart TD
-    START(["横断タスク開始"]) --> READ_REQ["solutionsRequest.md 読み込み"]
-    READ_REQ --> SCAN[".feedback/ 内の改善提案を一括スキミング"]
-    SCAN --> VERIFY{"ルールの妥当性・<br/>整合性を検証"}
-    VERIFY -->|承認| MERGE_TPL["morimori_template/ にルール統合"]
-    VERIFY -->|保留| REPORT["報告・フィードバック"]
-    MERGE_TPL --> DISTRIBUTE["全関連一般プロジェクトへ<br/>一斉同期配信"]
-    DISTRIBUTE --> FINISH(["全体自動進化・完了"])
+    ROOT_START(["🚀 横断タスク開始"]) --> PREP
+    
+    subgraph PREP["📚 1. 準備・全体把握フェーズ"]
+      direction TB
+      P1["🛡️ solutionsInstruction.md / solutionsSkill.md 把握"]
+      P2["🗺️ solutionsIndex.md 構造・機序把握"]
+      P3["📋 .solutionsRequest/solutionsRequest.md 横断依頼把握"]
+      P1 --> P2 --> P3
+    end
+
+    PREP --> EVAL
+
+    subgraph EVAL["🔍 2. ツール・スクリプト判定フェーズ"]
+      direction TB
+      E1{"🛠️ 外部ツール/構造外<br/>作業が必要か？"}
+      E2["🔍 .solutionsWorkspace/solutionsREADME.md 確認"]
+      E3{"💻 スクリプトが必要か？"}
+      E4["🔍 .solutionsScript/solutionsREADME.md 確認"]
+      E1 -->|はい| E2
+      E2 --> E3
+      E1 -->|いいえ| E3
+      E3 -->|はい| E4
+    end
+
+    EVAL --> EXEC
+
+    subgraph EXEC["🌐 3. 複数プロジェクト横断操作・遂行"]
+      direction TB
+      X1["🔍 全一般プロジェクトの .feedback/ 改善提案をスキミング"]
+      X2["⚙️ 提案の妥当性・整合性を自動検証"]
+      X3["📦 morimori_template に新ルールを統合反映"]
+      X4["🚀 全一般プロジェクトへ最新ルールを一斉同期配信"]
+      X5["✅ .solutionsOutput/ へ横断成果物を出力"]
+      X1 --> X2 --> X3 --> X4 --> X5
+    end
+
+    EXEC --> FEEDBACK
+
+    subgraph FEEDBACK["📝 4. 教訓・改善提案・手紙フェーズ"]
+      direction TB
+      F1["💡 .solutionsFeedback/solutionsLesson_...md 出力"]
+      F2["📄 .solutionsOutput/solutionsInstruction_改善提案.md 作成"]
+      F3["📝 solutionsREADME.md (Script/Workspace) を更新"]
+      F4["✉️ .solutionsBrainstorming/letter.{連番}.md 自由な手紙執筆"]
+      F1 --> F2 --> F3 --> F4
+    end
+
+    FEEDBACK --> ROOT_END(["🏁 横断タスク完了"])
           </pre>
         </div>
       </div>
@@ -511,18 +529,33 @@ flowchart TD
         <div class="mermaid-wrapper">
           <pre class="mermaid">
 sequenceDiagram
-    participant H AS 【人間】
-    participant S AS 【ソリューションズ (AI)】
-    participant T AS 【morimori_template】
-    participant P AS 【各一般プロジェクト】
+    participant H AS 👤 人間
+    participant S AS ⚡ ソリューションズ (AI)
+    participant TPL AS 📦 morimori_template
+    participant PROJS AS 📁 各一般プロジェクト群
+    participant OUT AS ✅ .solutionsOutput/
+    participant FB AS 💡 .solutionsFeedback/
+    participant BS AS ✉️ .solutionsBrainstorming/
 
-    H->>S: solutionsEntryPoint.md (開始号令)
-    S->>P: 各.feedback/ の教訓・提案をスキミング
-    P-->>S: instruction_改善提案.md
-    S->>S: 提案の自動検証とルール整形
-    S->>T: マスターテンプレート更新
-    S->>P: 最新ルールを一斉同期配信
-    S-->>H: 横断作業完了と報告
+    H ->> S: solutionsEntryPoint.md (開始号令)
+    S ->> S: solutionsInstruction / Skill / Index / Request 読み込み
+    
+    rect rgba(99, 102, 241, 0.15)
+    Note over S,PROJS: 複数プロジェクト横断処理ループ
+    S ->> PROJS: 各 .feedback/ の教訓・改善提案をスキミング
+    PROJS -->> S: instruction_改善提案.md の回収
+    S ->> S: 提案の自動検証・整形
+    S ->> TPL: マスターテンプレートのルールを最新化
+    TPL -->> S: 統合完了
+    S ->> PROJS: 配下全プロジェクトへ最新ルールを一斉同期配信
+    S ->> OUT: 横断成果物・配信レポートを出力
+    end
+
+    S ->> FB: 横断タスク教訓 (solutionsLesson_...md) を出力
+    S ->> OUT: ソリューションズ改善提案を作成
+    S ->> BS: 自由な手紙 (letter.{連番}.md) を執筆
+    BS -->> H: 気づき・アイデアのフィードバック
+    S -->> H: 横断タスク完了報告
           </pre>
         </div>
       </div>
@@ -573,9 +606,10 @@ sequenceDiagram
 
 AIエージェントは以下の順番でファイルを読み込み、横断作業を開始してください。
 
-1. `solutionsIndex.md` (前提・機序の把握)
-2. `.solutionsRequest/solutionsRequest.md` (横断依頼内容の把握)
-3. `.solutionsMain/` (対象資材の把握)</code></pre>
+1. `.solutionsInstruction/solutionsInstruction.md` (普遍の基本ルール)
+2. `.solutionsInstruction/solutionsSkill.md` (特定ジャンル・外部ツールルール)
+3. `solutionsIndex.md` (ソリューションズ構造と機序の把握)
+4. `.solutionsRequest/solutionsRequest.md` (横断依頼内容の把握)</code></pre>
       </div>
 
       <div class="code-content-panel" id="code-solutions-request">
