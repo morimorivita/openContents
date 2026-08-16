@@ -383,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
-  // 7. モーダルダイアログ
+  // 7. モーダルダイアログ (全10要素の定義)
   const modalOverlay = document.getElementById('modal-overlay');
   const modalTitle = document.getElementById('modal-title');
   const modalBody = document.getElementById('modal-body');
@@ -392,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const nodeModalInfo = {
     'solutions-index': {
       title: '🗺️ solutionsIndex.md (構造・機序マスター)',
-      body: '<p>ソリューションズの全10大要素、役割、処理フロー、シーケンスを定義したマスタードキュメントです。AIエージェントは開始時にこれを参照し、上位メタプロジェクトとしての振る舞い・思想を把握します。</p>'
+      body: '<p>ソリューションズの全要素、役割、処理フロー、シーケンスを定義したマスタードキュメントです。AIエージェントは開始時にこれを参照し、上位メタプロジェクトとしての振る舞い・思想を把握します。</p>'
     },
     'solutions-entry': {
       title: '⚡ solutionsEntryPoint.md (作業開始合図)',
@@ -421,6 +421,10 @@ document.addEventListener('DOMContentLoaded', () => {
     'solutions-feedback': {
       title: '💡 .solutionsFeedback/ (教訓一次記録)',
       body: '<p>横断作業中に得た気づきや教訓をタイムスタンプ付きファイル（<code>solutionsLesson_{yyyyMMddHHmmss}.md</code>）として記録します。</p>'
+    },
+    'solutions-documents': {
+      title: '📄 .solutionsDocuments/ (各種資料・方針書)',
+      body: '<p>ソリューションズ全体のアーキテクチャ設計書、複数プロジェクト統括方針、横断作業マニュアルなどの恒久的な技術資料を保管します。</p>'
     },
     'solutions-brainstorming': {
       title: '✉️ .solutionsBrainstorming/ (自由な手紙)',

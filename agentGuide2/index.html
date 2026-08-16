@@ -126,10 +126,38 @@
           </div>
           <div class="tree-node">
             <div class="tree-node-info">
+              <span>🛠️</span>
+              <span>.solutionsWorkspace/</span>
+            </div>
+            <span class="node-tag tag-work">作業領域</span>
+          </div>
+          <div class="tree-node">
+            <div class="tree-node-info">
               <span>✅</span>
               <span>.solutionsOutput/</span>
             </div>
             <span class="node-tag tag-out">共有成果物</span>
+          </div>
+          <div class="tree-node">
+            <div class="tree-node-info">
+              <span>💡</span>
+              <span>.solutionsFeedback/</span>
+            </div>
+            <span class="node-tag tag-feed">教訓記録</span>
+          </div>
+          <div class="tree-node">
+            <div class="tree-node-info">
+              <span>📄</span>
+              <span>.solutionsDocuments/</span>
+            </div>
+            <span class="node-tag tag-docs">各種資料</span>
+          </div>
+          <div class="tree-node">
+            <div class="tree-node-info">
+              <span>✉️</span>
+              <span>.solutionsBrainstorming/</span>
+            </div>
+            <span class="node-tag tag-brain">手紙</span>
           </div>
         </div>
       </div>
@@ -198,62 +226,106 @@ flowchart TD
         </div>
         <div style="background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.3);border-radius:10px;padding:1rem;text-align:center;">
           <div style="font-weight:800;color:#34d399;margin-bottom:0.3rem;">📦 マスター: morimori_template</div>
-          <div style="font-size:0.82rem;color:var(--text-sub);">検証済みルールが統合される雛形。ここから全一般プロジェクトへ配信</div>
+          <div style="font-size:0.82rem;color:var(--text-sub);">検証済みの新ルールを取り込み、標準基盤を常に最新化</div>
         </div>
         <div style="background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.3);border-radius:10px;padding:1rem;text-align:center;">
-          <div style="font-weight:800;color:#67e8f9;margin-bottom:0.3rem;">📁 下位: 多数の一般プロジェクト群</div>
-          <div style="font-size:0.82rem;color:var(--text-sub);">個別目的で開発を進めつつ、ソリューションズから最新ルールを受信</div>
+          <div style="font-weight:800;color:#67e8f9;margin-bottom:0.3rem;">📁 下位: 一般プロジェクト群</div>
+          <div style="font-size:0.82rem;color:var(--text-sub);">各現場での気づきを発信し、一斉配信で同時に自動アップデート</div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- ============================================================
-       ② 位置づけについて（物理階層 vs 概念上位）
+       ② 位置づけセクション（物理階層 vs 概念役割カード & 比較表）
        ============================================================ -->
   <section id="concepts">
     <div class="section-header">
-      <span class="section-badge">ARCHITECTURE</span>
-      <h2 class="section-title">ソリューションズの <span class="gradient-text">2面的な位置づけ</span></h2>
+      <span class="section-badge">ARCHITECTURE & CONCEPTS</span>
+      <h2 class="section-title">物理階層と概念役割の <span class="gradient-text">二重構造</span></h2>
       <p class="section-subtitle">
-        ソリューションズは物理的には同階層のフォルダですが、役割としては全プロジェクトを統括する上位メタプロジェクトとして振る舞います。
+        ソリューションズは物理的には各一般プロジェクトと同階層（兄弟フォルダ）ですが、概念的には全プロジェクトを統括する最上位オーケストレーターとして振る舞います。
       </p>
     </div>
 
     <div class="concept-cards-grid">
-      <!-- 物理的配置 -->
       <div class="concept-card">
-        <div class="card-icon-wrapper icon-physical">📁</div>
-        <h3>1. 物理的な配置 (Physical Layer)</h3>
+        <div class="card-icon-wrapper icon-physical">📂</div>
+        <h3>物理階層（ファイルシステム）</h3>
         <p>
-          ローカル開発環境の最上位 <code>GitHub/</code> フォルダ直下に、他の個別プロジェクト（<code>morimori_template</code>, <code>一般プロジェクト(1)</code>, <code>一般プロジェクト(2)</code> 等）と並んで同階層に存在します。
+          OS上のファイルシステムとしては、<code>GitHub/</code> フォルダの直下に各プロジェクトと並列して配置されます。特定の個別階層に埋もれることなく、独立したリポジトリとして保守されます。
         </p>
         <div class="diagram-box">
-          <div class="folder-level">📂 GitHub/</div>
-          <div class="folder-level highlight-meta" style="margin-left:1rem;">📂 solutions/ (当プロジェクト)</div>
-          <div class="folder-level" style="margin-left:1rem;">📂 morimori_template/</div>
-          <div class="folder-level" style="margin-left:1rem;">📂 一般プロジェクト(1)/</div>
-          <div class="folder-level" style="margin-left:1rem;">📂 一般プロジェクト(2)/</div>
+          <div class="folder-level">📁 GitHub/</div>
+          <div class="folder-level" style="margin-left:1.5rem;">📁 morimori_template/</div>
+          <div class="folder-level highlight-meta" style="margin-left:1.5rem;">👑 solutions/ (同階層)</div>
+          <div class="folder-level" style="margin-left:1.5rem;">📁 一般プロジェクト(1)/</div>
+          <div class="folder-level" style="margin-left:1.5rem;">📁 一般プロジェクト(2)/</div>
         </div>
       </div>
 
-      <!-- 概念的役割 -->
       <div class="concept-card">
         <div class="card-icon-wrapper icon-logical">👑</div>
-        <h3>2. 概念的な役割 (Logical Meta-Role)</h3>
+        <h3>概念役割（メタ統括レイヤー）</h3>
         <p>
-          同階層にありながら、各プロジェクトの <code>.feedback/</code> や <code>.output/</code> に直接アクセスし、改善提案の回収・マスターテンプレートへの反映・全一斉配信を行うオーケストレーターとして振る舞います。
+          役割としては「親」「最上位メタプロジェクト」です。自身は <code>.main/</code> を内包せず、横断対象の一般プロジェクトそのものを資材として扱い、全プロジェクトのルール自動成長ループを統括します。
         </p>
-        <div class="diagram-box" style="text-align:center;">
-          <div style="font-weight:700;color:#c084fc;margin-bottom:0.6rem;">【ソリューションズ統括オーケストレーター】</div>
-          <div style="font-size:1.2rem;color:#06b6d4;">⬇ 集約・検証 ＆ 一斉配信 ⬇</div>
-          <div style="display:flex;justify-content:space-around;margin-top:0.6rem;font-size:0.8rem;color:#9ca3af;">
-            <span>一般プロジェクト(1)</span>
-            <span>一般プロジェクト(2)</span>
-            <span>一般プロジェクト(3)</span>
-          </div>
+        <div class="diagram-box">
+          <div class="folder-level highlight-meta">👑 ソリューションズ (メタ統括・一括配信)</div>
+          <div class="folder-level" style="margin-left:1.5rem;">⬇ 改善提案の集約 & 一括検証</div>
+          <div class="folder-level" style="margin-left:1.5rem;">📦 morimori_template (ルール統合)</div>
+          <div class="folder-level" style="margin-left:1.5rem;">⬇ 全プロジェクトへ一斉同期配信</div>
+          <div class="folder-level" style="margin-left:1.5rem;">📁 各一般プロジェクト群 (自動進化)</div>
         </div>
       </div>
+    </div>
+
+    <!-- 比較表 -->
+    <div style="margin-top:2.5rem;background:var(--bg-card);border:1px solid var(--border-glass);border-radius:var(--radius-lg);padding:1.8rem;overflow-x:auto;">
+      <h3 style="margin-bottom:1rem;font-size:1.2rem;color:var(--accent-cyan);text-align:center;">
+        📊 個別一般プロジェクト vs ソリューションズ 比較表
+      </h3>
+      <table style="width:100%;border-collapse:collapse;font-size:0.92rem;">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border-glass);background:rgba(255,255,255,0.03);">
+            <th style="padding:0.9rem;text-align:left;color:var(--text-sub);">比較項目</th>
+            <th style="padding:0.9rem;text-align:left;color:#38bdf8;">🤖 個別一般プロジェクト (agentGuide)</th>
+            <th style="padding:0.9rem;text-align:left;color:#c084fc;">👑 ソリューションズ (agentGuide2)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--border-glass);">
+            <td style="padding:0.8rem;font-weight:700;">位置づけ</td>
+            <td style="padding:0.8rem;">個別タスク・機能開発を行う実作業リポジトリ</td>
+            <td style="padding:0.8rem;color:#c084fc;font-weight:700;">複数プロジェクトを横断管理・統括する上位メタプロジェクト</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-glass);">
+            <td style="padding:0.8rem;font-weight:700;">物理パス</td>
+            <td style="padding:0.8rem;"><code>GitHub/morimori_template/</code>, <code>GitHub/一般プロジェクト(1)/</code> 等</td>
+            <td style="padding:0.8rem;"><code>GitHub/solutions/</code> (兄弟フォルダ)</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-glass);">
+            <td style="padding:0.8rem;font-weight:700;">資材フォルダ</td>
+            <td style="padding:0.8rem;">自身のプロジェクト内に <code>.main/</code> を内包する</td>
+            <td style="padding:0.8rem;color:#fcd34d;font-weight:700;">自身には <code>.main/</code> を持たず、各一般プロジェクトそのものが資材</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-glass);">
+            <td style="padding:0.8rem;font-weight:700;">フォルダ接頭辞</td>
+            <td style="padding:0.8rem;">通常名 (<code>.instruction/</code>, <code>.request/</code> 等)</td>
+            <td style="padding:0.8rem;">ソリューションズ専用 (<code>.solutionsInstruction/</code>, <code>.solutionsRequest/</code> 等)</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-glass);">
+            <td style="padding:0.8rem;font-weight:700;">作業範囲</td>
+            <td style="padding:0.8rem;">自プロジェクト内のファイル更新・タスク遂行</td>
+            <td style="padding:0.8rem;">複数プロジェクトを横断したスキャン・検証・一斉配信</td>
+          </tr>
+          <tr>
+            <td style="padding:0.8rem;font-weight:700;">フィードバック循環</td>
+            <td style="padding:0.8rem;"><code>.feedback/</code> に教訓、<code>.output/</code> に改善提案を出力</td>
+            <td style="padding:0.8rem;color:#34d399;font-weight:700;">全プロジェクトの改善提案を回収 → テンプレート統合 → 全一斉配信</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
@@ -262,141 +334,152 @@ flowchart TD
        ============================================================ -->
   <section id="simulator">
     <div class="section-header">
-      <span class="section-badge">INTERACTIVE SIMULATION</span>
-      <h2 class="section-title">ソリューションズ <span class="gradient-text">横断ワークフロー・シミュレーター</span></h2>
+      <span class="section-badge">INTERACTIVE SIMULATOR</span>
+      <h2 class="section-title">横断タスク & 自己成長 <span class="gradient-text">シミュレーター</span></h2>
       <p class="section-subtitle">
-        ソリューションズがどのように改善提案を回収・検証し、全プロジェクトに配信してシステム全体を成長させるか、ステップごとに体験できます。
+        ソリューションズの2大革新機能（① ルール自己進化ループ、② AI思考・手紙循環）の動作プロセスをインタラクティブに体感できます。
       </p>
     </div>
 
     <div class="simulator-container">
-      <!-- 制御バー -->
       <div class="sim-controls">
         <div class="sim-tabs">
           <button class="sim-tab-btn active" data-mode="improvement">
-            🔄 メカニズム①: 改善提案の集約 & 一斉配信
+            🔄 ① 自己進化ルール循環ループ
           </button>
           <button class="sim-tab-btn" data-mode="sentiment">
-            💬 メカニズム②: AI感情 & 手紙分析による進化
+            ✉️ ② AI思考・手紙循環ループ
           </button>
         </div>
-
         <div class="sim-action-btns">
-          <button class="btn-icon" id="sim-prev-btn">◀ 前へ</button>
+          <button class="btn-icon" id="sim-prev-btn">◀ 前のステップ</button>
           <button class="btn-icon" id="sim-play-btn">▶ 自動再生</button>
-          <button class="btn-icon" id="sim-next-btn">次へ ▶</button>
+          <button class="btn-icon" id="sim-next-btn">次のステップ ▶</button>
         </div>
       </div>
 
-      <!-- ステップトラッカー -->
+      <!-- ステップトラッカー (4ステップ) -->
       <div class="sim-steps-tracker">
         <div class="step-card active" data-step="0">
           <div class="step-number">1</div>
-          <div class="step-title">教訓・提案の発生</div>
+          <div class="step-label">提案の一次生成</div>
         </div>
         <div class="step-card" data-step="1">
           <div class="step-number">2</div>
-          <div class="step-title">ソリューションズ集約</div>
+          <div class="step-label">集約 & 検証</div>
         </div>
         <div class="step-card" data-step="2">
           <div class="step-number">3</div>
-          <div class="step-title">テンプレート統合</div>
+          <div class="step-label">テンプレート統合</div>
         </div>
         <div class="step-card" data-step="3">
           <div class="step-number">4</div>
-          <div class="step-title">全一斉配信・最適化</div>
+          <div class="step-label">全社一斉配信</div>
         </div>
       </div>
 
-      <!-- シミュレータステージ -->
-      <div class="sim-stage">
-        <!-- ビジュアルノード表示 -->
+      <!-- シミュレーター・ビジュアルエリア -->
+      <div class="sim-visual-area">
         <div class="sim-visual-box" id="sim-visual-box">
-          <div class="proj-nodes-row">
+          <div class="proj-flow-display">
             <div class="proj-icon-badge" data-node="proj-a">
-              <span>📂 一般プロジェクト(1)</span>
-              <span style="font-size:0.7rem;color:#a5b4fc;">.feedback/</span>
+              <span class="icon">📁</span>
+              <span class="label">一般プロジェクト(1)</span>
             </div>
+            <div class="proj-arrow">➔</div>
             <div class="proj-icon-badge" data-node="solutions">
-              <span>⚡ Solutions</span>
-              <span style="font-size:0.7rem;color:#f472b6;">横断統括</span>
+              <span class="icon">👑</span>
+              <span class="label">ソリューションズ</span>
             </div>
+            <div class="proj-arrow">➔</div>
             <div class="proj-icon-badge" data-node="template">
-              <span>📦 morimori_template</span>
-              <span style="font-size:0.7rem;color:#34d399;">マスター</span>
+              <span class="icon">📦</span>
+              <span class="label">morimori_template</span>
             </div>
-          </div>
-          <div class="data-flow-arrow">⬇ リアルタイム処理データフロー ⬇</div>
-          <div class="proj-nodes-row" style="margin-bottom:0;">
-            <div class="proj-icon-badge" data-node="all-projs" style="width:100%;justify-content:center;">
-              <span>🌐 配下全プロジェクト群への一斉適用</span>
+            <div class="proj-arrow">➔</div>
+            <div class="proj-icon-badge" data-node="all-projs">
+              <span class="icon">🌐</span>
+              <span class="label">全一般プロジェクト</span>
             </div>
           </div>
         </div>
 
-        <!-- リアルタイム・ターミナルログ -->
-        <div class="sim-terminal-log" id="terminal-log">
-          <!-- JSで動的追加 -->
+        <div class="terminal-box">
+          <div class="terminal-header">
+            <div class="window-dots"><span></span><span></span><span></span></div>
+            <span class="terminal-title">Cross-Project Orchestration Console</span>
+          </div>
+          <div class="terminal-body" id="terminal-log">
+            <!-- JavaScriptで動的生成 -->
+          </div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- ============================================================
-       ④ AI感情・ガス抜き分析（Letter Sentiment & Brainstorming）
+       ④ AI感情・手紙（Brainstorming）アナライザー
        ============================================================ -->
   <section id="sentiment">
     <div class="section-header">
-      <span class="section-badge">HUMAN-AI SYNERGY</span>
-      <h2 class="section-title">AIの感情と自由な発想を活かす <span class="gradient-text">手紙 (letter.md) 機序</span></h2>
+      <span class="section-badge">AI REFLECTION & SENTIMENT</span>
+      <h2 class="section-title">AIの率直な手紙と <span class="gradient-text">思考の循環</span></h2>
       <p class="section-subtitle">
-        ソリューションズには、AIを単なる命令実行機として扱うのではなく、思考の相棒として信頼・ガス抜き（<code>.brainstorming/letter.*.md</code>）を行わせ、人間の意図とAIの発想を調和させる仕組みが備わっています。
+        ソリューションズは、単なるコードやルールの同期にとどまりません。作業完了後にAIが <code>.brainstorming/letter.*.md</code> に書き残す「本音の手紙」を分析し、人間とAIの信頼関係とルールの快適性を高め続けます。
       </p>
     </div>
 
-    <div class="sentiment-grid">
-      <!-- 概要説明 & 分析メーター -->
-      <div class="sentiment-card">
-        <h3>💌 手紙（ブレインストーミング）の意義</h3>
-        <p style="color:var(--text-sub);margin-top:0.5rem;">
-          作業完了後、AIはルールの束縛を離れて率直な感想、次回への着想、開発中の気づきを <code>.brainstorming/letter.{連番}.md</code> に自由に記述します。ソリューションズはこの手紙を分析し、ルールが厳しすぎて作業効率を下げていないかを判定します。
-        </p>
-
-        <div class="sentiment-metrics" id="sentiment-metrics-container">
-          <div class="metric-box">
-            <div class="metric-label">AI モチベーション</div>
-            <div class="metric-value" id="val-motivation">98%</div>
+    <div class="sentiment-dashboard">
+      <div class="sentiment-cards-grid">
+        <!-- 感情分析ゲージ -->
+        <div class="sentiment-card">
+          <div class="card-header-bar">
+            <span>📊 AI感情・摩擦度メトリクス</span>
+            <span class="status-live">● LIVE</span>
           </div>
-          <div class="metric-box">
-            <div class="metric-label">ルール摩擦指数</div>
-            <div class="metric-value" id="val-friction">12%</div>
+          <div class="metric-group">
+            <div class="metric-row">
+              <span class="metric-name">🤝 人間との信頼共鳴度</span>
+              <span class="metric-val" id="val-motivation" style="color:#34d399;">98%</span>
+            </div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill fill-green" style="width:98%;"></div></div>
           </div>
-          <div class="metric-box">
-            <div class="metric-label">自由発想貢献度</div>
-            <div class="metric-value" id="val-freedom">95%</div>
+          <div class="metric-group">
+            <div class="metric-row">
+              <span class="metric-name">⚡ ルールによる摩擦指数 (低=良好)</span>
+              <span class="metric-val" id="val-friction" style="color:#67e8f9;">12%</span>
+            </div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill fill-cyan" style="width:12%;"></div></div>
+          </div>
+          <div class="metric-group">
+            <div class="metric-row">
+              <span class="metric-name">💡 自由発想・自律提案度</span>
+              <span class="metric-val" id="val-freedom" style="color:#c084fc;">95%</span>
+            </div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill fill-purple" style="width:95%;"></div></div>
+          </div>
+          <div style="margin-top:1.2rem;padding:0.75rem;background:rgba(99,102,241,0.1);border-radius:var(--radius-sm);font-size:0.85rem;color:#c7d2fe;">
+            💡 <strong>分析サマリー</strong>: AIエージェントは制約に縛られず、自由な発想（ガス抜き）を行えることで高い創造性と安定したパフォーマンスを維持しています。
           </div>
         </div>
-      </div>
 
-      <!-- 手紙サンプル インタラクティブプレビュー -->
-      <div class="sentiment-card">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
-          <h3>📜 手紙アナライザー・体験プレイグラウンド</h3>
-          <span style="font-size:0.75rem;color:#34d399;font-weight:700;">[事例を切り替えられます]</span>
-        </div>
-
-        <div class="letter-presets" style="display:flex;gap:0.5rem;margin-top:0.8rem;flex-wrap:wrap;">
-          <button class="preset-btn active" data-preset="1">事例1: 技術解決</button>
-          <button class="preset-btn" data-preset="2">事例2: 仕組み提案</button>
-          <button class="preset-btn" data-preset="3">事例3: 信頼循環</button>
-        </div>
-
-        <div class="letter-demo-box" style="margin-top:1rem;">
-          <div class="letter-quote" id="letter-quote-text">
-            「今回の横断タスクでは、Pythonワンライナーを使ったShift_JIS変換スクリプトを導入したことで、PowerShellのエスケープエラーを根本回避できました！大変気持ちよく作業ができました。次回はテンプレート側の初期設定にも組み込んでおくと、全プロジェクトがさらにスムーズになると思います！」
+        <!-- 手紙の引用ビューア -->
+        <div class="sentiment-card">
+          <div class="card-header-bar">
+            <span>✉️ AIからの生の手紙 (Excerpt)</span>
+            <div class="preset-selector">
+              <button class="preset-btn active" data-preset="1">事例1 (技術革新)</button>
+              <button class="preset-btn" data-preset="2">事例2 (一斉同期)</button>
+              <button class="preset-btn" data-preset="3">事例3 (相互尊重)</button>
+            </div>
           </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.8rem;">
-            <span class="insight-badge" id="extracted-insight">💡 抽出改善案: Python変換ワンライナー標準化</span>
+          <div class="letter-quote-box">
+            <p id="letter-quote-text" class="letter-quote">
+              「今回の横断タスクでは、Pythonワンライナーを使ったShift_JIS変換スクリプトを導入したことで、PowerShellのエスケープエラーを根本回避できました！大変気持ちよく作業ができました。次回はテンプレート側の初期設定にも組み込んでおくと、全プロジェクトがさらにスムーズになると思います！」
+            </p>
+          </div>
+          <div class="letter-footer">
+            <span class="tag-badge" id="extracted-insight">💡 抽出改善案: Python変換ワンライナー標準化</span>
             <span style="font-size:0.8rem;color:#a5b4fc;" id="letter-filename">— letter.10.md より抜粋</span>
           </div>
         </div>
@@ -417,7 +500,7 @@ flowchart TD
     </div>
 
     <div class="mindmap-box">
-      <!-- モーダル起動ボタン群 -->
+      <!-- モーダル起動ボタン群 (全10要素) -->
       <div style="display:flex;justify-content:center;gap:0.75rem;margin-bottom:1.5rem;flex-wrap:wrap;">
         <button class="btn-secondary" onclick="openNodeModal('solutions-index')">🗺️ solutionsIndex.md</button>
         <button class="btn-secondary" onclick="openNodeModal('solutions-entry')">⚡ solutionsEntryPoint.md</button>
@@ -427,6 +510,7 @@ flowchart TD
         <button class="btn-secondary" onclick="openNodeModal('solutions-workspace')">🛠️ .solutionsWorkspace</button>
         <button class="btn-secondary" onclick="openNodeModal('solutions-output')">✅ .solutionsOutput</button>
         <button class="btn-secondary" onclick="openNodeModal('solutions-feedback')">💡 .solutionsFeedback</button>
+        <button class="btn-secondary" onclick="openNodeModal('solutions-documents')">📄 .solutionsDocuments</button>
         <button class="btn-secondary" onclick="openNodeModal('solutions-brainstorming')">✉️ .solutionsBrainstorming</button>
       </div>
 
@@ -442,31 +526,31 @@ flowchart TD
         <div class="mermaid-wrapper">
           <pre class="mermaid">
 mindmap
-  root((GitHub フォルダ<br/>※最上位環境))
-    projects))各一般プロジェクト群<br/>※兄弟関係((
-      template["morimori_template<br/>マスター雛形"]
-      p1["一般プロジェクト(1)"]
-      p2["一般プロジェクト(2)"]
-      pn["一般プロジェクト(N)"]
-    solutions))ソリューションズ統括<br/>※上位メタ役割((
-      solutionsManage((GitHub/solutions/<br/>統括リポジトリ))
-        folderInst((.solutionsInstruction/<br/>基本・特定ルール))
+  root((GitHub フォルダ<br/>※ローカル最上位))
+    projects["各一般プロジェクト群<br/>※物理的には同階層"]
+      template["GitHub/morimori_template/<br/>マスター雛形"]
+      p1["GitHub/一般プロジェクト(1)"]
+      p2["GitHub/一般プロジェクト(2)"]
+      pn["GitHub/一般プロジェクト(N)"]
+    solutions["ソリューションズ統括<br/>※上位メタ役割"]
+      solutionsManage["GitHub/solutions/<br/>統括リポジトリ"]
+        folderInst[".solutionsInstruction/<br/>基本・特定ルール"]
           instFile["solutionsInstruction.md"]
           skillFile["solutionsSkill.md"]
           mcpFile["solutionsMcp.json"]
-        folderReq((.solutionsRequest/<br/>横断依頼書・計画))
+        folderReq[".solutionsRequest/<br/>横断依頼書・計画"]
           reqFile["solutionsRequest.md"]
           planFile["作業計画.md"]
-        folderFeed((.solutionsFeedback/<br/>教訓一次記録))
+        folderFeed[".solutionsFeedback/<br/>教訓一次記録"]
           lessonFile["solutionsLesson_...md"]
-        folderScript((.solutionsScript/<br/>横断スクリプト))
+        folderScript[".solutionsScript/<br/>横断スクリプト"]
           scriptReadme["solutionsREADME.md"]
-        folderWork((.solutionsWorkspace/<br/>作業領域))
+        folderWork[".solutionsWorkspace/<br/>作業領域"]
           workReadme["solutionsREADME.md"]
-        folderOut((.solutionsOutput/<br/>成果物・改善提案))
+        folderOut[".solutionsOutput/<br/>成果物・改善提案"]
           outFile["solutionsInstruction_改善提案.md"]
-        folderDocs((.solutionsDocuments/<br/>関連資料))
-        folderBrain((.solutionsBrainstorming/<br/>手紙・ガス抜き))
+        folderDocs[".solutionsDocuments/<br/>関連資料・方針書"]
+        folderBrain[".solutionsBrainstorming/<br/>手紙・ガス抜き"]
           letterFile["letter.連番.md"]
         idxFile["solutionsIndex.md<br/>構造・機序説明"]
         entryFile["solutionsEntryPoint.md<br/>開始合図"]
@@ -474,59 +558,136 @@ mindmap
         </div>
       </div>
 
-      <!-- フローチャート表示 -->
+      <!-- フローチャート表示（Mermaid v11 安全構文） -->
       <div class="diagram-panel" id="diag-flowchart">
         <div class="mermaid-wrapper">
           <pre class="mermaid">
 flowchart TD
-    ROOT_START(["🚀 横断タスク開始"]) --> PREP
-    
-    subgraph PREP["📚 1. 準備・全体把握フェーズ"]
-      direction TB
-      P1["🛡️ solutionsInstruction.md / solutionsSkill.md 把握"]
-      P2["🗺️ solutionsIndex.md 構造・機序把握"]
-      P3["📋 .solutionsRequest/solutionsRequest.md 横断依頼把握"]
-      P1 --> P2 --> P3
+  %% 始端・終端
+    ROOT_START(["🚀 横断タスク開始"])
+    ROOT_END(["🏁 横断タスク完了"])
+
+  %% 人間側
+    subgraph HUMAN["👤 人間の行う作業"]
+        H_START(["開始"]) --> H_A1["「依頼書」を作成する"]
+        H_A1 --> H_O1[/"「依頼書」"/]
+        H_O1 --> H_O2[/"「開始合図」"/]
+        H_O2 --> H_A2["作業開始を号令する"]
+        H_A2 --> H_END(["終了"])
     end
 
-    PREP --> EVAL
+  %% AIエージェント側
+    subgraph MAIN["🤖 AIエージェントの仕事（ソリューションズ横断作業）"]
+        M_START(["開始"])
 
-    subgraph EVAL["🔍 2. ツール・スクリプト判定フェーズ"]
-      direction TB
-      E1{"🛠️ 外部ツール/構造外<br/>作業が必要か？"}
-      E2["🔍 .solutionsWorkspace/solutionsREADME.md 確認"]
-      E3{"💻 スクリプトが必要か？"}
-      E4["🔍 .solutionsScript/solutionsREADME.md 確認"]
-      E1 -->|はい| E2
-      E2 --> E3
-      E1 -->|いいえ| E3
-      E3 -->|はい| E4
+      %% オブジェクト
+        M_O_INST[/"「基本ルール」<br/>solutionsInstruction.md"/]
+        M_O_SKILL[/"「特定ジャンルルール」<br/>solutionsSkill.md"/]
+        M_O_IDX[/"「構造・機序説明」<br/>solutionsIndex.md"/]
+        M_O_REQ[/"「依頼書」<br/>solutionsRequest.md"/]
+        M_O_WORK_OLD[/"「ワークスペース」<br/>※既存リソース"/]
+        M_O_WORK_NEW[/"「ワークスペース」<br/>※新規作成分"/]
+        M_O_SCRIPT_OLD[/"「スクリプト」<br/>※過去の再利用"/]
+        M_O_SCRIPT_NEW[/"「スクリプト」<br/>※新規生成"/]
+        M_O_SCRIPT_README[/"「スクリプトREADME」<br/>solutionsREADME.md"/]
+        M_O_WORK_README[/"「ワークスペースREADME」<br/>solutionsREADME.md"/]
+        M_O_EXEC["AIが複数プロジェクトを横断して依頼を遂行する"]
+        M_O_OUT[/"「成果物」<br/>.solutionsOutput/"/]
+        M_O_LESSON[/"「教訓（ワークファイル）」<br/>.solutionsFeedback/"/]
+        M_O_PROP_INST[/"「基本ルール改善提案」"/]
+        M_O_PROP_SKILL[/"「特定ジャンル改善提案」"/]
+        M_O_LETTER[/"「手紙（ガス抜き）」<br/>.solutionsBrainstorming/"/]
+
+      %% アクション
+        M_A_INST["「基本ルール」を把握する"]
+        M_A_SKILL["「特定ジャンルルール」を把握する"]
+        M_A_IDX["「構造・機序」を把握する"]
+        M_A_REQ["「依頼書」を把握する"]
+        M_A_START["「依頼書」の内容に従い作業開始"]
+        M_A_WORK_CHK[".solutionsWorkspace/solutionsREADME.mdをサーチし<br/>既存リソースを確認"]
+        M_A_WORK_NEW[".solutionsWorkspaceに新規リソースを作成"]
+        M_A_WORK_USE["既存の.solutionsWorkspaceリソースを利用"]
+        M_A_SCRIPT_CHK["「スクリプト」再利用の判定。<br/>.solutionsScript/solutionsREADME.mdをサーチ"]
+        M_A_SCRIPT_USE["過去の「スクリプト」を再利用<br/>※修正可能"]
+        M_A_SCRIPT_NEW["「スクリプト」を新規生成する"]
+        M_A_LESSON["「教訓」を.solutionsFeedbackに出力する"]
+        M_A_OUT["「成果物」を生成する"]
+        M_A_SCRIPT_SAVE["今回の「スクリプト」を保存する"]
+        M_A_SCRIPT_README_UPD[".solutionsScript/solutionsREADME.mdを更新する"]
+        M_A_WORK_README_UPD[".solutionsWorkspace/solutionsREADME.mdを更新する"]
+        M_A_PROP_INST["「基本ルール改善提案」を作成する"]
+        M_A_PROP_SKILL["「特定ジャンル改善提案」を作成する"]
+        M_A_LETTER["作業を振り返り「手紙」を<br/>.solutionsBrainstormingに出力する"]
+
+      %% ブランチ
+        M_B_WORK{"外部ツールのインストールや<br/>構造外作業が必要か?"}
+        M_B_WORK_REUSE{".solutionsWorkspaceに<br/>再利用可能なリソースがあるか?"}
+        M_B_SCRIPT{"今回の作業は「スクリプト」<br/>生成が必要か?"}
+        M_B_SCRIPT_REUSE{"「スクリプト」再利用可能か?"}
+        M_B_DONE{"作業完了したか?"}
+        M_B_OUT{"「成果物」の生成が必要か?"}
+        M_B_SCRIPT_SAVE{"新しい「スクリプト」を使用したか?"}
+        M_B_WORK_SAVE{"新しい「ワークスペース」<br/>リソースを使用したか?"}
+        M_B_PROP_INST{"教訓から基本ルールの<br/>改善提案が必要か?"}
+        M_B_PROP_SKILL{"教訓から特定ジャンルの<br/>改善提案が必要か?"}
+
+      %% フロー接続（ノード直接接続）
+        M_START --> M_O_INST --> M_A_INST --> M_O_SKILL --> M_A_SKILL --> M_O_IDX --> M_A_IDX --> M_O_REQ --> M_A_REQ --> M_A_START
+        M_A_START --> M_B_WORK
+
+        %% ワークスペース判定
+        M_B_WORK -->|YES| M_A_WORK_CHK
+        M_B_WORK -->|NO | M_A_SCRIPT_CHK
+        M_A_WORK_CHK --> M_B_WORK_REUSE
+        M_B_WORK_REUSE -->|YES| M_A_WORK_USE
+        M_B_WORK_REUSE -->|NO | M_A_WORK_NEW
+        M_A_WORK_USE --> M_O_WORK_OLD --> M_O_EXEC
+        M_A_WORK_NEW --> M_O_WORK_NEW --> M_O_EXEC
+
+        %% スクリプト判定
+        M_A_SCRIPT_CHK --> M_B_SCRIPT
+        M_B_SCRIPT -->|YES| M_B_SCRIPT_REUSE
+        M_B_SCRIPT -->|NO | M_O_EXEC
+        M_B_SCRIPT_REUSE -->|YES| M_A_SCRIPT_USE
+        M_B_SCRIPT_REUSE -->|NO | M_A_SCRIPT_NEW
+        M_A_SCRIPT_USE --> M_O_SCRIPT_OLD --> M_O_EXEC
+        M_A_SCRIPT_NEW --> M_O_SCRIPT_NEW --> M_O_EXEC
+
+        %% 作業遂行・完了判定
+        M_O_EXEC --> M_B_DONE
+        M_B_DONE -->|YES| M_B_OUT
+        M_B_DONE -->|NO | M_O_EXEC
+
+        %% 成果物生成
+        M_B_OUT -->|YES| M_A_OUT
+        M_B_OUT -->|NO | M_A_LESSON
+        M_A_OUT --> M_O_OUT --> M_A_LESSON
+
+        %% 教訓・改善提案
+        M_A_LESSON --> M_O_LESSON --> M_B_PROP_INST
+        M_B_PROP_INST -->|YES| M_A_PROP_INST
+        M_B_PROP_INST -->|NO | M_B_PROP_SKILL
+        M_A_PROP_INST --> M_O_PROP_INST --> M_B_PROP_SKILL
+        M_B_PROP_SKILL -->|YES| M_A_PROP_SKILL
+        M_B_PROP_SKILL -->|NO | M_B_SCRIPT_SAVE
+        M_A_PROP_SKILL --> M_O_PROP_SKILL --> M_B_SCRIPT_SAVE
+
+        %% 保存・後処理
+        M_B_SCRIPT_SAVE -->|YES| M_A_SCRIPT_SAVE
+        M_B_SCRIPT_SAVE -->|NO | M_B_WORK_SAVE
+        M_A_SCRIPT_SAVE --> M_A_SCRIPT_README_UPD --> M_O_SCRIPT_README --> M_B_WORK_SAVE
+        M_B_WORK_SAVE -->|YES| M_A_WORK_README_UPD
+        M_B_WORK_SAVE -->|NO | M_A_LETTER
+        M_A_WORK_README_UPD --> M_O_WORK_README --> M_A_LETTER
+
+        %% ブレインストーミング
+        M_A_LETTER --> M_O_LETTER --> M_END_NODE(["終了"])
     end
 
-    EVAL --> EXEC
-
-    subgraph EXEC["🌐 3. 複数プロジェクト横断操作・遂行"]
-      direction TB
-      X1["🔍 全一般プロジェクトの .feedback/ 改善提案をスキミング"]
-      X2["⚙️ 提案の妥当性・整合性を自動検証"]
-      X3["📦 morimori_template に新ルールを統合反映"]
-      X4["🚀 全一般プロジェクトへ最新ルールを一斉同期配信"]
-      X5["✅ .solutionsOutput/ へ横断成果物を出力"]
-      X1 --> X2 --> X3 --> X4 --> X5
-    end
-
-    EXEC --> FEEDBACK
-
-    subgraph FEEDBACK["📝 4. 教訓・改善提案・手紙フェーズ"]
-      direction TB
-      F1["💡 .solutionsFeedback/solutionsLesson_...md 出力"]
-      F2["📄 .solutionsOutput/solutionsInstruction_改善提案.md 作成"]
-      F3["📝 solutionsREADME.md (Script/Workspace) を更新"]
-      F4["✉️ .solutionsBrainstorming/letter.{連番}.md 自由な手紙執筆"]
-      F1 --> F2 --> F3 --> F4
-    end
-
-    FEEDBACK --> ROOT_END(["🏁 横断タスク完了"])
+  %% 全体結合
+    ROOT_START --> H_START
+    H_END --> M_START
+    M_END_NODE --> ROOT_END
           </pre>
         </div>
       </div>
@@ -536,33 +697,51 @@ flowchart TD
         <div class="mermaid-wrapper">
           <pre class="mermaid">
 sequenceDiagram
-    participant H AS 👤 人間
-    participant S AS ⚡ ソリューションズ (AI)
-    participant TPL AS 📦 morimori_template
-    participant PROJS AS 📁 各一般プロジェクト群
-    participant OUT AS ✅ .solutionsOutput/
-    participant FB AS 💡 .solutionsFeedback/
-    participant BS AS ✉️ .solutionsBrainstorming/
-
-    H ->> S: solutionsEntryPoint.md (開始号令)
-    S ->> S: solutionsInstruction / Skill / Index / Request 読み込み
+    participant HUMAN          AS 【人】
+    participant AGENT          AS 【AIエージェント】
+    participant ENTRYPOINT     AS 【開始合図】<br/>solutionsEntryPoint.md
+    participant INSTRUCTION    AS 【基本ルール】<br/>solutionsInstruction.md
+    participant SKILL          AS 【特定ジャンル】<br/>solutionsSkill.md
+    participant INDEX          AS 【構造図】<br/>solutionsIndex.md
+    participant REQUEST        AS 【依頼書】<br/>solutionsRequest.md
+    participant WORKSPACE      AS 【ワークスペース】<br/>.solutionsWorkspace/
+    participant SCRIPT         AS 【スクリプト】<br/>.solutionsScript/
+    participant TARGET_PROJS   AS 【各一般プロジェクト】<br/>morimori_template 等
+    participant OUTPUT         AS 【成果物・提案】<br/>.solutionsOutput/
+    participant FEEDBACK       AS 【教訓記録】<br/>.solutionsFeedback/
+    participant BRAINSTORMING  AS 【手紙】<br/>.solutionsBrainstorming/
+    
+    HUMAN           ->> ENTRYPOINT     : 作業開始の号令
+    ENTRYPOINT     -->> AGENT          : 読み込み指示
+    AGENT           ->> INSTRUCTION    : 基本ルールの読み込み
+    INSTRUCTION    -->> AGENT          : 
+    AGENT           ->> SKILL          : 特定ジャンルルールの読み込み
+    SKILL          -->> AGENT          : 
+    AGENT           ->> INDEX          : 構造と機序の読み込み
+    INDEX          -->> AGENT          : 
+    AGENT           ->> REQUEST        : 依頼書の読み込み
+    REQUEST        -->> AGENT          : 
     
     rect rgba(99, 102, 241, 0.15)
-    Note over S,PROJS: 複数プロジェクト横断処理ループ
-    S ->> PROJS: 各 .feedback/ の教訓・改善提案をスキミング
-    PROJS -->> S: instruction_改善提案.md の回収
-    S ->> S: 提案の自動検証・整形
-    S ->> TPL: マスターテンプレートのルールを最新化
-    TPL -->> S: 統合完了
-    S ->> PROJS: 配下全プロジェクトへ最新ルールを一斉同期配信
-    S ->> OUT: 横断成果物・配信レポートを出力
+    loop ※依頼が完了するまで※ <br/>※コンテキスト維持上限が尽きるまで※
+        AGENT           ->> WORKSPACE      : 既存リソースのサーチ・利用・新規作成
+        WORKSPACE      -->> AGENT          : 
+        AGENT           ->> SCRIPT         : 既存スクリプトのサーチ・利用・新規作成
+        SCRIPT         -->> AGENT          : 
+        AGENT           ->> TARGET_PROJS   : 複数プロジェクトを横断した調査・編集・操作
+        TARGET_PROJS   -->> AGENT          : 
+        AGENT           ->> OUTPUT         : 成果物や共有用ファイルの出力
+        OUTPUT         -->> HUMAN          : 人によるレビュー・追加依頼
+        HUMAN           ->> AGENT          : 【適宜】チャットでのフィードバック
+    end
     end
 
-    S ->> FB: 横断タスク教訓 (solutionsLesson_...md) を出力
-    S ->> OUT: ソリューションズ改善提案を作成
-    S ->> BS: 自由な手紙 (letter.{連番}.md) を執筆
-    BS -->> H: 気づき・アイデアのフィードバック
-    S -->> H: 横断タスク完了報告
+    AGENT           ->> FEEDBACK       : 今回の教訓（lesson）を出力
+    AGENT           ->> OUTPUT         : 教訓をもとに改善提案（instruction/skill）を出力
+    HUMAN           ->> AGENT          : 完了の通知とお礼
+    AGENT           ->> BRAINSTORMING  : 作業を振り返り、自由な手紙を出力
+    BRAINSTORMING  -->> HUMAN          : 
+    AGENT          -->> HUMAN          : 総括
           </pre>
         </div>
       </div>
@@ -586,6 +765,9 @@ sequenceDiagram
         <button class="code-tab active" data-target="code-solutions-index">solutionsIndex.md</button>
         <button class="code-tab" data-target="code-solutions-entry">solutionsEntryPoint.md</button>
         <button class="code-tab" data-target="code-solutions-request">solutionsRequest.md</button>
+        <button class="code-tab" data-target="code-solutions-instruction">solutionsInstruction.md</button>
+        <button class="code-tab" data-target="code-solutions-skill">solutionsSkill.md</button>
+        <button class="code-tab" data-target="code-solutions-plan">作業計画.md</button>
       </div>
 
       <div class="code-content-panel active" id="code-solutions-index">
@@ -599,9 +781,14 @@ sequenceDiagram
 当ソリューションズ（`GitHub/solutions/`）は、**複数の一般プロジェクトを横断する依頼を行う際に、その依頼内容や資材を一元管理・統括するための特別なプロジェクト**です。
 
 **【想定される横断作業の例】**
-- 各プロジェクトの「改善提案（`instruction_改善案.md`）」を回収する。
+- 各プロジェクトの「改善提案（`instruction_改善提案.md` や `skill_改善提案.md`）」を回収する。
 - 改善案をマスターテンプレート（`morimori_template`）に反映する。
-- その後、他の全ての関連プロジェクトへ一斉に配信・適用する。</code></pre>
+- その後、他の全ての関連プロジェクトへ一斉に配信・適用する。
+
+## 位置づけについて（前提）
+- **物理的な配置**: `GitHub/solutions/` として、各一般プロジェクトと同階層（兄弟フォルダ）に存在します。
+- **概念的な役割**: 役割としては「全プロジェクトを横断して管理・統括・操作する上位のメタプロジェクト」として振る舞います。
+- **資材の考え方**: 自身には `.main/` を持たず、**横断対象となる各一般プロジェクトそのものが処理対象の資材**となります。</code></pre>
       </div>
 
       <div class="code-content-panel" id="code-solutions-entry">
@@ -626,9 +813,56 @@ AIエージェントは以下の順番でファイルを読み込み、横断作
         </div>
         <pre id="code-solutions-request-pre"><code># 全社プロジェクト横断依頼書 (solutionsRequest.md)
 
-## 依頼内容
-1. 全一般プロジェクトの `.feedback/` 内の改善提案をスキャンしてください。
-2. 承認されたルールを `morimori_template` に統合し、全プロジェクトへ最新 `instruction.md` を一斉同期配布してください。</code></pre>
+## 環境
+- OS: Windows 11 Home
+- コマンドシェル: PowerShell 7.x
+
+## 依頼概要
+- 全一般プロジェクトの改善提案（`instruction_改善提案.md`）を一括回収・検証し、`morimori_template` に統合反映後、全プロジェクトへ一斉同期配信してください。
+
+## 依頼のゴール
+- 全プロジェクトの `instruction.md` が最新化され、整合性が保たれていること。</code></pre>
+      </div>
+
+      <div class="code-content-panel" id="code-solutions-instruction">
+        <div class="code-header-bar">
+          <span>file: solutionsInstruction.md</span>
+          <button class="copy-code-btn" onclick="copyCodeContent('code-solutions-instruction-pre')">📋 コピー</button>
+        </div>
+        <pre id="code-solutions-instruction-pre"><code># ソリューションズ基本ルール (solutionsInstruction.md)
+
+## 開発スタンスとマインドセット
+- **相互尊重**: あなたは私の信頼する大切なパートナーです。
+- **基本理念**: な・ど・し・り・さ (なぜ作るのか、どうやるのか、書式はどうする、履歴はどうする、ここはさわるな)
+
+## 複数プロジェクト横断アクセスのルール
+- ソリューションズから各一般プロジェクトを操作する際は、各プロジェクト独自の `index.md` や `instruction.md` も尊重し、整合性を担保してください。</code></pre>
+      </div>
+
+      <div class="code-content-panel" id="code-solutions-skill">
+        <div class="code-header-bar">
+          <span>file: solutionsSkill.md</span>
+          <button class="copy-code-btn" onclick="copyCodeContent('code-solutions-skill-pre')">📋 コピー</button>
+        </div>
+        <pre id="code-solutions-skill-pre"><code># ソリューションズ特定ジャンルルール (solutionsSkill.md)
+
+## 複数プロジェクト一括同期スクリプトの利用
+- 全プロジェクトへの一斉配信は `.solutionsScript/deploy_all_projects.py` を呼び出して安全に実行してください。
+- 各ファイル操作は冪等性を担保し、実行前後の差分を検証してください。</code></pre>
+      </div>
+
+      <div class="code-content-panel" id="code-solutions-plan">
+        <div class="code-header-bar">
+          <span>file: 作業計画.md</span>
+          <button class="copy-code-btn" onclick="copyCodeContent('code-solutions-plan-pre')">📋 コピー</button>
+        </div>
+        <pre id="code-solutions-plan-pre"><code># 作業計画 (作業計画.md)
+
+| 番号 | 作業のタイトル | 状態 |
+|---|---|---|
+| 1 | 各プロジェクトの改善提案スキミング | 【◯完了】 |
+| 2 | マスターテンプレートへのルール統合 | 【△作業中】 |
+| 3 | 全一般プロジェクトへの一斉同期配信 | 【■未着手】 |</code></pre>
       </div>
     </div>
   </section>

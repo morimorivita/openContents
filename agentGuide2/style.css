@@ -425,6 +425,8 @@ section {
 .tag-script { background: rgba(6, 182, 212, 0.2); color: #67e8f9; }
 .tag-work { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
 .tag-feed { background: rgba(236, 72, 153, 0.2); color: #f472b6; }
+.tag-docs { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
+.tag-brain { background: rgba(236, 72, 153, 0.2); color: #f472b6; }
 
 /* ── ② 物理階層 vs 概念役割カード ── */
 .concept-cards-grid {
