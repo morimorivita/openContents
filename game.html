@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>深夜の路地</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: #0b0c10;
+    color: #c5c6c7;
+    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 16px;
+  }
+  #game-container {
+    width: 100%;
+    max-width: 480px;
+    background: #1f2833;
+    border: 1px solid #45a29e;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.8);
+  }
+  #scene-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #66fcf1;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #45a29e;
+    padding-bottom: 6px;
+  }
+  #text-box {
+    font-size: 0.95rem;
+    line-height: 1.8;
+    min-height: 140px;
+    white-space: pre-line;
+    margin-bottom: 20px;
+    color: #e0e0e0;
+  }
+  .choice-btn {
+    width: 100%;
+    background: #0b0c10;
+    color: #66fcf1;
+    border: 1px solid #45a29e;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s;
+  }
+  .choice-btn:active {
+    background: #45a29e;
+    color: #0b0c10;
+  }
+</style>
+</head>
+<body>
+
+<div id="game-container">
+  <div id="scene-title"></div>
+  <div id="text-box"></div>
+  <div id="choices-container"></div>
+</div>
+
+<script>
+const scenario = {
+  start: {
+    title: "深夜の帰り道",
+    text: "雨上がりの深夜、見覚えのない細い路地に迷い込んでしまった。\n\n街灯の下に古びた掲示板があり、濡れたビラが1枚だけ貼られている。",
+    choices: [
+      { label: "ビラの内容を確認する", target: "check_poster" },
+      { label: "見なかったことにして早足で進む", target: "ignore" }
+    ]
+  },
+  check_poster: {
+    title: "掲示板の前",
+    text: "ビラには『人を探しています』という文字。\n\nその下に書かれた服装の特徴は、今夜のあなたの服装と完全に一致していた。\n\n背後で、ピチャリと水たまりを踏む音が響く。",
+    choices: [
+      { label: "恐る恐る振り返る", target: "turn_around" },
+      { label: "前を向いたまま一気に駆け出す", target: "run_away" }
+    ]
+  },
+  ignore: {
+    title: "暗い路地",
+    text: "気味の悪さを感じて早足で歩く。\n\nしかし、角を何度曲がっても、先ほどと同じ街灯と掲示板の前に戻ってしまう。",
+    choices: [
+      { label: "スマホで地図アプリを開く", target: "use_phone" },
+      { label: "掲示板をもう一度見る", target: "check_poster" }
+    ]
+  },
+  turn_around: {
+    title: "【BAD END】見つかった",
+    text: "振り向いた瞬間、目の前に立っていた人物と目が合った。\n\nその顔には目も鼻もなく、ただ貼り付けたような笑顔だけが浮かんでいた。\n\n意識が急速に暗転していく……。",
+    choices: [
+      { label: "最初からやり直す", target: "start" }
+    ]
+  },
+  run_away: {
+    title: "【ESCAPE END】静寂の駅前",
+    text: "後ろを振り返らず、全力で路地を駆け抜けた。\n\n背後から追ってくる気配は、大通りの灯りが見えた瞬間にスッと消え去った。\n\n息を切らしながら駅前へ辿り着いたが、ポケットの中に覚えのない紙切れが入っていることに気づく……。",
+    choices: [
+      { label: "最初からやり直す", target: "start" }
+    ]
+  },
+  use_phone: {
+    title: "【BAD END】圏外の画面",
+    text: "スマホの画面をタップするが、電波は圏外。\n\nふと暗い画面に目をやると、黒い画面に反射した自分の背後に、ぴったりと張り付く誰かの影が映っていた。",
+    choices: [
+      { label: "最初からやり直す", target: "start" }
+    ]
+  }
+};
+
+function renderScene(sceneKey) {
+  const scene = scenario[sceneKey];
+  document.getElementById("scene-title").textContent = scene.title;
+  document.getElementById("text-box").textContent = scene.text;
+  
+  const choicesContainer = document.getElementById("choices-container");
+  choicesContainer.innerHTML = "";
+  
+  scene.choices.forEach(choice => {
+    const button = document.createElement("button");
+    button.className = "choice-btn";
+    button.textContent = choice.label;
+    button.onclick = () => renderScene(choice.target);
+    choicesContainer.appendChild(button);
+  });
+}
+
+// ゲーム開始
+renderScene("start");
+</script>
+</body>
+</html>
+

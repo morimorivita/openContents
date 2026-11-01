@@ -20,7 +20,7 @@ flowchart TD
    ROOT-O-01300@{shape: rounded, label: "Word<br/>エクスポート"};
    ROOT-O-01400@{shape: rounded, label: "PDF<br/>エクスポート"};
    ROOT-O-01500@{shape: rounded, label: "CSV<br/>図表の部分<br/>エクスポート"};
-   ROOT-O-02100@{shape: win-pane, label: "ノートブック</br>※アップした<br/>資料を元に作業"};
+   ROOT-O-02100@{shape: win-pane, label: "ノートブック<br/>※アップした<br/>資料を元に作業"};
    ROOT-O-02000@{shape: docs, label: "資料をアップ<br/>※さまざまな<br/>ドキュメント類"}
 
    %% アクション
