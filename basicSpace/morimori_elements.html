@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>もりもり元素一覧表</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=Outfit:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+    <style>
+        :root {
+            --green-900: #14532d;
+            --green-800: #166534;
+            --green-700: #15803d;
+            --emerald-600: #059669;
+            --emerald-500: #10b981;
+            --emerald-400: #34d399;
+            --mint-100: #dcfce7;
+            --mint-50: #f2fbf6;
+            --bg-gradient: linear-gradient(135deg, #f4fbf7 0%, #ebf9f1 50%, #e4f5ec 100%);
+            --glass-bg: rgba(255, 255, 255, 0.86);
+            --glass-border: rgba(16, 185, 129, 0.24);
+            --text-main: #0f2e1f;
+            --text-body: #1e293b;
+            --text-muted: #475569;
+            --text-subtle: #64748b;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', 'Inter', 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Meiryo', sans-serif;
+            background-color: #eef9f2;
+            background-image:
+                radial-gradient(circle at 8% 12%, rgba(16, 185, 129, 0.16) 0%, transparent 42%),
+                radial-gradient(circle at 92% 88%, rgba(52, 211, 153, 0.18) 0%, transparent 44%),
+                radial-gradient(circle at 50% 0%, rgba(167, 243, 208, 0.25) 0%, transparent 50%),
+                var(--bg-gradient);
+            background-attachment: fixed;
+            margin: 0;
+            padding: 10px 14px 20px;
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        /* Compact Top Bar (Glowing Title + Control Buttons) */
+        .top-bar {
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px 14px;
+            max-width: 1520px;
+        }
+
+        @keyframes titleShimmer {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 220% 50%; }
+        }
+
+        @keyframes titleGlowPulse {
+            0%, 100% {
+                filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.36)) drop-shadow(0 0 14px rgba(52, 211, 153, 0.24));
+            }
+            50% {
+                filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.68)) drop-shadow(0 0 22px rgba(6, 182, 212, 0.48));
+            }
+        }
+
+        h1 {
+            font-size: clamp(1.1rem, 2vw, 1.32rem);
+            font-weight: 700;
+            margin: 0;
+            padding: 2px 4px;
+            line-height: 1.2;
+            white-space: nowrap;
+            letter-spacing: 0.03em;
+            background: linear-gradient(
+                110deg,
+                #14532d 0%,
+                #15803d 25%,
+                #10b981 42%,
+                #a7f3d0 50%,
+                #06b6d4 58%,
+                #15803d 75%,
+                #14532d 100%
+            );
+            background-size: 220% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleShimmer 4.2s linear infinite, titleGlowPulse 2.8s ease-in-out infinite;
+        }
+
+        /* Filter & Control Bar */
+        .filter-buttons {
+            margin: 0;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 7px 16px;
+            border: 1px solid rgba(16, 185, 129, 0.32);
+            border-radius: 30px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.88);
+            color: var(--green-900);
+            transition: all 0.25s ease;
+            font-weight: 600;
+            font-size: 0.84rem;
+            font-family: inherit;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 2px 8px rgba(20, 83, 45, 0.06);
+        }
+
+        .filter-btn:hover {
+            background: #ffffff;
+            border-color: var(--emerald-500);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.18);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #15803d 0%, #10b981 100%);
+            border-color: #059669;
+            color: #ffffff;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+        }
+
+        .filter-btn-gemini {
+            border-color: rgba(16, 185, 129, 0.55);
+            color: #047857;
+            background: linear-gradient(135deg, rgba(236, 253, 245, 0.95), rgba(209, 250, 229, 0.9));
+        }
+
+        .filter-btn-gemini.active {
+            background: linear-gradient(135deg, #059669 0%, #10b981 55%, #06b6d4 100%);
+            border-color: #059669;
+            color: #ffffff;
+            box-shadow: 0 4px 18px rgba(16, 185, 129, 0.42);
+        }
+
+        .filter-btn-colvis {
+            border-color: rgba(21, 128, 61, 0.4);
+            color: var(--green-800);
+            background: rgba(255, 255, 255, 0.92);
+        }
+
+        /* Glassmorphism Container */
+        .table-container {
+            position: relative;
+            width: 100%;
+            max-width: 1520px;
+            margin: 0 auto;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 16px 14px;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 18px 45px rgba(20, 83, 45, 0.09);
+        }
+
+        /* DataTable Styling Overrides (Respect scrollX dynamic calculation) */
+        table.dataTable {
+            border-collapse: separate !important;
+            border-spacing: 0 5px !important;
+            width: max-content !important;
+            min-width: 100%;
+            margin: 0 !important;
+            background: transparent !important;
+        }
+
+        table.dataTable thead th {
+            background: linear-gradient(180deg, #166534 0%, #14532d 100%) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.16) !important;
+            padding: 11px 10px !important;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            border-bottom: 2px solid var(--emerald-500) !important;
+            white-space: nowrap;
+        }
+
+        .dataTables_scrollHead {
+            background: #14532d !important;
+            border-radius: 10px 10px 0 0;
+            overflow: hidden !important;
+        }
+
+        .dataTables_scrollBody {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .dataTables_scroll {
+            width: 100%;
+        }
+
+        table.dataTable tbody tr {
+            background-color: #ffffff !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            cursor: pointer;
+        }
+
+        table.dataTable tbody tr:nth-child(even) {
+            background-color: var(--mint-50) !important;
+        }
+
+        table.dataTable tbody tr:hover {
+            background-color: #e3f8ec !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.16);
+        }
+
+        table.dataTable tbody td {
+            border-top: 1px solid rgba(16, 185, 129, 0.14) !important;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.14) !important;
+            border-left: 1px solid rgba(16, 185, 129, 0.08) !important;
+            border-right: 1px solid rgba(16, 185, 129, 0.08) !important;
+            padding: 9px 10px !important;
+            vertical-align: middle;
+            color: var(--text-body);
+            font-size: 0.86rem;
+            line-height: 1.5;
+        }
+
+        table.dataTable tbody tr td:first-child {
+            border-left: 1px solid rgba(16, 185, 129, 0.18) !important;
+            border-radius: 10px 0 0 10px;
+        }
+
+        table.dataTable tbody tr td:last-child {
+            border-right: 1px solid rgba(16, 185, 129, 0.18) !important;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .col-wrap {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 260px;
+        }
+
+        .col-nowrap {
+            white-space: nowrap;
+        }
+
+        .clickable-no {
+            text-align: center;
+            color: var(--green-700) !important;
+            font-weight: 700;
+            font-size: 0.92rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        table.dataTable tbody tr:hover .clickable-no {
+            color: var(--emerald-600) !important;
+        }
+
+        .element-name-ja {
+            font-weight: 700;
+            color: var(--green-900);
+            font-size: 0.92rem;
+        }
+
+        /* Symbol Badges */
+        .symbol-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 44px;
+            padding: 4px 11px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.03em;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            color: #14532d;
+            border: 1px solid #86efac;
+            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.14);
+        }
+
+        /* Gemini Highlight Rows & Badges (1: H, 6: C, 18: Ar) */
+        @keyframes geminiRowPulse {
+            0%, 100% {
+                box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.35), 0 0 14px rgba(16, 185, 129, 0.24);
+            }
+            50% {
+                box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.48), 0 0 24px rgba(16, 185, 129, 0.45);
+            }
+        }
+
+        @keyframes geminiBadgeGlow {
+            0%, 100% {
+                box-shadow: 0 0 8px rgba(16, 185, 129, 0.45), 0 2px 8px rgba(6, 182, 212, 0.28);
+            }
+            50% {
+                box-shadow: 0 0 18px rgba(16, 185, 129, 0.78), 0 0 26px rgba(52, 211, 153, 0.55);
+            }
+        }
+
+        table.dataTable tbody tr.gemini-highlight {
+            background: linear-gradient(90deg, #dcfce7 0%, #d1fae5 45%, #cffafe 100%) !important;
+            animation: geminiRowPulse 2.8s ease-in-out infinite;
+        }
+
+        table.dataTable tbody tr.gemini-highlight:hover {
+            background: linear-gradient(90deg, #bbf7d0 0%, #a7f3d0 50%, #a5f3fc 100%) !important;
+            transform: translateY(-1px);
+        }
+
+        table.dataTable tbody tr.gemini-highlight td {
+            border-top: 1px solid rgba(16, 185, 129, 0.45) !important;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.45) !important;
+            color: #064e3b;
+        }
+
+        table.dataTable tbody tr.gemini-highlight td:first-child {
+            border-left: 5px solid #10b981 !important;
+            box-shadow: inset 4px 0 10px rgba(16, 185, 129, 0.25);
+        }
+
+        table.dataTable tbody tr.gemini-highlight td:last-child {
+            border-right: 1px solid rgba(16, 185, 129, 0.45) !important;
+        }
+
+        .symbol-badge.gemini-badge {
+            background: linear-gradient(135deg, #10b981 0%, #059669 55%, #06b6d4 100%);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.75);
+            animation: geminiBadgeGlow 2.4s ease-in-out infinite;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .symbol-badge.gemini-badge::after {
+            content: " ✦";
+            font-size: 0.75rem;
+            color: #fef08a;
+            margin-left: 3px;
+            text-shadow: 0 0 6px rgba(254, 240, 138, 0.9);
+        }
+
+        /* DataTables Controls (Light Green Theme) */
+        .dataTables_wrapper .dataTables_filter {
+            margin-bottom: 10px;
+        }
+
+        .dataTables_wrapper .dataTables_filter input {
+            background: #ffffff !important;
+            border: 1px solid rgba(16, 185, 129, 0.35) !important;
+            border-radius: 30px !important;
+            color: var(--text-main) !important;
+            padding: 6px 14px !important;
+            font-size: 0.85rem !important;
+            outline: none !important;
+            transition: all 0.25s;
+            margin-left: 6px;
+        }
+
+        .dataTables_wrapper .dataTables_filter input:focus {
+            border-color: var(--emerald-500) !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18) !important;
+        }
+
+        .dataTables_wrapper .dataTables_filter label,
+        .dataTables_wrapper .dataTables_length label {
+            color: var(--text-muted) !important;
+            font-size: 0.84rem !important;
+            font-weight: 500;
+        }
+
+        .dataTables_wrapper .dataTables_length {
+            margin-bottom: 10px;
+        }
+
+        .dataTables_wrapper .dataTables_length select {
+            background: #ffffff !important;
+            border: 1px solid rgba(16, 185, 129, 0.35) !important;
+            border-radius: 8px !important;
+            color: var(--text-main) !important;
+            padding: 4px 8px !important;
+            font-size: 0.84rem !important;
+            outline: none;
+        }
+
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            color: var(--text-muted) !important;
+            font-size: 0.82rem !important;
+            margin-top: 10px;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            color: var(--green-800) !important;
+            border-radius: 6px !important;
+            padding: 4px 10px !important;
+            font-size: 0.82rem !important;
+            border: 1px solid transparent !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.disabled) {
+            background: #dcfce7 !important;
+            color: var(--green-900) !important;
+            border-color: #86efac !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+            background: linear-gradient(135deg, #15803d 0%, #10b981 100%) !important;
+            border: none !important;
+            color: #ffffff !important;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 9px;
+            height: 9px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #e8f7ef;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(16, 185, 129, 0.4);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(5, 150, 105, 0.65);
+        }
+
+        /* Modal Base Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 46, 31, 0.42);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            padding: 12px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 16px;
+            padding: 22px;
+            width: 100%;
+            max-width: 460px;
+            max-height: 82vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 24px 55px rgba(20, 83, 45, 0.22);
+            transform: translateY(-16px);
+            transition: transform 0.25s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            margin-bottom: 14px;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.18);
+            padding-bottom: 10px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.15rem;
+            color: var(--green-900);
+            text-align: center;
+        }
+
+        .modal-body {
+            overflow-y: auto;
+            flex-grow: 1;
+            margin-bottom: 16px;
+            padding-right: 4px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 10px;
+            transition: background 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .checkbox-item:hover {
+            background: #f0fdf4;
+            border-color: rgba(16, 185, 129, 0.25);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--emerald-600);
+        }
+
+        .checkbox-item span {
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            user-select: none;
+            flex-grow: 1;
+            font-weight: 500;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            border-top: 1px solid rgba(16, 185, 129, 0.18);
+            padding-top: 14px;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            font-size: 0.88rem;
+        }
+
+        .btn-cancel {
+            background: #ffffff;
+            color: var(--text-muted);
+            border: 1px solid rgba(100, 116, 139, 0.35);
+        }
+
+        .btn-cancel:hover {
+            background: #f1f5f9;
+            color: var(--text-main);
+        }
+
+        .btn-apply {
+            background: linear-gradient(135deg, #15803d 0%, #10b981 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.32);
+        }
+
+        .btn-apply:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
+        }
+
+        /* Detail Card Modal */
+        @keyframes geminiCardPulse {
+            0%, 100% {
+                box-shadow: 0 24px 60px rgba(6, 95, 70, 0.24), 0 0 22px rgba(16, 185, 129, 0.42);
+                border-color: #10b981;
+            }
+            50% {
+                box-shadow: 0 24px 60px rgba(6, 95, 70, 0.28), 0 0 38px rgba(6, 182, 212, 0.62);
+                border-color: #06b6d4;
+            }
+        }
+
+        .card-modal-content {
+            background: linear-gradient(155deg, #ffffff 0%, #f3fbf7 100%);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            border-radius: 18px;
+            padding: 22px;
+            width: 100%;
+            max-width: 660px;
+            max-height: 88vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 24px 60px rgba(20, 83, 45, 0.22);
+            transform: scale(0.95);
+            transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .modal-overlay.active .card-modal-content {
+            transform: scale(1);
+        }
+
+        .card-modal-content.gemini-card {
+            background: linear-gradient(155deg, #ffffff 0%, #ecfdf5 55%, #ecfeff 100%);
+            border: 2px solid #10b981;
+            animation: geminiCardPulse 2.6s ease-in-out infinite;
+        }
+
+        .card-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+            padding-bottom: 14px;
+            margin-bottom: 16px;
+        }
+
+        .card-title-group {
+            flex-grow: 1;
+            padding-right: 12px;
+        }
+
+        .card-title-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+        }
+
+        .card-title {
+            margin: 0;
+            font-size: 1.4rem;
+            color: var(--green-900);
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .card-sub-titles {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .close-icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-subtle);
+            font-size: 1.6rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 2px 8px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .close-icon-btn:hover {
+            color: var(--green-900);
+            background: rgba(16, 185, 129, 0.14);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 11px 14px;
+            margin-bottom: 8px;
+        }
+
+        .card-item {
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(16, 185, 129, 0.18);
+            border-radius: 11px;
+            padding: 10px 12px;
+        }
+
+        .card-modal-content.gemini-card .card-item {
+            background: rgba(255, 255, 255, 0.92);
+            border-color: rgba(16, 185, 129, 0.35);
+        }
+
+        .card-item-full {
+            grid-column: 1 / -1;
+        }
+
+        .card-item-label {
+            font-size: 0.72rem;
+            letter-spacing: 0.04em;
+            color: var(--emerald-600);
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        .card-item-value {
+            font-size: 0.93rem;
+            color: var(--text-main);
+            word-break: break-word;
+            line-height: 1.5;
+        }
+
+        .card-nav-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            border-top: 1px solid rgba(16, 185, 129, 0.2);
+            padding-top: 14px;
+            margin-top: auto;
+        }
+
+        .card-nav-center {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-nav {
+            background: #ecfdf5;
+            border: 1px solid rgba(16, 185, 129, 0.45);
+            color: var(--green-800);
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.84rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-nav:hover:not(:disabled) {
+            background: var(--emerald-500);
+            border-color: var(--emerald-600);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-nav:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .card-counter {
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Loading Overlay Styles (Light Green Theme) */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(240, 253, 244, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 0.45s ease, visibility 0.45s ease;
+            padding: 16px;
+        }
+
+        .loading-overlay.fade-out {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loading-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            border-radius: 20px;
+            padding: 34px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 20px 50px rgba(20, 83, 45, 0.14);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .spinner-container {
+            position: relative;
+            width: 64px;
+            height: 64px;
+            margin-bottom: 20px;
+        }
+
+        .green-spinner {
+            width: 100%;
+            height: 100%;
+            border: 4px solid rgba(16, 185, 129, 0.18);
+            border-top: 4px solid #15803d;
+            border-right: 4px solid #10b981;
+            border-radius: 50%;
+            animation: greenSpin 0.95s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+        }
+
+        .spinner-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 36px;
+            height: 36px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.45) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: greenPulse 1.4s ease-in-out infinite alternate;
+        }
+
+        @keyframes greenSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes greenPulse {
+            0% { opacity: 0.35; transform: translate(-50%, -50%) scale(0.8); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1.25); }
+        }
+
+        .loading-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--green-900);
+            margin-bottom: 6px;
+        }
+
+        .loading-subtitle {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-bottom: 18px;
+        }
+
+        .loading-bar {
+            width: 100%;
+            height: 6px;
+            background: #dcfce7;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loading-bar-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 40%;
+            background: linear-gradient(90deg, #15803d, #10b981, #34d399);
+            border-radius: 10px;
+            animation: loadingMove 1.4s ease-in-out infinite;
+        }
+
+        @keyframes loadingMove {
+            0% { left: -40%; width: 40%; }
+            50% { width: 60%; }
+            100% { left: 100%; width: 40%; }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 640px) {
+            body {
+                padding: 12px 8px 20px;
+            }
+
+            .table-container {
+                padding: 12px 8px;
+                border-radius: 12px;
+            }
+
+            .dataTables_wrapper .dataTables_length,
+            .dataTables_wrapper .dataTables_filter {
+                float: none !important;
+                text-align: left !important;
+                width: 100%;
+            }
+
+            .dataTables_wrapper .dataTables_filter input {
+                width: calc(100% - 60px);
+                max-width: 260px;
+            }
+        }
+
+        @media (max-width: 550px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-modal-content {
+                padding: 16px;
+            }
+
+            .btn-nav {
+                padding: 7px 12px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-card">
+            <div class="spinner-container">
+                <div class="green-spinner"></div>
+                <div class="spinner-glow"></div>
+            </div>
+            <div class="loading-title">元素データを読み込み中です</div>
+            <div class="loading-subtitle">少しお待ちください...</div>
+            <div class="loading-bar">
+                <div class="loading-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="top-bar">
+        <h1>もりもり元素一覧表</h1>
+        <div class="filter-buttons">
+            <button type="button" class="filter-btn active" data-filter="all">全元素 (118)</button>
+            <button type="button" class="filter-btn filter-btn-gemini" data-filter="gemini">✨ Gemini関連元素 (H・C・Ar)</button>
+            <button type="button" class="filter-btn filter-btn-colvis" id="btnShowColVis">表示項目選択</button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table id="elementsTable" class="display" style="width:100%">
+            <thead>
+                <tr>
+                    <th>元素番号</th>
+                    <th>元素記号</th>
+                    <th>日本語名</th>
+                    <th>日本語の読み</th>
+                    <th>英語名</th>
+                    <th>由来</th>
+                    <th>特徴・主な用途</th>
+                </tr>
+            </thead>
+            <tbody id="elementsBody"></tbody>
+        </table>
+    </div>
+
+    <!-- Detail Card Modal -->
+    <div class="modal-overlay" id="detailCardModal" role="dialog" aria-modal="true" aria-labelledby="cardTitle">
+        <div class="card-modal-content" id="detailCardContent">
+            <div class="card-header-bar">
+                <div class="card-title-group">
+                    <div class="card-title-row">
+                        <span class="symbol-badge" id="cardHeaderBadge">H</span>
+                        <h2 class="card-title" id="cardTitle">水素</h2>
+                    </div>
+                    <p class="card-sub-titles" id="cardSubTitles">すいそ（ハイドロゲン） / Hydrogen</p>
+                </div>
+                <button type="button" class="close-icon-btn" id="btnCloseCardX" title="閉じる" aria-label="閉じる">&times;</button>
+            </div>
+
+            <div class="modal-body" style="margin-bottom:0;">
+                <div class="card-grid">
+                    <div class="card-item">
+                        <div class="card-item-label">元素番号</div>
+                        <div class="card-item-value" id="cardNumber">-</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">元素記号</div>
+                        <div class="card-item-value" id="cardSymbol">-</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">日本語名</div>
+                        <div class="card-item-value" id="cardNameJa">-</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">日本語の読み</div>
+                        <div class="card-item-value" id="cardReadingJa">-</div>
+                    </div>
+                    <div class="card-item card-item-full">
+                        <div class="card-item-label">英語名</div>
+                        <div class="card-item-value" id="cardNameEn">-</div>
+                    </div>
+                    <div class="card-item card-item-full">
+                        <div class="card-item-label">由来</div>
+                        <div class="card-item-value" id="cardOrigin">-</div>
+                    </div>
+                    <div class="card-item card-item-full">
+                        <div class="card-item-label">特徴・主な用途</div>
+                        <div class="card-item-value" id="cardFeatures">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-nav-footer">
+                <button type="button" class="btn-nav" id="btnPrevCard">
+                    <span>&larr;</span> 前の元素
+                </button>
+                <div class="card-nav-center">
+                    <span class="card-counter" id="cardCounter">1 / 118</span>
+                    <button type="button" class="btn btn-cancel" id="btnCloseCard">閉じる</button>
+                </div>
+                <button type="button" class="btn-nav" id="btnNextCard">
+                    次の元素 <span>&rarr;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Column Visibility Modal -->
+    <div class="modal-overlay" id="colVisModal" role="dialog" aria-modal="true" aria-labelledby="colVisTitle">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="colVisTitle">表示項目の選択</h2>
+            </div>
+            <div class="modal-body" id="colVisList"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel" id="btnCancelColVis">キャンセル</button>
+                <button type="button" class="btn btn-apply" id="btnApplyColVis">適用</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Embedded Elements Data (118 Elements) -->
+    <script id="elementsData" type="application/json">[{"number": 1, "symbol": "H", "name_ja": "水素", "reading_ja": "すいそ（ハイドロゲン）", "name_en": "Hydrogen", "origin": "水素（H）：ギリシャ語の「水（hydro）」と「生じる（genes）」から、燃焼すると水ができることに由来", "features": "【001 H 】最も軽い気体。ロケット燃料や燃料電池、アンモニア原料 (Gemini4 Hydrogen)"}, {"number": 2, "symbol": "He", "name_ja": "ヘリウム", "reading_ja": "ヘリウム（ヘリウム）", "name_en": "Helium", "origin": "ヘリウム（He）：ギリシャ語の「太陽（helios）」に由来（太陽光スペクトルから発見）", "features": "【002 He】非常に軽く不燃性。ヘリウム風船やMRIの超伝導冷却"}, {"number": 3, "symbol": "Li", "name_ja": "リチウム", "reading_ja": "リチウム（リチウム）", "name_en": "Lithium", "origin": "リチウム（Li）：ギリシャ語の「石（lithos）」に由来（鉱物から発見されたため）", "features": "【003 Li】最も軽い金属。スマートフォン等のリチウムイオン電池"}, {"number": 4, "symbol": "Be", "name_ja": "ベリリウム", "reading_ja": "ベリリウム（ベリリウム）", "name_en": "Beryllium", "origin": "ベリリウム（Be）：緑柱石（ベリル、beryl）に由来", "features": "【004 Be】軽量で高強度の金属。航空宇宙材料やエメラルドの構成成分"}, {"number": 5, "symbol": "B", "name_ja": "ホウ素", "reading_ja": "ほうそ（ボロン）", "name_en": "Boron", "origin": "ホウ素（B）：アラビア語の「白・ホウ砂（buraq）」に由来", "features": "【005 B 】耐熱ガラス添加剤、目薬、ホウ酸団子（殺虫剤）"}, {"number": 6, "symbol": "C", "name_ja": "炭素", "reading_ja": "たんそ（カーボン）", "name_en": "Carbon", "origin": "炭素（C）：ラテン語の「木炭（carbo）」に由来", "features": "【006 C 】生命の基本骨格。黒鉛、ダイヤモンド、炭素繊維 (Gemini4 Carbon)"}, {"number": 7, "symbol": "N", "name_ja": "窒素", "reading_ja": "ちっそ（ナイトロジェン）", "name_en": "Nitrogen", "origin": "窒素（N）：ギリシャ語の「天然炭酸ソーダ（nitron）」と「生じる（genes）」に由来", "features": "【007 N 】大気の約78%を占める。肥料原料、食品の酸化防止充填"}, {"number": 8, "symbol": "O", "name_ja": "酸素", "reading_ja": "さんそ（オキシジェン）", "name_en": "Oxygen", "origin": "酸素（O）：ギリシャ語の「酸（oxys）」と「生じる（genes）」に由来", "features": "【008 O 】大気の約21%。生物の呼吸に不可欠、製鉄や燃焼支援"}, {"number": 9, "symbol": "F", "name_ja": "フッ素", "reading_ja": "ふっそ（フローリン）", "name_en": "Fluorine", "origin": "フッ素（F）：ラテン語の「流れる（fluere）」に由来（蛍石が融点を下げる融剤になることから）", "features": "【009 F 】最も電気陰性度が高い。虫歯予防フッ素、フッ素樹脂加工"}, {"number": 10, "symbol": "Ne", "name_ja": "ネオン", "reading_ja": "ネオン（ネオン）", "name_en": "Neon", "origin": "ネオン（Ne）：ギリシャ語の「新しい（neon）」に由来", "features": "【010 Ne】放電すると赤橙色に発光。ネオンサイン、高圧表示灯"}, {"number": 11, "symbol": "Na", "name_ja": "ナトリウム", "reading_ja": "ナトリウム（ソディウム）", "name_en": "Sodium (Natrium)", "origin": "ナトリウム（Na）：炭酸ソーダ（天然炭酸ナトリウム）を指す語「natron」に由来", "features": "【011 Na】食塩（塩化ナトリウム）の構成元素。生体必須ミネラル"}, {"number": 12, "symbol": "Mg", "name_ja": "マグネシウム", "reading_ja": "マグネシウム（マグネシウム）", "name_en": "Magnesium", "origin": "マグネシウム（Mg）：ギリシャの古代都市「マグネシア（Magnesia）」に由来", "features": "【012 Mg】実用金属で最軽量級。ノートPC筐体、にがりの主成分"}, {"number": 13, "symbol": "Al", "name_ja": "アルミニウム", "reading_ja": "アルミニウム（アルミニウム）", "name_en": "Aluminium", "origin": "アルミニウム（Al）：ミョウバンを意味するラテン語「alumen」に由来", "features": "【013 Al】軽量で耐食性が高い。アルミ缶、建材サッシ、アルミ箔"}, {"number": 14, "symbol": "Si", "name_ja": "ケイ素", "reading_ja": "けいそ（シリコン）", "name_en": "Silicon", "origin": "ケイ素（Si）：火打石を意味するラテン語「silex」に由来", "features": "【014 Si】地殻に豊富。半導体素子（集積回路）、シリコーン樹脂"}, {"number": 15, "symbol": "P", "name_ja": "リン", "reading_ja": "リン（フォスフォラス）", "name_en": "Phosphorus", "origin": "リン（P）：ギリシャ語の「光を運ぶもの（phosphoros）」に由来（暗所で発光することから）", "features": "【015 P 】生体必須元素（DNA・骨）。マッチの側薬、化学肥料"}, {"number": 16, "symbol": "S", "name_ja": "硫黄", "reading_ja": "いおう（サルファー）", "name_en": "Sulfur", "origin": "硫黄（S）：サンスクリット語の「銅の敵（sulvere）」またはラテン語「sulphur」に由来", "features": "【016 S 】温泉成分や火山ガス。硫酸の原料、タイヤ用ゴムの加硫剤"}, {"number": 17, "symbol": "Cl", "name_ja": "塩素", "reading_ja": "えんそ（クロリン）", "name_en": "Chlorine", "origin": "塩素（Cl）：ギリシャ語の「黄緑色（chloros）」に由来（気体の色から）", "features": "【017 Cl】水道水・プールの消毒殺菌、漂白剤、食塩の構成成分"}, {"number": 18, "symbol": "Ar", "name_ja": "アルゴン", "reading_ja": "アルゴン（アルゴン）", "name_en": "Argon", "origin": "アルゴン（Ar）：ギリシャ語の「働かない・不活性な（argos）」に由来", "features": "【018 Ar】不活性気体。電球・蛍光灯の封入ガス、溶接の保護ガス (Gemini4 Argon)"}, {"number": 19, "symbol": "K", "name_ja": "カリウム", "reading_ja": "カリウム（ポタシウム）", "name_en": "Potassium (Kalium)", "origin": "カリウム（K）：アラビア語の「植物の灰（al-qaly）」に由来", "features": "【019 K 】生体必須ミネラル（神経・筋制御）。カリ肥料の原料"}, {"number": 20, "symbol": "Ca", "name_ja": "カルシウム", "reading_ja": "カルシウム（カルシウム）", "name_en": "Calcium", "origin": "カルシウム（Ca）：石灰を意味するラテン語「calx」に由来", "features": "【020 Ca】骨や歯の主成分。石灰、セメント、生体機能の維持"}, {"number": 21, "symbol": "Sc", "name_ja": "スカンジウム", "reading_ja": "スカンジウム（スカンジウム）", "name_en": "Scandium", "origin": "スカンジウム（Sc）：スカンジナビア半島（Scandinavia）に由来", "features": "【021 Sc】アルミニウム合金添加剤（航空機・自転車フレーム）、高演色照明"}, {"number": 22, "symbol": "Ti", "name_ja": "チタン", "reading_ja": "チタン（チタニウム）", "name_en": "Titanium", "origin": "チタン（Ti）：ギリシャ神話の巨人神族「ティーターン（Titan）」に由来", "features": "【022 Ti】軽くて強く耐食性が抜群。航空機、人工関節、眼鏡フレーム"}, {"number": 23, "symbol": "V", "name_ja": "バナジウム", "reading_ja": "バナジウム（バナジウム）", "name_en": "Vanadium", "origin": "バナジウム（V）：北欧神話の愛と美の女神「バナジス（Vanadis）」に由来", "features": "【023 V 】鋼への添加（バナジウム鋼、工具、バネ）、化学触媒"}, {"number": 24, "symbol": "Cr", "name_ja": "クロム", "reading_ja": "クロム（クロミウム）", "name_en": "Chromium", "origin": "クロム（Cr）：ギリシャ語の「色（chroma）」に由来（多様な色彩の化合物を形成することから）", "features": "【024 Cr】耐食性に優れる。ステンレス鋼の添加元素、金属めっき"}, {"number": 25, "symbol": "Mn", "name_ja": "マンガン", "reading_ja": "マンガン（マンガニーズ）", "name_en": "Manganese", "origin": "マンガン（Mn）：磁石やマグネシアに由来するラテン語「magnes」の転訛に由来", "features": "【025 Mn】鉄鋼の脱酸・脱硫剤、乾電池の材料、高張力鋼"}, {"number": 26, "symbol": "Fe", "name_ja": "鉄", "reading_ja": "てつ（アイアン）", "name_en": "Iron (Ferrum)", "origin": "鉄（Fe）：古英語「iren」およびラテン語「ferrum（硬い・鉄）」に由来", "features": "【026 Fe】最も広く利用される金属。鉄鋼材料、赤血球のヘモグロビン"}, {"number": 27, "symbol": "Co", "name_ja": "コバルト", "reading_ja": "コバルト（コバルト）", "name_en": "Cobalt", "origin": "コバルト（Co）：ドイツの鉱山の地下の悪霊・妖精「コーボルト（Kobold）」に由来", "features": "【027 Co】強磁性金属。リチウムイオン電池正極材、強力磁石"}, {"number": 28, "symbol": "Ni", "name_ja": "ニッケル", "reading_ja": "ニッケル（ニッケル）", "name_en": "Nickel", "origin": "ニッケル（Ni）：ドイツの悪霊「悪魔の銅（Kupfernickel）」に由来", "features": "【028 Ni】耐熱・耐食性合金。ステンレス鋼、硬貨、ニッケルめっき"}, {"number": 29, "symbol": "Cu", "name_ja": "銅", "reading_ja": "どう（コッパー）", "name_en": "Copper (Cuprum)", "origin": "銅（Cu）：古代の産地キプロス島（ラテン語：Cyprus/Cyprium）に由来", "features": "【029 Cu】高い導電性・熱伝導性。電線、配管、銅合金（青銅・黄銅）"}, {"number": 30, "symbol": "Zn", "name_ja": "亜鉛", "reading_ja": "あえん（ジンク）", "name_en": "Zinc", "origin": "亜鉛（Zn）：ドイツ語の「尖り（Zinke）」に由来（鉱石のトゲ状の結晶形状から）", "features": "【030 Zn】鉄の防錆めっき（トタン）、乾電池の負極、真鍮合金"}, {"number": 31, "symbol": "Ga", "name_ja": "ガリウム", "reading_ja": "ガリウム（ガリウム）", "name_en": "Gallium", "origin": "ガリウム（Ga）：フランスの古名「ガリア（Gallia）」に由来", "features": "【031 Ga】低融点（約30℃）。青色LED、高周波半導体素子"}, {"number": 32, "symbol": "Ge", "name_ja": "ゲルマニウム", "reading_ja": "ゲルマニウム（ゲルマニウム）", "name_en": "Germanium", "origin": "ゲルマニウム（Ge）：ドイツのラテン名「ゲルマニア（Germania）」に由来", "features": "【032 Ge】半導体材料、光ファイバー添加剤、赤外線レンズ"}, {"number": 33, "symbol": "As", "name_ja": "ヒ素", "reading_ja": "ひそ（アーセニック）", "name_en": "Arsenic", "origin": "ヒ素（As）：ギリシャ語の「強力な・男性的な（arsenikon）」に由来", "features": "【033 As】化合物半導体材料（GaAs）。毒劇物としても知られる"}, {"number": 34, "symbol": "Se", "name_ja": "セレン", "reading_ja": "セレン（セレニウム）", "name_en": "Selenium", "origin": "セレン（Se）：ギリシャ神話の月の女神「セレネ（Selene）」に由来", "features": "【034 Se】コピー機の感光体ドラム、赤色ガラス着色、必須微量元素"}, {"number": 35, "symbol": "Br", "name_ja": "臭素", "reading_ja": "しゅうそ（ブロミン）", "name_en": "Bromine", "origin": "臭素（Br）：ギリシャ語の「悪臭（bromos）」に由来（強烈な刺激臭を持つことから）", "features": "【035 Br】常温で液体の非金属。難燃剤、写真感光材、医薬品原料"}, {"number": 36, "symbol": "Kr", "name_ja": "クリプトン", "reading_ja": "クリプトン（クリプトン）", "name_en": "Krypton", "origin": "クリプトン（Kr）：ギリシャ語の「隠されたもの（kryptos）」に由来", "features": "【036 Kr】高輝度放電灯（空港滑走路灯）、断熱複層ガラス封入ガス"}, {"number": 37, "symbol": "Rb", "name_ja": "ルビジウム", "reading_ja": "ルビジウム（ルビジウム）", "name_en": "Rubidium", "origin": "ルビジウム（Rb）：ラテン語の「暗赤色（rubidus）」に由来（分光分析の赤色輝線から）", "features": "【037 Rb】原子時計、光電管、特殊ガラス添加剤"}, {"number": 38, "symbol": "Sr", "name_ja": "ストロンチウム", "reading_ja": "ストロンチウム（ストロンチウム）", "name_en": "Strontium", "origin": "ストロンチウム（Sr）：スコットランドの鉱山村「ストロンティアン（Strontian）」に由来", "features": "【038 Sr】花火の鮮やかな赤色炎色反応、フェライト磁石"}, {"number": 39, "symbol": "Y", "name_ja": "イットリウム", "reading_ja": "イットリウム（イットリウム）", "name_en": "Yttrium", "origin": "イットリウム（Y）：スウェーデンの村「イッテルビー（Ytterby）」に由来", "features": "【039 Y 】高温超伝導体、希土類磁石添加剤、白色LED蛍光体"}, {"number": 40, "symbol": "Zr", "name_ja": "ジルコニウム", "reading_ja": "ジルコニウム（ジルコニウム）", "name_en": "Zirconium", "origin": "ジルコニウム（Zr）：鉱物ジルコン（ペルシャ語で金色を意味するzargun）に由来", "features": "【040 Zr】耐食・耐熱性金属。原子炉燃料被覆管、人工ダイヤ（キュービックジルコニア）"}, {"number": 41, "symbol": "Nb", "name_ja": "ニオブ", "reading_ja": "ニオブ（ニオビウム）", "name_en": "Niobium", "origin": "ニオブ（Nb）：ギリシャ神話のタンタロスの娘「ニオベ（Niobe）」に由来", "features": "【041 Nb】超伝導電磁石（MRI・リニア）、高張力鋼の添加剤"}, {"number": 42, "symbol": "Mo", "name_ja": "モリブデン", "reading_ja": "モリブデン（モリブデナム）", "name_en": "Molybdenum", "origin": "モリブデン（Mo）：ギリシャ語の「鉛（molybdos）」に由来（輝水鉛鉱が鉛鉱石と似ていたため）", "features": "【042 Mo】高融点金属。耐熱・高強度合金鋼、潤滑剤（二硫化モリブデン）"}, {"number": 43, "symbol": "Tc", "name_ja": "テクネチウム", "reading_ja": "テクネチウム（テクネチウム）", "name_en": "Technetium", "origin": "テクネチウム（Tc）：ギリシャ語の「人工の（technetos）」に由来（世界初の人工元素）", "features": "【043 Tc】最初の人工元素。放射性医薬品（がん・臓器シンチグラフィ）"}, {"number": 44, "symbol": "Ru", "name_ja": "ルテニウム", "reading_ja": "ルテニウム（ルテニウム）", "name_en": "Ruthenium", "origin": "ルテニウム（Ru）：ロシアのラテン名「ルテニア（Ruthenia）」に由来", "features": "【044 Ru】ハードディスク記録層、電子回路チップ抵抗器、化学触媒"}, {"number": 45, "symbol": "Rh", "name_ja": "ロジウム", "reading_ja": "ロジウム（ロジウム）", "name_en": "Rhodium", "origin": "ロジウム（Rh）：ギリシャ語の「バラ色（rhodon）」に由来（水溶液のバラ色から）", "features": "【045 Rh】自動車排ガス浄化触媒、高反射めっき、装飾用貴金属"}, {"number": 46, "symbol": "Pd", "name_ja": "パラジウム", "reading_ja": "パラジウム（パラジウム）", "name_en": "Palladium", "origin": "パラジウム（Pd）：当時発見された小惑星「パラス（Pallas）」に由来", "features": "【046 Pd】自動車排ガス浄化触媒、歯科治療材料（金銀パラジウム合金）"}, {"number": 47, "symbol": "Ag", "name_ja": "銀", "reading_ja": "ぎん（シルバー）", "name_en": "Silver (Argentum)", "origin": "銀（Ag）：ラテン語の「白く輝くもの（argentum）」に由来", "features": "【047 Ag】金属中最高の導電率と熱伝導率。貴金属、食器、電子配線"}, {"number": 48, "symbol": "Cd", "name_ja": "カドミウム", "reading_ja": "カドミウム（カドミウム）", "name_en": "Cadmium", "origin": "カドミウム（Cd）：ギリシャ神話のカドモスに因む鉱石「カドミア（kadmeia）」に由来", "features": "【048 Cd】ニッケル・カドミウム蓄電池、黄色顔料（カドミウムイエロー）"}, {"number": 49, "symbol": "In", "name_ja": "インジウム", "reading_ja": "インジウム（インジウム）", "name_en": "Indium", "origin": "インジウム（In）：分光スペクトルの鮮やかな「藍色（indigo）」に由来", "features": "【049 In】透明導電膜（ITO、液晶ディスプレイやタッチパネル必須材料）"}, {"number": 50, "symbol": "Sn", "name_ja": "スズ", "reading_ja": "スズ（ティン）", "name_en": "Tin (Stannum)", "origin": "スズ（Sn）：ケルト語またはラテン語「stannum（滴る・スズ）」に由来", "features": "【050 Sn】ブリキ（鉄のスズめっき）、はんだ、青銅の構成成分"}, {"number": 51, "symbol": "Sb", "name_ja": "アンチモン", "reading_ja": "アンチモン（アンチモニー）", "name_en": "Antimony (Stibium)", "origin": "アンチモン（Sb）：ギリシャ語の「孤独を嫌う（anti-monos）」または輝安鉱（stibium）に由来", "features": "【051 Sb】難燃助剤（三酸化アンチモン）、鉛蓄電池電極合金"}, {"number": 52, "symbol": "Te", "name_ja": "テルル", "reading_ja": "テルル（テルリウム）", "name_en": "Tellurium", "origin": "テルル（Te）：ローマ神話の大地の女神「テルス（Tellus、地球）」に由来", "features": "【052 Te】相変化記録膜（DVD-RAM・光ディスク）、熱電変換素子"}, {"number": 53, "symbol": "I", "name_ja": "ヨウ素", "reading_ja": "ようそ（アイオディン）", "name_en": "Iodine", "origin": "ヨウ素（I）：ギリシャ語の「紫色（ioeides）」に由来（気体の鮮やかな紫色から）", "features": "【053 I 】うがい薬・消毒液（ヨードチンキ）、造影剤、甲状腺ホルモン"}, {"number": 54, "symbol": "Xe", "name_ja": "キセノン", "reading_ja": "キセノン（ゼノン）", "name_en": "Xenon", "origin": "キセノン（Xe）：ギリシャ語の「奇妙な・見知らぬもの（xenos）」に由来", "features": "【054 Xe】超高輝度放電灯（映画プロジェクター）、イオンエンジン推進剤"}, {"number": 55, "symbol": "Cs", "name_ja": "セシウム", "reading_ja": "セシウム（セシウム）", "name_en": "Caesium", "origin": "セシウム（Cs）：ラテン語の「青空色（caesius）」に由来（分光スペクトルの青色輝線から）", "features": "【055 Cs】高精度原子時計（秒の国際定義）、石油掘削泥水添加剤"}, {"number": 56, "symbol": "Ba", "name_ja": "バリウム", "reading_ja": "バリウム（バリウム）", "name_en": "Barium", "origin": "バリウム（Ba）：ギリシャ語の「重い（barys）」に由来（重晶石の重さから）", "features": "【056 Ba】胃のX線検査造影剤（硫酸バリウム）、花火の緑色着色"}, {"number": 57, "symbol": "La", "name_ja": "ランタン", "reading_ja": "ランタン（ランタナム）", "name_en": "Lanthanum", "origin": "ランタン（La）：ギリシャ語の「隠れている（lanthanein）」に由来", "features": "【057 La】高屈折率光学ガラス、ハイブリッド車ニッケル水素電池負極材"}, {"number": 58, "symbol": "Ce", "name_ja": "セリウム", "reading_ja": "セリウム（セリウム）", "name_en": "Cerium", "origin": "セリウム（Ce）：発見直前に発見された準惑星（小惑星）「ケレス（Ceres）」に由来", "features": "【058 Ce】ガラス研磨剤（酸化セリウム）、紫外線遮蔽ガラス、排ガス触媒"}, {"number": 59, "symbol": "Pr", "name_ja": "プラセオジム", "reading_ja": "プラセオジム（プラセオジミウム）", "name_en": "Praseodymium", "origin": "プラセオジム（Pr）：ギリシャ語の「淡緑色の双子（prasios didymos）」に由来", "features": "【059 Pr】航空機エンジン用耐熱合金、黄色着色ガラス、希土類磁石"}, {"number": 60, "symbol": "Nd", "name_ja": "ネオジム", "reading_ja": "ネオジム（ネオジミウム）", "name_en": "Neodymium", "origin": "ネオジム（Nd）：ギリシャ語の「新しい双子（neos didymos）」に由来", "features": "【060 Nd】最強の永久磁石（ネオジム磁石、EVモーター・ハードディスク）"}, {"number": 61, "symbol": "Pm", "name_ja": "プロメチウム", "reading_ja": "プロメチウム（プロメチウム）", "name_en": "Promethium", "origin": "プロメチウム（Pm）：ギリシャ神話で火を人類に与えた神「プロメテウス（Prometheus）」に由来", "features": "【061 Pm】人工放射性元素。原子力電池、夜光塗料原料"}, {"number": 62, "symbol": "Sm", "name_ja": "サマリウム", "reading_ja": "サマリウム（サマリウム）", "name_en": "Samarium", "origin": "サマリウム（Sm）：ロシアの鉱山技師サマルスキー大佐に因む鉱石「サマルスキー石」に由来", "features": "【062 Sm】耐熱性に優れたサマリウムコバルト磁石、特殊レーザー"}, {"number": 63, "symbol": "Eu", "name_ja": "ユウロピウム", "reading_ja": "ユウロピウム（ユーロピウム）", "name_en": "Europium", "origin": "ユウロピウム（Eu）：ヨーロッパ大陸（Europe）に由来", "features": "【063 Eu】カラーテレビ・LED赤色蛍光体、ユーロ紙幣の偽造防止蛍光インク"}, {"number": 64, "symbol": "Gd", "name_ja": "ガドリニウム", "reading_ja": "ガドリニウム（ガドリニウム）", "name_en": "Gadolinium", "origin": "ガドリニウム（Gd）：希土類研究者ヨハン・ガドリンに因む鉱石「ガドリン石」に由来", "features": "【064 Gd】MRI造影剤、原子炉制御材、磁気冷却材料"}, {"number": 65, "symbol": "Tb", "name_ja": "テルビウム", "reading_ja": "テルビウム（テルビウム）", "name_en": "Terbium", "origin": "テルビウム（Tb）：スウェーデンの村「イッテルビー（Ytterby）」に由来", "features": "【065 Tb】ディスプレイ・蛍光灯用緑色蛍光体、光磁気ディスク"}, {"number": 66, "symbol": "Dy", "name_ja": "ジスプロシウム", "reading_ja": "ジスプロシウム（ジスプロシウム）", "name_en": "Dysprosium", "origin": "ジスプロシウム（Dy）：ギリシャ語の「近づき難い・分離困難な（dysprositos）」に由来", "features": "【066 Dy】ネオジム磁石の耐熱性向上添加剤、原子炉制御棒"}, {"number": 67, "symbol": "Ho", "name_ja": "ホルミウム", "reading_ja": "ホルミウム（ホルミウム）", "name_en": "Holmium", "origin": "ホルミウム（Ho）：スウェーデンのストックホルムのラテン名「ホルミア（Holmia）」に由来", "features": "【067 Ho】金属中最高の磁気モーメント。強力電磁石用ポールピース"}, {"number": 68, "symbol": "Er", "name_ja": "エルビウム", "reading_ja": "エルビウム（エルビウム）", "name_en": "Erbium", "origin": "エルビウム（Er）：スウェーデンの村「イッテルビー（Ytterby）」に由来", "features": "【068 Er】光ファイバー通信の光増幅器、歯科用レーザーメス"}, {"number": 69, "symbol": "Tm", "name_ja": "ツリウム", "reading_ja": "ツリウム（ツリウム）", "name_en": "Thulium", "origin": "ツリウム（Tm）：北欧の伝説の最北の地「トゥーレ（Thule）」に由来", "features": "【069 Tm】ポータブルX線照射器、高輝度メタルハライドランプ"}, {"number": 70, "symbol": "Yb", "name_ja": "イッテルビウム", "reading_ja": "イッテルビウム（イッテルビウム）", "name_en": "Ytterbium", "origin": "イッテルビウム（Yb）：スウェーデンの村「イッテルビー（Ytterby）」に由来", "features": "【070 Yb】次世代光格子時計、高出力ファイバーレーザー、特殊合金"}, {"number": 71, "symbol": "Lu", "name_ja": "ルテチウム", "reading_ja": "ルテチウム（ルテチウム）", "name_en": "Lutetium", "origin": "ルテチウム（Lu）：フランスのパリのラテン名「ルテティア（Lutetia）」に由来", "features": "【071 Lu】PETスキャナのシンチレータ結晶、高屈折率光学材料"}, {"number": 72, "symbol": "Hf", "name_ja": "ハフニウム", "reading_ja": "ハフニウム（ハフニウム）", "name_en": "Hafnium", "origin": "ハフニウム（Hf）：デンマークのコペンハーゲンのラテン名「ハフニア（Hafnia）」に由来", "features": "【072 Hf】半導体超微細化ゲート絶縁膜、原子炉制御棒、超耐熱合金"}, {"number": 73, "symbol": "Ta", "name_ja": "タンタル", "reading_ja": "タンタル（タンタラム）", "name_en": "Tantalum", "origin": "タンタル（Ta）：ギリシャ神話で渇きと飢えの罰を受けた「タンタロス（Tantalus）」に由来", "features": "【073 Ta】高容量タンタルコンデンサ（スマートフォン・PC）、耐食部材"}, {"number": 74, "symbol": "W", "name_ja": "タングステン", "reading_ja": "タングステン（タングステン）", "name_en": "Tungsten (Wolfram)", "origin": "タングステン（W）：スウェーデン語「重い石（tung sten）」および鉱石名（Wolframite）に由来", "features": "【074 W 】金属中最高の融点（3422℃）。超硬工具、白熱電球フィラメント"}, {"number": 75, "symbol": "Re", "name_ja": "レニウム", "reading_ja": "レニウム（レニウム）", "name_en": "Rhenium", "origin": "レニウム（Re）：ドイツの「ライン川（ラテン語：Rhenus）」に由来", "features": "【075 Re】航空機ジェットエンジン用超耐熱合金、石油改質触媒"}, {"number": 76, "symbol": "Os", "name_ja": "オスミウム", "reading_ja": "オスミウム（オスミウム）", "name_en": "Osmium", "origin": "オスミウム（Os）：ギリシャ語の「臭気（osme）」に由来（四酸化物の強い刺激臭から）", "features": "【076 Os】最も密度が高い金属（約22.6g/cm³）。万年筆ペン先、生体染色"}, {"number": 77, "symbol": "Ir", "name_ja": "イリジウム", "reading_ja": "イリジウム（イリジウム）", "name_en": "Iridium", "origin": "イリジウム（Ir）：ギリシャ神話の虹の女神「イリス（Iris）」に由来（塩が多彩な色を呈するため）", "features": "【077 Ir】極めて高い耐食性・耐熱性。自動車点火プラグ、るつぼ"}, {"number": 78, "symbol": "Pt", "name_ja": "白金", "reading_ja": "はっきん（プラチナ）", "name_en": "Platinum", "origin": "白金（Pt）：スペイン語の「小粒の銀（platina）」に由来", "features": "【078 Pt】貴金属。自動車排ガス浄化触媒、抗がん剤、宝飾品"}, {"number": 79, "symbol": "Au", "name_ja": "金", "reading_ja": "きん（ゴールド）", "name_en": "Gold (Aurum)", "origin": "金（Au）：ラテン語の「輝く夜明け・光（aurum）」に由来", "features": "【079 Au】最高の耐腐食性と展延性。電子基板配線、宝飾品、資産保有"}, {"number": 80, "symbol": "Hg", "name_ja": "水銀", "reading_ja": "すいぎん（マーキュリー）", "name_en": "Mercury (Hydrargyrum)", "origin": "水銀（Hg）：ギリシャ語の「液体の銀（hydrargyros）」に由来", "features": "【080 Hg】常温で液体の唯一の金属。水銀温度計、蛍光灯（水銀蒸気）"}, {"number": 81, "symbol": "Tl", "name_ja": "タリウム", "reading_ja": "タリウム（タリウム）", "name_en": "Thallium", "origin": "タリウム（Tl）：ギリシャ語の「緑の若枝（thallos）」に由来（分光スペクトルの緑色輝線から）", "features": "【081 Tl】高屈折率光学ガラス、心筋シンチグラフィ用放射性医薬品"}, {"number": 82, "symbol": "Pb", "name_ja": "鉛", "reading_ja": "なまり（リード）", "name_en": "Lead (Plumbum)", "origin": "鉛（Pb）：ラテン語の「鉛（plumbum）」に由来", "features": "【082 Pb】高密度で放射線遮蔽材。自動車用鉛蓄電池、防音制振材"}, {"number": 83, "symbol": "Bi", "name_ja": "ビスマス", "reading_ja": "ビスマス（ビスマス）", "name_en": "Bismuth", "origin": "ビスマス（Bi）：ドイツ語の「白い塊（Wismut）」に由来", "features": "【083 Bi】低毒性の重金属。胃腸薬（次サリチル酸ビスマス）、低融点はんだ"}, {"number": 84, "symbol": "Po", "name_ja": "ポロニウム", "reading_ja": "ポロニウム（ポロニウム）", "name_en": "Polonium", "origin": "ポロニウム（Po）：キュリー夫人の祖国「ポーランド（ラテン語：Polonia）」に由来", "features": "【084 Po】強いアルファ線源。静電気除去器、初期宇宙探査機熱源"}, {"number": 85, "symbol": "At", "name_ja": "アスタチン", "reading_ja": "アスタチン（アスタチン）", "name_en": "Astatine", "origin": "アスタチン（At）：ギリシャ語の「不安定な（astatos）」に由来（極めて放射性崩壊しやすいため）", "features": "【085 At】非常に希少なハロゲン。標的アルファ線がん治療薬研究"}, {"number": 86, "symbol": "Rn", "name_ja": "ラドン", "reading_ja": "ラドン（ラドン）", "name_en": "Radon", "origin": "ラドン（Rn）：親元素ラジウム（Radium）の放射放出気体に由来", "features": "【086 Rn】放射性希ガス。ラドン温泉、地下水や地殻変動観測"}, {"number": 87, "symbol": "Fr", "name_ja": "フランシウム", "reading_ja": "フランシウム（フランシウム）", "name_en": "Francium", "origin": "フランシウム（Fr）：発見者の祖国「フランス（France）」に由来", "features": "【087 Fr】極めて不安定なアルカリ金属。原子物理学の基礎研究"}, {"number": 88, "symbol": "Ra", "name_ja": "ラジウム", "reading_ja": "ラジウム（ラジウム）", "name_en": "Radium", "origin": "ラジウム（Ra）：ラテン語の「光線・放射（radius）」に由来（強い放射線を放つことから）", "features": "【088 Ra】キュリー夫妻が発見。初期の放射線治療や夜光塗料"}, {"number": 89, "symbol": "Ac", "name_ja": "アクチニウム", "reading_ja": "アクチニウム（アクチニウム）", "name_en": "Actinium", "origin": "アクチニウム（Ac）：ギリシャ語の「光線（aktis）」に由来", "features": "【089 Ac】放射線源。標的アルファ線がん治療の先進研究"}, {"number": 90, "symbol": "Th", "name_ja": "トリウム", "reading_ja": "トリウム（トリウム）", "name_en": "Thorium", "origin": "トリウム（Th）：北欧神話の雷神「トール（Thor）」に由来", "features": "【090 Th】トリウム溶融塩炉の将来燃料候補、高温ガス灯マントル"}, {"number": 91, "symbol": "Pa", "name_ja": "プロトアクチニウム", "reading_ja": "プロトアクチニウム（プロトアクチニウム）", "name_en": "Protactinium", "origin": "プロトアクチニウム（Pa）：ギリシャ語の「最初の（protos）」と「アクチニウム」に由来（崩壊してアクチニウムになるため）", "features": "【091 Pa】ウラン崩壊系列の中間生成物。海洋底堆積物の年代測定"}, {"number": 92, "symbol": "U", "name_ja": "ウラン", "reading_ja": "ウラン（ウラニウム）", "name_en": "Uranium", "origin": "ウラン（U）：発見直前に発見された天王星（ウラヌス、Uranus）に由来", "features": "【092 U 】核分裂連鎖反応を起こす。原子力発電用燃料、初期の核兵器"}, {"number": 93, "symbol": "Np", "name_ja": "ネプツニウム", "reading_ja": "ネプツニウム（ネプツニウム）", "name_en": "Neptunium", "origin": "ネプツニウム（Np）：太陽系惑星の海王星（ネプチューン、Neptune）に由来", "features": "【093 Np】最初の超ウラン元素。原子炉副産物、中性子検出器"}, {"number": 94, "symbol": "Pu", "name_ja": "プルトニウム", "reading_ja": "プルトニウム（プルトニウム）", "name_en": "Plutonium", "origin": "プルトニウム（Pu）：太陽系惑星（当時）の冥王星（プルート、Pluto）に由来", "features": "【094 Pu】核燃料（プルサーマル利用）および核兵器原料、宇宙探査機熱源"}, {"number": 95, "symbol": "Am", "name_ja": "アメリシウム", "reading_ja": "アメリシウム（アメリシウム）", "name_en": "Americium", "origin": "アメリシウム（Am）：アメリカ大陸（Americas）に由来", "features": "【095 Am】身近に使われる唯一の超ウラン元素。イオン化式煙感知器"}, {"number": 96, "symbol": "Cm", "name_ja": "キュリウム", "reading_ja": "キュリウム（キュリウム）", "name_en": "Curium", "origin": "キュリウム（Cm）：放射能研究者マリー＆ピエール・キュリー夫妻に因む", "features": "【096 Cm】アルファ線源。宇宙探査機搭載アルファ線X線分光器（APXS）"}, {"number": 97, "symbol": "Bk", "name_ja": "バークリウム", "reading_ja": "バークリウム（バークリウム）", "name_en": "Berkelium", "origin": "バークリウム（Bk）：合成された研究都市「米カリフォルニア州バークレー（Berkeley）」に由来", "features": "【097 Bk】基礎科学研究用。より重い超アクチノイド元素合成の標的核"}, {"number": 98, "symbol": "Cf", "name_ja": "カリホルニウム", "reading_ja": "カリホルニウム（カリフォルニウム）", "name_en": "Californium", "origin": "カリホルニウム（Cf）：合成された地名「カリフォルニア州およびカリフォルニア大学（California）」に由来", "features": "【098 Cf】強い自発核分裂中性子源。中性子非破壊検査、原子炉起動中性子源"}, {"number": 99, "symbol": "Es", "name_ja": "アインスタイニウム", "reading_ja": "アインスタイニウム（アインスタイニウム）", "name_en": "Einsteinium", "origin": "アインスタイニウム（Es）：物理学者アルベルト・アインシュタインに因む", "features": "【099 Es】水爆実験灰から発見。超重元素の合成・基礎物理研究"}, {"number": 100, "symbol": "Fm", "name_ja": "フェルミウム", "reading_ja": "フェルミウム（フェルミウム）", "name_en": "Fermium", "origin": "フェルミウム（Fm）：物理学者エンリコ・フェルミに因む", "features": "【100 Fm】水爆実験灰から発見。中性子捕獲反応で合成可能な限界元素"}, {"number": 101, "symbol": "Md", "name_ja": "メンデレビウム", "reading_ja": "メンデレビウム（メンデレビウム）", "name_en": "Mendelevium", "origin": "メンデレビウム（Md）：周期表を提唱したロシアの化学者ドミトリ・メンデレーエフに因む", "features": "【101 Md】加速器で初めて原子単位で合成された元素。基礎化学研究"}, {"number": 102, "symbol": "No", "name_ja": "ノーベリウム", "reading_ja": "ノーベリウム（ノーベリウム）", "name_en": "Nobelium", "origin": "ノーベリウム（No）：ノーベル賞創設者アルフレッド・ノーベルに因む", "features": "【102 No】アルフレッド・ノーベルに因む。加速器を用いた核物理研究"}, {"number": 103, "symbol": "Lr", "name_ja": "ローレンシウム", "reading_ja": "ローレンシウム（ローレンシウム）", "name_en": "Lawrencium", "origin": "ローレンシウム（Lr）：サイクロトロンを発明したアーネスト・ローレンスに因む", "features": "【103 Lr】アクチノイド系列最後の元素。超重元素の化学的性質解明"}, {"number": 104, "symbol": "Rf", "name_ja": "ラザホージウム", "reading_ja": "ラザホージウム（ラザフォーディウム）", "name_en": "Rutherfordium", "origin": "ラザホージウム（Rf）：原子核物理学者アーネスト・ラザフォードに因む", "features": "【104 Rf】最初の超アクチノイド元素。超重元素の気相化学研究"}, {"number": 105, "symbol": "Db", "name_ja": "ドブニウム", "reading_ja": "ドブニウム（ドブニウム）", "name_en": "Dubnium", "origin": "ドブニウム（Db）：ロシアの合同原子核研究所がある都市「ドブナ（Dubna）」に由来", "features": "【105 Db】ロシアの都市ドブナに因む。単一原子スケールの化学挙動解明"}, {"number": 106, "symbol": "Sg", "name_ja": "シーボーギウム", "reading_ja": "シーボーギウム（シーボーギウム）", "name_en": "Seaborgium", "origin": "シーボーギウム（Sg）：超ウラン元素合成を主導した米化学者グレン・シーボーグに因む", "features": "【106 Sg】グレン・シーボーグに因む。周期表第6族の重同族体研究"}, {"number": 107, "symbol": "Bh", "name_ja": "ボーリウム", "reading_ja": "ボーリウム（ボーリウム）", "name_en": "Bohrium", "origin": "ボーリウム（Bh）：量子力学の父である物理学者ニールス・ボーアに因む", "features": "【107 Bh】ニールス・ボーアに因む。揮発性オキシ塩化物の気相分離実験"}, {"number": 108, "symbol": "Hs", "name_ja": "ハッシウム", "reading_ja": "ハッシウム（ハッシウム）", "name_en": "Hassium", "origin": "ハッシウム（Hs）：重イオン研究所があるドイツ・ヘッセン州のラテン名「ハッシア（Hassia）」に由来", "features": "【108 Hs】ドイツ・ヘッセン州に因む。第8族元素の四酸化物化学研究"}, {"number": 109, "symbol": "Mt", "name_ja": "マイトネリウム", "reading_ja": "マイトネリウム（マイトネリウム）", "name_en": "Meitnerium", "origin": "マイトネリウム（Mt）：核分裂の理論的解明に貢献した物理学者リーゼ・マイトナーに因む", "features": "【109 Mt】リーゼ・マイトナーに因む。超重元素の合成と壊変特性研究"}, {"number": 110, "symbol": "Ds", "name_ja": "ダームスタチウム", "reading_ja": "ダームスタチウム（ダームスタチウム）", "name_en": "Darmstadtium", "origin": "ダームスタチウム（Ds）：重イオン研究所の所在地ドイツの都市「ダルムシュタット（Darmstadt）」に由来", "features": "【110 Ds】ダルムシュタット重イオン研究所に因む。超重核構造研究"}, {"number": 111, "symbol": "Rg", "name_ja": "レントゲニウム", "reading_ja": "レントゲニウム（レントゲニウム）", "name_en": "Roentgenium", "origin": "レントゲニウム（Rg）：X線を発見した物理学者ヴィルヘルム・レントゲンに因む", "features": "【111 Rg】X線発見者レントゲンに因む。相対論効果による化学特性解明"}, {"number": 112, "symbol": "Cn", "name_ja": "コペルニシウム", "reading_ja": "コペルニシウム（コペルニシウム）", "name_en": "Copernicium", "origin": "コペルニシウム（Cn）：地動説を提唱した天文学者ニコラウス・コペルニクスに因む", "features": "【112 Cn】コペルニクスに因む。常温揮発性金属としての挙動解明実験"}, {"number": 113, "symbol": "Nh", "name_ja": "ニホニウム", "reading_ja": "ニホニウム（ニホニウム）", "name_en": "Nihonium", "origin": "ニホニウム（Nh）：アジアで初めて合成・発見された元素として国名「日本（Nihon）」に由来", "features": "【113 Nh】日本（理研）で合成・命名された元素。崩壊系列の解明"}, {"number": 114, "symbol": "Fl", "name_ja": "フレロビウム", "reading_ja": "フレロビウム（フレロビウム）", "name_en": "Flerovium", "origin": "フレロビウム（Fl）：ソ連の核物理学者ゲオルギー・フリョロフに因む", "features": "【114 Fl】フリョロフ核反応研究所に因む。希ガス類似性の検証研究"}, {"number": 115, "symbol": "Mc", "name_ja": "モスコビウム", "reading_ja": "モスコビウム（モスコビウム）", "name_en": "Moscovium", "origin": "モスコビウム（Mc）：合同原子核研究所が所在するロシアの「モスクワ州（Moscow Oblast）」に由来", "features": "【115 Mc】モスクワ州に因む。超重元素合成の反応機構と核構造研究"}, {"number": 116, "symbol": "Lv", "name_ja": "リバモリウム", "reading_ja": "リバモリウム（リバモリウム）", "name_en": "Livermorium", "origin": "リバモリウム（Lv）：共同研究を行った米国の「ローレンス・リバモア国立研究所（Livermore）」に由来", "features": "【116 Lv】ローレンス・リバモア国立研究所に因む。壊変特性の研究"}, {"number": 117, "symbol": "Ts", "name_ja": "テネシン", "reading_ja": "テネシン（テネシン）", "name_en": "Tennessine", "origin": "テネシン（Ts）：共同研究機関が集まる米国の「テネシー州（Tennessee）」に由来", "features": "【117 Ts】米テネシー州に因む。超重ハロゲンの化学的性質解明"}, {"number": 118, "symbol": "Og", "name_ja": "オガネソン", "reading_ja": "オガネソン（オガネソン）", "name_en": "Oganesson", "origin": "オガネソン（Og）：超重元素合成研究を率いたロシアの核物理学者ユーリィ・オガネシアンに因む", "features": "【118 Og】物理学者オガネシアンに因む。希ガス族最重元素の相対論研究"}]</script>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            const GEMINI_NUMBERS = new Set([1, 6, 18]);
+
+            function hideLoading() {
+                const overlay = document.getElementById('loadingOverlay');
+                if (overlay && !overlay.classList.contains('fade-out')) {
+                    overlay.classList.add('fade-out');
+                    setTimeout(function () {
+                        overlay.style.display = 'none';
+                    }, 460);
+                }
+            }
+
+            function escapeHtml(value) {
+                if (value === null || value === undefined) return '';
+                return String(value)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            function isGeminiElement(row) {
+                return GEMINI_NUMBERS.has(Number(row.number));
+            }
+
+            function populateTable(data) {
+                const tbody = document.getElementById('elementsBody');
+                tbody.innerHTML = '';
+
+                data.forEach(function (row) {
+                    const tr = document.createElement('tr');
+                    tr._rowData = row;
+
+                    const gemini = isGeminiElement(row);
+                    if (gemini) {
+                        tr.classList.add('gemini-highlight');
+                    }
+
+                    const badgeClass = gemini ? 'symbol-badge gemini-badge' : 'symbol-badge';
+
+                    tr.innerHTML =
+                        '<td class="clickable-no col-nowrap" title="クリックして詳細カードを表示">' + escapeHtml(row.number) + '</td>' +
+                        '<td class="col-nowrap" style="text-align:center;"><span class="' + badgeClass + '">' + escapeHtml(row.symbol) + '</span></td>' +
+                        '<td class="element-name-ja col-nowrap">' + escapeHtml(row.name_ja) + '</td>' +
+                        '<td class="col-nowrap">' + escapeHtml(row.reading_ja) + '</td>' +
+                        '<td class="col-nowrap">' + escapeHtml(row.name_en) + '</td>' +
+                        '<td class="col-wrap">' + escapeHtml(row.origin) + '</td>' +
+                        '<td class="col-wrap">' + escapeHtml(row.features) + '</td>';
+
+                    tbody.appendChild(tr);
+                });
+            }
+
+            let elementsData = [];
+            try {
+                const rawJson = document.getElementById('elementsData').textContent;
+                elementsData = JSON.parse(rawJson);
+                populateTable(elementsData);
+            } catch (err) {
+                console.error('Failed to parse embedded elements data:', err);
+                const titleEl = document.querySelector('.loading-title');
+                const subEl = document.querySelector('.loading-subtitle');
+                if (titleEl && subEl) {
+                    titleEl.textContent = 'データの読み込みに失敗しました';
+                    titleEl.style.color = '#dc2626';
+                    subEl.textContent = '埋め込みデータの形式を確認してください。';
+                }
+                return;
+            }
+
+            const table = $('#elementsTable').DataTable({
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/ja.json'
+                },
+                lengthMenu: [[25, 50, 100, -1], [25, 50, 100, '全件']],
+                pageLength: -1,
+                scrollX: true,
+                scrollY: '78vh',
+                scrollCollapse: true,
+                autoWidth: false,
+                order: [[0, 'asc']],
+                columnDefs: [
+                    { targets: [0], width: '78px', type: 'num' },
+                    { targets: [1], width: '92px' },
+                    { targets: [2], width: '140px' },
+                    { targets: [3], width: '190px' },
+                    { targets: [4], width: '150px' },
+                    { targets: [5], width: '320px' },
+                    { targets: [6], width: '320px' }
+                ],
+                initComplete: function () {
+                    hideLoading();
+                }
+            });
+
+            // Failsafe in case external language JSON stalls or is blocked on file:///
+            setTimeout(hideLoading, 1800);
+
+            // Quick Filter Buttons
+            $('.filter-btn:not(#btnShowColVis)').on('click', function () {
+                $('.filter-btn:not(#btnShowColVis)').removeClass('active');
+                $(this).addClass('active');
+
+                const filterType = $(this).attr('data-filter');
+                if (filterType === 'gemini') {
+                    table.column(0).search('^(1|6|18)$', true, false).draw();
+                } else {
+                    table.column(0).search('').draw();
+                }
+            });
+
+            // Column Visibility Modal Logic
+            const colVisModal = document.getElementById('colVisModal');
+            const colVisList = document.getElementById('colVisList');
+            const btnShowColVis = document.getElementById('btnShowColVis');
+            const btnCancelColVis = document.getElementById('btnCancelColVis');
+            const btnApplyColVis = document.getElementById('btnApplyColVis');
+
+            function closeColVisModal() {
+                colVisModal.classList.remove('active');
+            }
+
+            btnShowColVis.addEventListener('click', function () {
+                colVisList.innerHTML = '';
+
+                table.columns().every(function () {
+                    const col = this;
+                    const idx = col.index();
+                    const title = $(col.header()).text().trim();
+                    const isVisible = col.visible();
+
+                    const label = document.createElement('label');
+                    label.className = 'checkbox-item';
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = String(idx);
+                    checkbox.checked = isVisible;
+
+                    const span = document.createElement('span');
+                    span.textContent = title;
+
+                    label.appendChild(checkbox);
+                    label.appendChild(span);
+                    colVisList.appendChild(label);
+                });
+
+                colVisModal.classList.add('active');
+            });
+
+            btnCancelColVis.addEventListener('click', closeColVisModal);
+            colVisModal.addEventListener('click', function (e) {
+                if (e.target === colVisModal) closeColVisModal();
+            });
+
+            btnApplyColVis.addEventListener('click', function () {
+                const checkboxes = colVisList.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(function (cb) {
+                    const idx = parseInt(cb.value, 10);
+                    table.column(idx).visible(cb.checked, false);
+                });
+
+                table.columns.adjust().draw(false);
+                closeColVisModal();
+            });
+
+            // Detail Card Modal Logic
+            const detailModal = document.getElementById('detailCardModal');
+            const detailCardContent = document.getElementById('detailCardContent');
+            let currentCardFilteredIndex = -1;
+
+            function getFilteredRowNodes() {
+                return table.rows({ search: 'applied', order: 'applied' }).nodes().toArray();
+            }
+
+            function showCardAtIndex(idx) {
+                const visibleNodes = getFilteredRowNodes();
+                if (visibleNodes.length === 0) return;
+
+                if (idx < 0) idx = visibleNodes.length - 1;
+                if (idx >= visibleNodes.length) idx = 0;
+
+                currentCardFilteredIndex = idx;
+                const rowNode = visibleNodes[idx];
+                const rowData = rowNode && rowNode._rowData ? rowNode._rowData : null;
+                if (!rowData) return;
+
+                const gemini = isGeminiElement(rowData);
+                detailCardContent.classList.toggle('gemini-card', gemini);
+
+                const headerBadge = document.getElementById('cardHeaderBadge');
+                headerBadge.textContent = rowData.symbol;
+                headerBadge.className = gemini ? 'symbol-badge gemini-badge' : 'symbol-badge';
+
+                $('#cardTitle').text(rowData.name_ja);
+                $('#cardSubTitles').text(rowData.reading_ja + ' / ' + rowData.name_en);
+
+                $('#cardNumber').text(String(rowData.number));
+                $('#cardSymbol').text(rowData.symbol);
+                $('#cardNameJa').text(rowData.name_ja);
+                $('#cardReadingJa').text(rowData.reading_ja);
+                $('#cardNameEn').text(rowData.name_en);
+                $('#cardOrigin').text(rowData.origin);
+                $('#cardFeatures').text(rowData.features);
+
+                $('#cardCounter').text((idx + 1) + ' / ' + visibleNodes.length);
+                detailModal.classList.add('active');
+            }
+
+            function closeDetailModal() {
+                detailModal.classList.remove('active');
+            }
+
+            $('#elementsTable tbody').on('click', 'tr', function (e) {
+                if ($(e.target).closest('a').length > 0) return;
+                const visibleNodes = getFilteredRowNodes();
+                const idx = visibleNodes.indexOf(this);
+                if (idx !== -1) {
+                    showCardAtIndex(idx);
+                }
+            });
+
+            $('#btnPrevCard').on('click', function () {
+                showCardAtIndex(currentCardFilteredIndex - 1);
+            });
+
+            $('#btnNextCard').on('click', function () {
+                showCardAtIndex(currentCardFilteredIndex + 1);
+            });
+
+            $('#btnCloseCard, #btnCloseCardX').on('click', closeDetailModal);
+            detailModal.addEventListener('click', function (e) {
+                if (e.target === detailModal) closeDetailModal();
+            });
+
+            $(document).on('keydown', function (e) {
+                if (colVisModal.classList.contains('active') && e.key === 'Escape') {
+                    closeColVisModal();
+                    return;
+                }
+                if (!detailModal.classList.contains('active')) return;
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    showCardAtIndex(currentCardFilteredIndex - 1);
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    showCardAtIndex(currentCardFilteredIndex + 1);
+                } else if (e.key === 'Escape') {
+                    closeDetailModal();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
