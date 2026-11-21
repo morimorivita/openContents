@@ -36,7 +36,10 @@
     .card {
       position: absolute;
       width: calc(100% - 32px);
-      max-width: 580px;
+      max-width: 640px;
+      max-height: calc(100vh - 24px);
+      display: flex;
+      flex-direction: column;
       background: var(--glass-bg);
       backdrop-filter: blur(18px) saturate(160%);
       -webkit-backdrop-filter: blur(18px) saturate(160%);
@@ -75,6 +78,7 @@
       position: relative;
       overflow: hidden;
       cursor: grab;
+      flex-shrink: 0;
     }
 
     .card-header:active {
@@ -131,16 +135,18 @@
       display: flex;
       background: rgba(0, 0, 0, 0.15);
       border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-      padding: 6px 12px;
+      padding: 6px 10px;
       gap: 6px;
+      flex-shrink: 0;
     }
 
     .cat-btn {
-      flex: 1;
-      padding: 8px 10px;
+      flex: 1 1 auto;
+      padding: 8px 8px;
       border: none;
       background: transparent;
-      color: rgba(255, 255, 255, 0.7);
+      color: rgba(255, 255, 255, 0.72);
+      font-family: inherit;
       font-size: 0.78rem;
       font-weight: 700;
       border-radius: 8px;
@@ -164,6 +170,7 @@
     .card-body {
       padding: 18px 24px;
       min-height: 280px;
+      overflow-y: auto;
     }
 
     .page-content {
@@ -290,6 +297,18 @@
       font-weight: 900;
     }
 
+    .badge-elements {
+      background: linear-gradient(135deg, #059669, #10b981, #06b6d4);
+      color: #fff;
+      font-size: 1.1rem;
+    }
+
+    .badge-list {
+      background: linear-gradient(135deg, #14b8a6, #39C5BB);
+      color: #fff;
+      font-size: 1.05rem;
+    }
+
     .menu-text-container {
       flex: 1;
       display: flex;
@@ -329,6 +348,7 @@
       font-size: 0.7rem;
       color: rgba(30, 80, 77, 0.75);
       border-top: 1px solid rgba(255, 255, 255, 0.1);
+      flex-shrink: 0;
     }
 
     .page-dots {
@@ -369,6 +389,46 @@
     .pnav-btn:hover {
       background: rgba(255, 255, 255, 0.3);
     }
+
+    /* ── レスポンシブ調整 (4タブ対応・狭幅/スマホ最適化) ── */
+    @media (max-width: 580px) {
+      .category-nav {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        padding: 8px 10px;
+        gap: 6px;
+      }
+
+      .cat-btn {
+        padding: 7px 6px;
+        font-size: 0.74rem;
+      }
+
+      .card-header {
+        padding: 18px 20px 14px;
+      }
+
+      .card-body {
+        padding: 14px 16px;
+        min-height: 240px;
+      }
+
+      .menu-list a {
+        padding: 11px 14px;
+        gap: 11px;
+      }
+
+      .card-footer {
+        padding: 10px 16px 12px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .cat-btn {
+        font-size: 0.68rem;
+        padding: 6px 4px;
+      }
+    }
   </style>
 </head>
 
@@ -383,13 +443,14 @@
 
     <!-- ページ・カテゴリ切替タブ -->
     <div class="category-nav">
-      <button class="cat-btn active" data-page="1">⚡ AI &amp; 開発ガイド (親 / 子)</button>
-      <button class="cat-btn" data-page="2">🎮 プレイステーション</button>
-      <button class="cat-btn" data-page="3">✍ SNS &amp; ブログ</button>
+      <button class="cat-btn active" data-page="1">⚡ 開発ガイド</button>
+      <button class="cat-btn" data-page="2">📋 リストメニュー</button>
+      <button class="cat-btn" data-page="3">🎮 プレイステーション</button>
+      <button class="cat-btn" data-page="4">✍ ブログ等</button>
     </div>
 
     <div class="card-body">
-      <!-- Page 1: AI & 開発ガイド -->
+      <!-- Page 1: 開発ガイド -->
       <div class="page-content active" id="page-1">
         <ul class="menu-list">
 
@@ -429,8 +490,26 @@
         </ul>
       </div>
 
-      <!-- Page 2: プレイステーション -->
+      <!-- Page 2: リストメニュー -->
       <div class="page-content" id="page-2">
+        <ul class="menu-list">
+
+          <li>
+            <a href="basicSpace/morimori_elements.html" target="newWindow">
+              <span class="badge badge-elements">🧪</span>
+              <div class="menu-text-container">
+                <span class="menu-text">もりもり元素一覧</span>
+                <span class="menu-subtext">全118元素の記号・読み・由来・用途を検索・一覧できる画面です。<br />※行クリックで詳細カード表示、Gemini関連元素フィルタにも対応!</span>
+              </div>
+              <span class="menu-arrow">›</span>
+            </a>
+          </li>
+
+        </ul>
+      </div>
+
+      <!-- Page 3: プレイステーション -->
+      <div class="page-content" id="page-3">
         <ul class="menu-list">
 
           <li>
@@ -459,8 +538,8 @@
         </ul>
       </div>
 
-      <!-- Page 3: SNS & BLOG -->
-      <div class="page-content" id="page-3">
+      <!-- Page 4: ブログ等 -->
+      <div class="page-content" id="page-4">
         <ul class="menu-list">
 
           <li>
@@ -496,6 +575,7 @@
         <span class="dot active" data-page="1"></span>
         <span class="dot" data-page="2"></span>
         <span class="dot" data-page="3"></span>
+        <span class="dot" data-page="4"></span>
       </div>
 
       <div class="page-nav-btns">
@@ -511,7 +591,7 @@
   <script>
     // 1. ページ切り替え / カテゴリタブ制御
     let currentPage = 1;
-    const totalPages = 3;
+    const totalPages = 4;
 
     const catBtns = document.querySelectorAll('.cat-btn');
     const pageContents = document.querySelectorAll('.page-content');
@@ -599,8 +679,8 @@
     window.addEventListener('resize', () => {
       const l = parseInt(card.style.left) || 0;
       const t = parseInt(card.style.top) || 0;
-      card.style.left = Math.min(l, window.innerWidth - card.offsetWidth) + 'px';
-      card.style.top = Math.min(t, window.innerHeight - card.offsetHeight) + 'px';
+      card.style.left = Math.max(0, Math.min(l, window.innerWidth - card.offsetWidth)) + 'px';
+      card.style.top = Math.max(0, Math.min(t, window.innerHeight - card.offsetHeight)) + 'px';
     });
   </script>
 </body>
