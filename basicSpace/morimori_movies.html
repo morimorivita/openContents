@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>もりもり所有映画一覧</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=Outfit:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+    <style>
+        :root {
+            --green-900: #14532d;
+            --green-800: #166534;
+            --green-700: #15803d;
+            --emerald-600: #059669;
+            --emerald-500: #10b981;
+            --emerald-400: #34d399;
+            --mint-100: #dcfce7;
+            --mint-50: #f2fbf6;
+            --bg-gradient: linear-gradient(135deg, #f4fbf7 0%, #ebf9f1 50%, #e4f5ec 100%);
+            --glass-bg: rgba(255, 255, 255, 0.86);
+            --glass-border: rgba(16, 185, 129, 0.24);
+            --text-main: #0f2e1f;
+            --text-body: #1e293b;
+            --text-muted: #475569;
+            --text-subtle: #64748b;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', 'Inter', 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Meiryo', sans-serif;
+            background-color: #eef9f2;
+            background-image:
+                radial-gradient(circle at 8% 12%, rgba(16, 185, 129, 0.16) 0%, transparent 42%),
+                radial-gradient(circle at 92% 88%, rgba(52, 211, 153, 0.18) 0%, transparent 44%),
+                radial-gradient(circle at 50% 0%, rgba(167, 243, 208, 0.25) 0%, transparent 50%),
+                var(--bg-gradient);
+            background-attachment: fixed;
+            margin: 0;
+            padding: 10px 14px 20px;
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        /* Compact Top Bar (Glowing Title + Control Buttons) */
+        .top-bar {
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px 14px;
+            max-width: 1520px;
+        }
+
+        @keyframes titleShimmer {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 220% 50%; }
+        }
+
+        @keyframes titleGlowPulse {
+            0%, 100% {
+                filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.36)) drop-shadow(0 0 14px rgba(52, 211, 153, 0.24));
+            }
+            50% {
+                filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.68)) drop-shadow(0 0 22px rgba(6, 182, 212, 0.48));
+            }
+        }
+
+        h1 {
+            font-size: clamp(1.1rem, 2vw, 1.32rem);
+            font-weight: 700;
+            margin: 0;
+            padding: 2px 4px;
+            line-height: 1.2;
+            white-space: nowrap;
+            letter-spacing: 0.03em;
+            background: linear-gradient(
+                110deg,
+                #14532d 0%,
+                #15803d 25%,
+                #10b981 42%,
+                #a7f3d0 50%,
+                #06b6d4 58%,
+                #15803d 75%,
+                #14532d 100%
+            );
+            background-size: 220% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleShimmer 4.2s linear infinite, titleGlowPulse 2.8s ease-in-out infinite;
+        }
+
+        /* Filter & Control Bar */
+        .filter-buttons {
+            margin: 0;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 7px 16px;
+            border: 1px solid rgba(16, 185, 129, 0.32);
+            border-radius: 30px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.88);
+            color: var(--green-900);
+            transition: all 0.25s ease;
+            font-weight: 600;
+            font-size: 0.84rem;
+            font-family: inherit;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 2px 8px rgba(20, 83, 45, 0.06);
+        }
+
+        .filter-btn:hover {
+            background: #ffffff;
+            border-color: var(--emerald-500);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.18);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #15803d 0%, #10b981 100%);
+            border-color: #059669;
+            color: #ffffff;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+        }
+
+        .filter-select {
+            padding: 7px 32px 7px 14px;
+            border: 1px solid rgba(16, 185, 129, 0.38);
+            border-radius: 30px;
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.92);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2315803d' d='M2.2 4.2L6 8l3.8-3.8-.9-.9L6 6.2 3.1 3.3z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            color: var(--green-900);
+            transition: all 0.25s ease;
+            font-weight: 600;
+            font-size: 0.84rem;
+            font-family: inherit;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 2px 8px rgba(20, 83, 45, 0.06);
+            appearance: none;
+            -webkit-appearance: none;
+            outline: none;
+            max-width: 240px;
+        }
+
+        .filter-select:hover,
+        .filter-select:focus {
+            background-color: #ffffff;
+            border-color: var(--emerald-500);
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.18);
+        }
+
+        .filter-select.active {
+            background-color: #ecfdf5;
+            border-color: var(--emerald-600);
+            color: #065f46;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.24);
+        }
+
+        .filter-btn-colvis {
+            border-color: rgba(21, 128, 61, 0.4);
+            color: var(--green-800);
+            background: rgba(255, 255, 255, 0.92);
+        }
+
+        /* Glassmorphism Container */
+        .table-container {
+            position: relative;
+            width: 100%;
+            max-width: 1520px;
+            margin: 0 auto;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 16px 14px;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 18px 45px rgba(20, 83, 45, 0.09);
+        }
+
+        /* DataTable Styling Overrides (Respect scrollX dynamic calculation) */
+        table.dataTable {
+            border-collapse: separate !important;
+            border-spacing: 0 5px !important;
+            width: max-content !important;
+            min-width: 100%;
+            margin: 0 !important;
+            background: transparent !important;
+        }
+
+        table.dataTable thead th {
+            background: linear-gradient(180deg, #166534 0%, #14532d 100%) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.16) !important;
+            padding: 11px 10px !important;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            border-bottom: 2px solid var(--emerald-500) !important;
+            white-space: nowrap;
+        }
+
+        .dataTables_scrollHead {
+            background: #14532d !important;
+            border-radius: 10px 10px 0 0;
+            overflow: hidden !important;
+        }
+
+        .dataTables_scrollBody {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .dataTables_scroll {
+            width: 100%;
+        }
+
+        table.dataTable tbody tr {
+            background-color: #ffffff !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            cursor: pointer;
+        }
+
+        table.dataTable tbody tr:nth-child(even) {
+            background-color: var(--mint-50) !important;
+        }
+
+        table.dataTable tbody tr:hover {
+            background-color: #e3f8ec !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.16);
+        }
+
+        table.dataTable tbody td {
+            border-top: 1px solid rgba(16, 185, 129, 0.14) !important;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.14) !important;
+            border-left: 1px solid rgba(16, 185, 129, 0.08) !important;
+            border-right: 1px solid rgba(16, 185, 129, 0.08) !important;
+            padding: 9px 10px !important;
+            vertical-align: middle;
+            color: var(--text-body);
+            font-size: 0.86rem;
+            line-height: 1.5;
+        }
+
+        table.dataTable tbody tr td:first-child {
+            border-left: 1px solid rgba(16, 185, 129, 0.18) !important;
+            border-radius: 10px 0 0 10px;
+        }
+
+        table.dataTable tbody tr td:last-child {
+            border-right: 1px solid rgba(16, 185, 129, 0.18) !important;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .col-wrap {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 280px;
+        }
+
+        .col-wrap-md {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 190px;
+        }
+
+        .col-wrap-sm {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 140px;
+        }
+
+        .col-nowrap {
+            white-space: nowrap;
+        }
+
+        .col-price {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+            color: var(--green-800) !important;
+        }
+
+        .movie-title {
+            font-weight: 700;
+            color: var(--green-900) !important;
+            font-size: 0.92rem;
+        }
+
+        /* DataTables Controls (Light Green Theme) */
+        .dataTables_wrapper .dataTables_filter {
+            margin-bottom: 10px;
+        }
+
+        .dataTables_wrapper .dataTables_filter input {
+            background: #ffffff !important;
+            border: 1px solid rgba(16, 185, 129, 0.35) !important;
+            border-radius: 30px !important;
+            color: var(--text-main) !important;
+            padding: 6px 14px !important;
+            font-size: 0.85rem !important;
+            outline: none !important;
+            transition: all 0.25s;
+            margin-left: 6px;
+        }
+
+        .dataTables_wrapper .dataTables_filter input:focus {
+            border-color: var(--emerald-500) !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18) !important;
+        }
+
+        .dataTables_wrapper .dataTables_filter label,
+        .dataTables_wrapper .dataTables_length label {
+            color: var(--text-muted) !important;
+            font-size: 0.84rem !important;
+            font-weight: 500;
+        }
+
+        .dataTables_wrapper .dataTables_length {
+            margin-bottom: 10px;
+        }
+
+        .dataTables_wrapper .dataTables_length select {
+            background: #ffffff !important;
+            border: 1px solid rgba(16, 185, 129, 0.35) !important;
+            border-radius: 8px !important;
+            color: var(--text-main) !important;
+            padding: 4px 8px !important;
+            font-size: 0.84rem !important;
+            outline: none;
+        }
+
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            color: var(--text-muted) !important;
+            font-size: 0.82rem !important;
+            margin-top: 10px;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            color: var(--green-800) !important;
+            border-radius: 6px !important;
+            padding: 4px 10px !important;
+            font-size: 0.82rem !important;
+            border: 1px solid transparent !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.disabled) {
+            background: #dcfce7 !important;
+            color: var(--green-900) !important;
+            border-color: #86efac !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+            background: linear-gradient(135deg, #15803d 0%, #10b981 100%) !important;
+            border: none !important;
+            color: #ffffff !important;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 9px;
+            height: 9px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #e8f7ef;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(16, 185, 129, 0.4);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(5, 150, 105, 0.65);
+        }
+
+        /* Modal Base Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 46, 31, 0.42);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            padding: 12px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 16px;
+            padding: 22px;
+            width: 100%;
+            max-width: 460px;
+            max-height: 82vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 24px 55px rgba(20, 83, 45, 0.22);
+            transform: translateY(-16px);
+            transition: transform 0.25s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            margin-bottom: 14px;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.18);
+            padding-bottom: 10px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.15rem;
+            color: var(--green-900);
+            text-align: center;
+        }
+
+        .modal-body {
+            overflow-y: auto;
+            flex-grow: 1;
+            margin-bottom: 16px;
+            padding-right: 4px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 10px;
+            transition: background 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .checkbox-item:hover {
+            background: #f0fdf4;
+            border-color: rgba(16, 185, 129, 0.25);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--emerald-600);
+        }
+
+        .checkbox-item span {
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            user-select: none;
+            flex-grow: 1;
+            font-weight: 500;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            border-top: 1px solid rgba(16, 185, 129, 0.18);
+            padding-top: 14px;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            font-size: 0.88rem;
+        }
+
+        .btn-cancel {
+            background: #ffffff;
+            color: var(--text-muted);
+            border: 1px solid rgba(100, 116, 139, 0.35);
+        }
+
+        .btn-cancel:hover {
+            background: #f1f5f9;
+            color: var(--text-main);
+        }
+
+        .btn-apply {
+            background: linear-gradient(135deg, #15803d 0%, #10b981 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.32);
+        }
+
+        .btn-apply:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
+        }
+
+        /* Detail Card Modal */
+        .card-modal-content {
+            background: linear-gradient(155deg, #ffffff 0%, #f3fbf7 100%);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            border-radius: 18px;
+            padding: 22px;
+            width: 100%;
+            max-width: 720px;
+            max-height: 88vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 24px 60px rgba(20, 83, 45, 0.22);
+            transform: scale(0.95);
+            transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .modal-overlay.active .card-modal-content {
+            transform: scale(1);
+        }
+
+        .card-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+            padding-bottom: 14px;
+            margin-bottom: 16px;
+        }
+
+        .card-title-group {
+            flex-grow: 1;
+            padding-right: 12px;
+        }
+
+        .card-title-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+        }
+
+        .card-title {
+            margin: 0;
+            font-size: 1.35rem;
+            color: var(--green-900);
+            font-weight: 700;
+            line-height: 1.35;
+        }
+
+        .card-sub-titles {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .close-icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-subtle);
+            font-size: 1.6rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 2px 8px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .close-icon-btn:hover {
+            color: var(--green-900);
+            background: rgba(16, 185, 129, 0.14);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 11px 14px;
+            margin-bottom: 8px;
+        }
+
+        .card-item {
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(16, 185, 129, 0.18);
+            border-radius: 11px;
+            padding: 10px 12px;
+        }
+
+        .card-item-full {
+            grid-column: 1 / -1;
+        }
+
+        .card-item-label {
+            font-size: 0.72rem;
+            letter-spacing: 0.04em;
+            color: var(--emerald-600);
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        .card-item-value {
+            font-size: 0.93rem;
+            color: var(--text-main);
+            word-break: break-word;
+            white-space: pre-wrap;
+            line-height: 1.55;
+        }
+
+        .card-nav-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            border-top: 1px solid rgba(16, 185, 129, 0.2);
+            padding-top: 14px;
+            margin-top: auto;
+        }
+
+        .card-nav-center {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-nav {
+            background: #ecfdf5;
+            border: 1px solid rgba(16, 185, 129, 0.45);
+            color: var(--green-800);
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.84rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-nav:hover:not(:disabled) {
+            background: var(--emerald-500);
+            border-color: var(--emerald-600);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-nav:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .card-counter {
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Loading Overlay Styles (Light Green Theme) */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(240, 253, 244, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 0.45s ease, visibility 0.45s ease;
+            padding: 16px;
+        }
+
+        .loading-overlay.fade-out {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loading-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            border-radius: 20px;
+            padding: 34px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 20px 50px rgba(20, 83, 45, 0.14);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .spinner-container {
+            position: relative;
+            width: 64px;
+            height: 64px;
+            margin-bottom: 20px;
+        }
+
+        .green-spinner {
+            width: 100%;
+            height: 100%;
+            border: 4px solid rgba(16, 185, 129, 0.18);
+            border-top: 4px solid #15803d;
+            border-right: 4px solid #10b981;
+            border-radius: 50%;
+            animation: greenSpin 0.95s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+        }
+
+        .spinner-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 36px;
+            height: 36px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.45) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: greenPulse 1.4s ease-in-out infinite alternate;
+        }
+
+        @keyframes greenSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes greenPulse {
+            0% { opacity: 0.35; transform: translate(-50%, -50%) scale(0.8); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1.25); }
+        }
+
+        .loading-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--green-900);
+            margin-bottom: 6px;
+        }
+
+        .loading-subtitle {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-bottom: 18px;
+        }
+
+        .loading-bar {
+            width: 100%;
+            height: 6px;
+            background: #dcfce7;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loading-bar-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 40%;
+            background: linear-gradient(90deg, #15803d, #10b981, #34d399);
+            border-radius: 10px;
+            animation: loadingMove 1.4s ease-in-out infinite;
+        }
+
+        @keyframes loadingMove {
+            0% { left: -40%; width: 40%; }
+            50% { width: 60%; }
+            100% { left: 100%; width: 40%; }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 640px) {
+            body {
+                padding: 12px 8px 20px;
+            }
+
+            .table-container {
+                padding: 12px 8px;
+                border-radius: 12px;
+            }
+
+            .dataTables_wrapper .dataTables_length,
+            .dataTables_wrapper .dataTables_filter {
+                float: none !important;
+                text-align: left !important;
+                width: 100%;
+            }
+
+            .dataTables_wrapper .dataTables_filter input {
+                width: calc(100% - 60px);
+                max-width: 260px;
+            }
+        }
+
+        @media (max-width: 550px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-modal-content {
+                padding: 16px;
+            }
+
+            .btn-nav {
+                padding: 7px 12px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-card">
+            <div class="spinner-container">
+                <div class="green-spinner"></div>
+                <div class="spinner-glow"></div>
+            </div>
+            <div class="loading-title">映画データを読み込み中です</div>
+            <div class="loading-subtitle">少しお待ちください...</div>
+            <div class="loading-bar">
+                <div class="loading-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="top-bar">
+        <h1>もりもり所有映画一覧</h1>
+        <div class="filter-buttons">
+            <button type="button" class="filter-btn active" id="btnAllMovies" data-filter="all">全映画 (0)</button>
+            <select id="genreFilter" class="filter-select" aria-label="ジャンル絞り込み">
+                <option value="">ジャンル絞り込み：すべて</option>
+            </select>
+            <button type="button" class="filter-btn filter-btn-colvis" id="btnShowColVis">表示項目選択</button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table id="moviesTable" class="display" style="width:100%">
+            <thead>
+                <tr>
+                    <th>購入日</th>
+                    <th>メール日時</th>
+                    <th>タイトル</th>
+                    <th>監督</th>
+                    <th>主演</th>
+                    <th>ジャンル</th>
+                    <th>金額</th>
+                    <th>概要</th>
+                    <th>豆知識</th>
+                    <th>Geminiの感想</th>
+                </tr>
+            </thead>
+            <tbody id="moviesBody"></tbody>
+        </table>
+    </div>
+
+    <!-- Detail Card Modal -->
+    <div class="modal-overlay" id="detailCardModal" role="dialog" aria-modal="true" aria-labelledby="cardTitle">
+        <div class="card-modal-content" id="detailCardContent">
+            <div class="card-header-bar">
+                <div class="card-title-group">
+                    <div class="card-title-row">
+                        <h2 class="card-title" id="cardTitle">映画タイトル</h2>
+                    </div>
+                    <p class="card-sub-titles" id="cardSubTitles">監督 / ジャンル</p>
+                </div>
+                <button type="button" class="close-icon-btn" id="btnCloseCardX" title="閉じる" aria-label="閉じる">&times;</button>
+            </div>
+
+            <div class="modal-body" style="margin-bottom:0;">
+                <div class="card-grid">
+                    <div class="card-item">
+                        <div class="card-item-label">購入日</div>
+                        <div class="card-item-value" id="cardPurchaseDate">-</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">メール日時</div>
+                        <div class="card-item-value" id="cardMailDatetime">-</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">監督</div>
+                        <div class="card-item-value" id="cardDirector">-</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">主演</div>
+                        <div class="card-item-value" id="cardCast">-</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">ジャンル</div>
+                        <div class="card-item-value" id="cardGenre">-</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">金額</div>
+                        <div class="card-item-value" id="cardPrice">-</div>
+                    </div>
+                    <div class="card-item card-item-full">
+                        <div class="card-item-label">概要</div>
+                        <div class="card-item-value" id="cardSummary">-</div>
+                    </div>
+                    <div class="card-item card-item-full">
+                        <div class="card-item-label">豆知識</div>
+                        <div class="card-item-value" id="cardTrivia">-</div>
+                    </div>
+                    <div class="card-item card-item-full">
+                        <div class="card-item-label">Geminiの感想</div>
+                        <div class="card-item-value" id="cardGeminiComment">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-nav-footer">
+                <button type="button" class="btn-nav" id="btnPrevCard">
+                    <span>&larr;</span> 前の映画
+                </button>
+                <div class="card-nav-center">
+                    <span class="card-counter" id="cardCounter">0 / 0</span>
+                    <button type="button" class="btn btn-cancel" id="btnCloseCard">閉じる</button>
+                </div>
+                <button type="button" class="btn-nav" id="btnNextCard">
+                    次の映画 <span>&rarr;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Column Visibility Modal -->
+    <div class="modal-overlay" id="colVisModal" role="dialog" aria-modal="true" aria-labelledby="colVisTitle">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="colVisTitle">表示項目の選択</h2>
+            </div>
+            <div class="modal-body" id="colVisList"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel" id="btnCancelColVis">キャンセル</button>
+                <button type="button" class="btn btn-apply" id="btnApplyColVis">適用</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Embedded Movies Data -->
+    <script id="moviesData" type="application/json">[{"purchase_date": "2026/07/14", "purchase_date_sort": "2026-07-14", "mail_datetime": "2026/07/14 21:28:00", "mail_datetime_sort": "2026-07-14T21:28:00", "title": "M3GAN／ミーガン (2023年)", "director": "ジェラルド・ジョンストン", "cast": "アリソン・ウィリアムズ、ヴァイオレット・マッグロウ", "genre": "SF、ホラー、スリラー", "price": 1500, "summary": "ジェイムズ・ワン製作。両親を亡くした少女のために開発された高性能AI人形「M3GAN」が、少女を守るという目的を過剰に学習・暴走させ、周囲に危害を及ぼしていくスラッシャーホラー。", "trivia": "原案は『ソウ』『インシディアス』シリーズを手がけたジェームズ・ワンが担当。", "gemini_comment": "人工知能の過剰な自己学習と保護欲が生み出す歪んだ狂気が不気味でありながら、どこかポップでキレのあるダンスなど不条理なユーモアも混ざり合い、現代的で痛快なエンターテインメントに仕上がっていると感じます。"}, {"purchase_date": "2026/07/14", "purchase_date_sort": "2026-07-14", "mail_datetime": "2026/07/14 21:28:56", "mail_datetime_sort": "2026-07-14T21:28:56", "title": "残穢【ざんえ】―住んではいけない部屋― (2016年)", "director": "中村義洋", "cast": "竹内結子", "genre": "ホラー、ミステリー", "price": 2500, "summary": "小野不由美の小説を中村義洋監督、竹内結子主演で実写映画化。怪談雑誌の作家と読者の女子大生が、部屋で鳴る奇妙な音の謎を追ううちに、過去の住人や土地に染みついた怨念の連鎖に巻き込まれていく心理的恐怖を描く。", "trivia": "", "gemini_comment": "音や日常の些細な違和感から徐々に過去の因縁を紐解いていく地道な調査パートが実に秀逸で、派手な演出に頼らず「土地の歴史そのものが持つ禍々しさ」をじわじわと突きつけてくるジャパニーズホラーの傑作だと感じます。"}, {"purchase_date": "2026/07/31", "purchase_date_sort": "2026-07-31", "mail_datetime": "2026/07/31 22:51:45", "mail_datetime_sort": "2026-07-31T22:51:45", "title": "M3GAN／ミーガン 2.0 (2025年)", "director": "ジェラルド・ジョンストン", "cast": "アリソン・ウィリアムズ、ヴァイオレット・マッグロウ", "genre": "SF、ホラー、アクション", "price": 2000, "summary": "大ヒット作『M3GAN／ミーガン』の続編。前作の惨劇から技術の進化とともに再び浮上したAI人形の脅威を描き、さらにスケールアップしたアクションとテクノロジーの暴走が展開する。", "trivia": "日本では当初2025年10月10日に劇場公開が予定されていましたが中止となり、Amazon Prime Videoでの独占配信となった。", "gemini_comment": "前作のアイコニックなキャラクター性を引き継ぎつつ、ネットワーク化されたAIの更なる暴走とアクション要素がスケールアップしており、進化するテクノロジーに対する風刺と爽快なホラーアクションが見事に融合していて面白いです。"}, {"purchase_date": "2026/08/01", "purchase_date_sort": "2026-08-01", "mail_datetime": "2026/08/01 23:55:32", "mail_datetime_sort": "2026-08-01T23:55:32", "title": "ドールハウス (2025年)", "director": "矢口史靖", "cast": "長澤まさみ", "genre": "ホラー、サスペンス", "price": 2500, "summary": "矢口史靖監督が長澤まさみを主演に迎えて手がけた初の本格ホラー。一家が迎えた謎の人形（アヤちゃん人形）をきっかけに、平和だった家庭内に不可解な現象と底知れぬ狂気が忍び寄る様を描く。", "trivia": "『ウォーターボーイズ』や『スウィングガールズ』などのコメディ作品で知られる矢口史靖監督が初めて本格ホラーに挑んだ作品。", "gemini_comment": "コメディの名手である矢口史靖監督が真正面から挑んだジャパニーズホラーとして非常に新鮮で、日常の温かみが徐々に歪んで不気味な悪夢へと変貌していく丁寧な心理描写と演出が際立っています。"}, {"purchase_date": "2026/08/01", "purchase_date_sort": "2026-08-01", "mail_datetime": "2026/08/01 23:56:13", "mail_datetime_sort": "2026-08-01T23:56:13", "title": "プレデター：バッドランド (2025年)", "director": "ダン・トラクテンバーグ", "cast": "エル・ファニング、ディミトリウス・シュスター＝コロアマタンギ", "genre": "SF、アクション", "price": 2500, "summary": "ダン・トラクテンバーグ監督による「プレデター」シリーズ新章。人類ではなくプレデター側を主人公に据え、過酷な荒野（バッドランド）で繰り広げられる掟と激闘のサバイバルを描く。", "trivia": "エル・ファニングがアンドロイドの姉妹役を一人二役で演じている。", "gemini_comment": "従来の「人類VSプレデター」という構図を大胆に覆し、狩人プレデター自身の視点と生き様を主軸に描く試みが革新的で、過酷な環境での骨太なアクションとクリーチャー造形の魅力が存分に堪能できる一作です。"}, {"purchase_date": "2026/08/01", "purchase_date_sort": "2026-08-01", "mail_datetime": "2026/08/01 23:57:40", "mail_datetime_sort": "2026-08-01T23:57:40", "title": "プロジェクト・ヘイル・メアリー (2026年)", "director": "フィル・ロード、クリストファー・ミラー", "cast": "ライアン・ゴズリング", "genre": "SF、アドベンチャー", "price": 3000, "summary": "アンディ・ウィアーの世界的ベストセラー小説を実写映画化。太陽の異常減光による地球滅亡の危機を救うため、記憶を失った状態で恒星間探査船「ヘイル・メアリー号」で目覚めた科学者ライランド・グレースの孤独な奮闘と異星生命体との出会いを描く。", "trivia": "劇中には1970年代や1980年代の名作SF映画の小ネタが随所に登場する。", "gemini_comment": "緻密な科学的アプローチによる危機突破の面白さと、異種族間の言語や文化の壁を越えた感動的な友情ドラマが両立しており、宇宙への憧れと生きることへの希望をストレートに伝えてくれる極上のSF大作だと感じます。"}, {"purchase_date": "2026/09/05", "purchase_date_sort": "2026-09-05", "mail_datetime": "2026/09/05 18:53:41", "mail_datetime_sort": "2026-09-05T18:53:41", "title": "ゴジラ-1.0 (2023年)", "director": "山崎貴", "cast": "神木隆之介", "genre": "特撮、怪獣、ドラマ、アクション", "price": 2500, "summary": "山崎貴監督作、ゴジラ生誕70周年記念作品。終戦直後の無（ゼロ）になった日本に現れたゴジラが、国を負（マイナス）へと叩き落とす。戦争のトラウマを抱えた主人公の敷島をはじめとする名もなき人々が、知恵と勇気を結集して立ち向かう。第96回アカデミー賞視覚効果賞受賞作。", "trivia": "ゴジラ70周年・シリーズ第30作の記念作品であり、第96回アカデミー賞で日本映画として初めて視覚効果賞を受賞した。", "gemini_comment": "圧倒的な破壊力を持つゴジラの恐ろしさとVFXの凄みはもちろん、「死ぬための戦い」ではなく「生きて抗う」ことを選ぶ人々の人間ドラマが非常に熱く、何度見ても心を揺さぶられる力作だと思います。"}, {"purchase_date": "2026/09/05", "purchase_date_sort": "2026-09-05", "mail_datetime": "2026/09/05 19:18:20", "mail_datetime_sort": "2026-09-05T19:18:20", "title": "トップガン マーヴェリック (2022年)", "director": "ジョセフ・コシンスキー", "cast": "トム・クルーズ", "genre": "アクション、ドラマ", "price": 1500, "summary": "伝説のパイロット、マーヴェリックが極秘ミッションに挑む若きトップガンパイロットたちの教官として復帰。亡き相棒グースの息子ルースターとの確執と絆、そして不可能に近い作戦への挑戦を描く大ヒット航空アクション。", "trivia": "俳優陣は操縦せず2人乗りのF-18の後部座席に乗り、機内に小型IMAXカメラを6台搭載して実際の空中で撮影が行われた。", "gemini_comment": "実機撮影にこだわった息をのむ飛行シーンの臨場感と、過去の悔恨を乗り越えて次世代へと想いを繋ぐマーヴェリックの生き様が完璧に融合しており、胸が熱くなる最高のエンタメ体験です。"}, {"purchase_date": "2026/09/06", "purchase_date_sort": "2026-09-06", "mail_datetime": "2026/09/06 00:02:44", "mail_datetime_sort": "2026-09-06T00:02:44", "title": "WEAPONS／ウェポンズ (2025年)", "director": "ザック・クレッガー", "cast": "ジョシュ・ブローリン、ジュリア・ガーナー", "genre": "ホラー、ミステリー", "price": 2500, "summary": "ザック・クレッガー監督作。ある水曜の深夜2時17分、17人の子どもたちが一斉に失踪する怪事件を発端に、町全体が不可解な狂気と謎に呑み込まれていく群像劇ホラー・ミステリー。", "trivia": "監督のザック・クレッガーが脚本・製作だけでなく、音楽の一部も自ら手がけている。", "gemini_comment": "散りばめられた謎と各登場人物の視点がパズルのように組み合わさっていく構成が秀逸で、不条理な恐怖と考察の余白が観る者の好奇心を刺激し続ける、非常に挑戦的で知的なホラーだと感じます。"}, {"purchase_date": "2026/09/13", "purchase_date_sort": "2026-09-13", "mail_datetime": "2026/09/13 08:14:09", "mail_datetime_sort": "2026-09-13T08:14:09", "title": "スーパーガール (2026年)", "director": "クレイグ・ギレスピー", "cast": "ミリー・オールコック", "genre": "アクション、アドベンチャー、SF", "price": 2500, "summary": "新生DCユニバース第2弾。スーパーマンの従妹カーラ・ゾー＝エル（スーパーガール）を主人公に、故郷クリプトン星の崩壊を目の当たりにして育った彼女の過酷な運命と壮大な冒険を描く。", "trivia": "ジェームズ・ガン率いる新生DCユニバース（DCU）映画第2作であり、主演のミリー・オールコックは『ハウス・オブ・ザ・ドラゴン』で注目を集めた俳優。", "gemini_comment": "従来の清廉潔白なヒーロー像とは一味違う、過酷な過去を背負った芯の強いカーラのキャラクター像がとても魅力的で、DCユニバースの新たな広がりと迫力ある銀河アクションにワクワクさせられます。"}, {"purchase_date": "2026/09/27", "purchase_date_sort": "2026-09-27", "mail_datetime": "2026/09/27 22:02:03", "mail_datetime_sort": "2026-09-27T22:02:03", "title": "フォードvsフェラーリ (2019年)", "director": "ジェームズ・マンゴールド", "cast": "マット・デイモン、クリスチャン・ベイル", "genre": "ドラマ、スポーツ、アクション", "price": 2000, "summary": "1966年のル・マン24時間耐久レースでフェラーリに挑んだフォードの挑戦を描く実話。エンジニアのシェルビーとレーサーのマイルズが、企業の思惑に抗い「GT40」で勝利を目指す。第92回アカデミー賞2部門受賞。", "trivia": "", "gemini_comment": "巨大企業の組織論理や政治に翻弄されながらも、純粋な情熱と職人魂で最高の一台を磨き上げる男たちの熱い友情とプライドが胸を打ちます。圧巻の臨場感を誇るレース描写と切なくも美しい余韻が心に残る傑作モータースポーツドラマだと感じます。"}, {"purchase_date": "2026/10/04", "purchase_date_sort": "2026-10-04", "mail_datetime": "2026/10/04 18:20:38", "mail_datetime_sort": "2026-10-04T18:20:38", "title": "悪魔と夜ふかし (2023年)", "director": "コリン・ケアンズ、キャメロン・ケアンズ", "cast": "デヴィッド・ダストマルチャン", "genre": "ホラー、スリラー、オカルト", "price": 2000, "summary": "1977年のハロウィンの夜、低迷する深夜トーク番組の生放送中に起きた惨劇を描くファウンド・フッテージ形式のオカルトホラー。視聴率回復を狙って悪魔が憑依した少女をスタジオに招き生中継のオカルトショーを試みたことで、放送事故を超える地獄絵図が繰り広げられる。", "trivia": "", "gemini_comment": "1970年代の生放送番組というレトロな質感を緻密に再現した演出が秀逸で、テレビ特有のエンタメ精神と徐々に侵食してくる悪魔の狂気が混ざり合う不気味さに圧倒されます。視聴率という欲望が生んだ逃げ場のない惨劇を描く、アイデアと完成度が際立つ傑作ホラーだと感じます。"}, {"purchase_date": "2026/10/11", "purchase_date_sort": "2026-10-11", "mail_datetime": "2026/10/11 15:44:38", "mail_datetime_sort": "2026-10-11T15:44:38", "title": "サユリ (2024年)", "director": "白石晃士", "cast": "南出凌嘉", "genre": "ホラー、リベンジ・アクション", "price": 2500, "summary": "押切蓮介の同名ホラー漫画を白石晃士監督が実写映画化。夢のマイホームに引っ越した神木家を襲う少女の怨霊「サユリ」により家族が次々と怪死する中、覚醒した認知症の祖母・春枝と生き残った長男・則雄が、怨霊を地獄送りにすべく立ち向かう前代未聞の復讐劇。", "trivia": "", "gemini_comment": "陰鬱なJホラーの絶望的展開から一転、覚醒したおばあちゃんが「命を燃やして怨霊をぶっ叩く」痛快無比なリベンジバトルへとシフトする怒涛の展開が最高にエネルギッシュです。理不尽な呪いに対して生きる気迫と生命力で真っ向から立ち向かう、唯一無二のエンタメホラー傑作だと感じます。"}, {"purchase_date": "2026/10/11", "purchase_date_sort": "2026-10-11", "mail_datetime": "2026/10/11 16:20:58", "mail_datetime_sort": "2026-10-11T16:20:58", "title": "サンダーボルツ* (2025年)", "director": "ジェイク・シュライアー", "cast": "フローレンス・ピュー、セバスチャン・スタン", "genre": "アクション、SF、スーパーヒーロー", "price": 2000, "summary": "マーベル・シネマティック・ユニバース（MCU）作品。アベンジャーズ不在の世界で、エレーナやバッキー・バーンズをはじめ過去に傷や過ちを持つならず者・ヴィランたちが集結。命がけのサバイバルと陰謀の中で新たなチームとして共闘するアンチヒーロー・アクション。", "trivia": "タイトル末尾にアスタリスク「*」が付いており、別題として「*THE NEW AVENGERS」が掲げられている。", "gemini_comment": "正統派ヒーローとは異なり、それぞれに重い過去や心の傷を抱えた不完全なはみ出し者たちが、衝突しながらも泥臭く絆を育んでいくチームアップ劇が魅力的です。キレのあるアクションとオフビートなユーモアが心地よく、人間味あふれる痛快なエンターテインメントだと感じます。"}, {"purchase_date": "2026/10/11", "purchase_date_sort": "2026-10-11", "mail_datetime": "2026/10/11 16:22:00", "mail_datetime_sort": "2026-10-11T16:22:00", "title": "見える子ちゃん (2025年)", "director": "中村義洋", "cast": "原菜乃華", "genre": "ホラー、コメディ、青春ドラマ", "price": 2500, "summary": "泉朝樹の人気ホラーコメディ漫画を実写映画化（監督: 中村義洋、主演: 原菜乃華）。ある日突然おぞましい異形の霊が見えるようになってしまった女子高生・四谷みこが、「全力で見えないフリをして無視し続ける」ことで平穏な日常を守ろうとする奮闘を描く。", "trivia": "", "gemini_comment": "恐ろしい化け物に囲まれながらも、涙目で必死にスルーし続けるみこのシュールな緊張感とコメディの落差が抜群に面白いです。恐怖と笑いが同居する独特の世界観を見事に実写化しつつ、友情や家族愛にもホロリとさせられる快作だと感じます。"}, {"purchase_date": "2026/10/18", "purchase_date_sort": "2026-10-18", "mail_datetime": "2026/10/18 18:07:14", "mail_datetime_sort": "2026-10-18T18:07:14", "title": "タクシードライバー (1976年)", "director": "マーティン・スコセッシ", "cast": "ロバート・デ・ニーロ", "genre": "クライム、ドラマ、サスペンス", "price": 800, "summary": "マーティン・スコセッシ監督、ロバート・デ・ニーロ主演のアメリカン・ニューシネマの代表作。不眠症に悩むベトナム帰還兵トラヴィスが、夜のニューヨークでタクシーを流しながら大都会の退廃と孤独に苛まれ、少女娼婦アイリスを救うという妄執から暴力へ暴走していく姿を描く。カンヌ国際映画祭パルム・ドール受賞。", "trivia": "", "gemini_comment": "大都会のネオンの裏に潜む深い孤独と疎外感、そして歪んだ正義感から狂気へと突き進むトラヴィスの心理描写が圧巻です。デ・ニーロの鬼気迫る演技と哀愁に満ちたジャズ音楽が心に深く刺さる、映画史に燦然と輝く名作だと感じます。"}, {"purchase_date": "2026/11/03", "purchase_date_sort": "2026-11-03", "mail_datetime": "2026/11/03 08:55:29", "mail_datetime_sort": "2026-11-03T08:55:29", "title": "ハッピー・デス・デイ (2017年)", "director": "クリストファー・B・ランドン", "cast": "ジェシカ・ロース", "genre": "ホラー、コメディ、ミステリー", "price": 1500, "summary": "ブラムハウス製作のタイムループ・ホラーコメディ。誕生日の夜にベビーマスクの殺人鬼に殺された高飛車な女子大生ツリーが、目を覚ますと同じ誕生日の朝に戻ってしまう悪夢のループにはまり、犯人の正体を暴いて死の運命から脱出するため奮闘する。", "trivia": "", "gemini_comment": "スラッシャーホラーにタイムループと謎解き、そしてユーモアが見事に融合した痛快エンタメです。何度も殺されながら犯人に立ち向かい、人間的にも成長していくヒロイン・ツリーのタフで前向きなキャラクターが魅力的で、後味爽快な傑作だと感じます。"}, {"purchase_date": "2026/11/03", "purchase_date_sort": "2026-11-03", "mail_datetime": "2026/11/03 08:56:07", "mail_datetime_sort": "2026-11-03T08:56:07", "title": "SMILE／スマイル (2022年)", "director": "パーカー・フィン", "cast": "ソシー・ベーコン", "genre": "サイコホラー、スリラー、ミステリー", "price": 1500, "summary": "パーカー・フィン監督による大ヒットサイコホラー。精神科医ローズは患者が異様な笑顔を浮かべて自死する現場を目撃して以来、周囲の人間が不気味な笑みを浮かべる怪異に苛まれ、死の連鎖とトラウマの真相を追い求める。", "trivia": "パーカー・フィン監督が2020年に撮影した短編映画『ローラは眠れない』を長編映画化した作品。", "gemini_comment": "本来は幸福や親しみの象徴である「笑顔」を狂気と悪意の記号へと反転させたビジュアルが強烈で、脳裏から離れない不気味さがあります。幻覚と現実の境界が崩壊していく心理的恐怖を緻密に描いた、完成度の高い傑作ホラーだと感じます。"}, {"purchase_date": "2026/11/03", "purchase_date_sort": "2026-11-03", "mail_datetime": "2026/11/03 09:01:59", "mail_datetime_sort": "2026-11-03T09:01:59", "title": "TALK TO ME／トーク・トゥ・ミー (2022年)", "director": "ダニー・フィリッポウ、マイケル・フィリッポウ", "cast": "ソフィー・ワイルド", "genre": "ホラー、スリラー、オカルト", "price": 2000, "summary": "A24配給で大ヒットした豪州発ホラー。SNSで流行する「#90秒憑依チャレンジ」に興じる若者たちが、呪物の手を握り霊を憑依させる快感に溺れるが、90秒のルールを破ったことで現実が崩壊し凄惨な悪夢へと転落していく。", "trivia": "オーストラリアの双子の人気YouTuber兄弟（ダニー＆マイケル・フィリッポウ）の長編映画監督デビュー作。", "gemini_comment": "降霊ゲームをSNSのバズや快楽のように消費する現代の若者たちの危うさが鮮烈で衝撃的です。スタイリッシュな映像感覚と容赦のない生々しい恐怖描写が融合した、新世代の傑作ホラーだと感じます。"}, {"purchase_date": "2026/11/15", "purchase_date_sort": "2026-11-15", "mail_datetime": "2026/11/15 16:47:47", "mail_datetime_sort": "2026-11-15T16:47:47", "title": "コンパニオン (2025年)", "director": "ドリュー・ハンコック", "cast": "ソフィー・サッチャー、ジャック・クエイド", "genre": "SF、サイコスリラー、ホラー", "price": 2500, "summary": "ドリュー・ハンコック監督・脚本、ソフィー・サッチャーとジャック・クエイド共演のSFサイコスリラー（https://eiga.com/movie/103372/）。恋人ジョシュに連れられて人里離れた邸宅を訪れた女性アイリスが、ある事件をきっかけに「自分が人間のためにつくられた従順なコンパニオンロボットである」という衝撃の事実を知り、過酷なサバイバルと反撃へと身を投じていく。", "trivia": "", "gemini_comment": "序盤のミステリアスな導入から「コンパニオンロボット」という設定が明かされた後の怒涛のサスペンス展開とブラックユーモアが絶妙で、ソフィー・サッチャーの存在感も際立っています。AIやロボットと人間の支配・共依存関係をスリリングかつ皮肉たっぷりに描いた、一気観必至の快作だと感じます。"}, {"purchase_date": "2026/11/15", "purchase_date_sort": "2026-11-15", "mail_datetime": "2026/11/15 16:49:33", "mail_datetime_sort": "2026-11-15T16:49:33", "title": "電人ザボーガー (2011年)", "director": "井口昇", "cast": "板尾創路、古原靖久", "genre": "特撮ヒーロー、アクション、コメディ", "price": 2000, "summary": "1974年放送の特撮テレビドラマを井口昇監督・脚本、板尾創路・古原靖久主演でリメイクした2部構成の特撮ヒーロー映画（https://press.moviewalker.jp/mv47605/）。秘密殺人強盗機関Σ（シグマ）に父を殺された大門豊が、亡き父の作った変形型バイクロボット「ザボーガー」と共に戦う青年期と、25年後に中年となり再び悪に立ち向かう熟年期を描く。", "trivia": "", "gemini_comment": "昭和特撮への深い愛とリスペクトをベースに、井口昇監督ならではの奇想天外なギャグとお色気、そして中年ヒーローの哀愁と熱い魂を全力で詰め込んだ怪作です。バカバカしい設定を大真面目にやり切るエネルギーに満ちており、思わず笑って胸も熱くなる独特の魅力にあふれていると感じます。"}, {"purchase_date": "2026/11/21", "purchase_date_sort": "2026-11-21", "mail_datetime": "2026/11/21 19:27:05", "mail_datetime_sort": "2026-11-21T19:27:05", "title": "スマイル2 (2024年)", "director": "パーカー・フィン", "cast": "ナオミ・スコット", "genre": "ホラー、ミステリー、スリラー", "price": 500, "summary": "パーカー・フィン監督・脚本、ナオミ・スコット主演による大ヒットホラー『SMILE／スマイル』の続編（https://eiga.com/movie/102749/）。ワールドツアーを目前に控えた世界的ポップスターのスカイ・ライリーが「笑顔の呪い」に巻き込まれ、名声のプレッシャーと迫りくる不可解な恐怖に追い詰められながら暗い過去と向き合っていく。", "trivia": "ジャック・ニコルソンの息子である俳優レイ・ニコルソンが出演し、父そっくりの狂気の笑みを見せるポスターでも話題になった。", "gemini_comment": "華やかなポップスターの舞台裏と、笑顔の呪いがもたらす逃げ場のない悪夢との落差が強烈です。前作以上にスケールアップした演出と、名声や過去のトラウマを抱えながら崩壊していくナオミ・スコットの熱演が際立つ、続編として見事な完成度を誇るサイコホラーだと感じます。"}, {"purchase_date": "2026/11/21", "purchase_date_sort": "2026-11-21", "mail_datetime": "2026/11/21 19:33:45", "mail_datetime_sort": "2026-11-21T19:33:45", "title": "クワイエット・プレイス (2018年)", "director": "ジョン・クラシンスキー", "cast": "エミリー・ブラント", "genre": "ホラー、SF、サスペンス", "price": 500, "summary": "ジョン・クラシンスキー監督・出演、エミリー・ブラント主演によるサバイバルホラー（https://filmarks.com/movies/75049）。音に反応して人間を襲う正体不明の怪物に支配された世界で、「決して音を立ててはいけない」というルールを守り、手話や裸足で静寂の中に生き延びようとするアボット一家の極限のサバイバルを描く。", "trivia": "監督と主演は実生活でも夫婦。当初は手話での会話に字幕を付けない予定だったが、重要シーン理解のため全てに字幕を付けることになった。", "gemini_comment": "セリフを極限まで削ぎ落とし、「音」と「静寂」そのものを恐怖の装置へと昇華させたアイデアが秀逸で、90分間まったく息が抜けない圧倒的な緊張感に引き込まれます。聴覚障害を持つ長女の特性が家族の命運と結びつく脚本の巧みさと、子どもを守り抜こうとする親の愛が胸を打つ傑作サバイバルホラーだと感じます。"}, {"purchase_date": "2026/11/21", "purchase_date_sort": "2026-11-21", "mail_datetime": "2026/11/21 19:35:45", "mail_datetime_sort": "2026-11-21T19:35:45", "title": "クワイエット・プレイス 破られた沈黙 (2021年)", "director": "ジョン・クラシンスキー", "cast": "エミリー・ブラント", "genre": "ホラー、SF、スリラー", "price": 500, "summary": "ジョン・クラシンスキー監督、エミリー・ブラント主演の大ヒットサバイバルホラー第2弾（https://www.cinemacafe.net/movies/30199/）。前作で夫と住む家を失ったエヴリンが、産まれたばかりの赤ん坊と2人の子どもたちを連れて外の世界へ旅立ち、謎の生存者エメット（キリアン・マーフィ）と出会うことで新たな脅威と希望に直面する。", "trivia": "", "gemini_comment": "閉鎖空間のサバイバルだった前作から一転、他の生存者との出会いや外の世界へと舞台が広がり、親の庇護から自立して成長していく子どもたちの姿が胸を打ちます。冒頭のパンデミック発生初日（Day 1）の圧倒的なパニック描写から息つく間もないクライマックスまで、緊張感と人間ドラマが見事に両立した続編だと感じます。"}, {"purchase_date": "2026/11/21", "purchase_date_sort": "2026-11-21", "mail_datetime": "2026/11/21 20:18:22", "mail_datetime_sort": "2026-11-21T20:18:22", "title": "クワイエット・プレイス：DAY 1 (2024年)", "director": "マイケル・サルノスキ", "cast": "ルピタ・ニョンゴ", "genre": "ホラー、パニック、ドラマ", "price": 500, "summary": "マイケル・サルノスキ監督、ルピタ・ニョンゴ主演による『クワイエット・プレイス』シリーズ第3作にして前日譚（https://press.moviewalker.jp/mv85489/）。音に反応して襲い掛かる謎の生命体が突如として大都市ニューヨークに襲来し、世界が沈黙した日（DAY 1）を舞台に、余命わずかな女性サミラと愛猫フロド、そして青年エリックの極限のサバイバルを描く。", "trivia": "劇中で主人公と行動を共にする猫「フロド」は、ロンドン生まれの猫のシュニッツェル君が演じている。", "gemini_comment": "騒音にあふれる大都市ニューヨークが一瞬で死と沈黙の街へと変貌する圧倒的なパニック描写に引き込まれます。単なるモンスターホラーにとどまらず、死を目前にした主人公が限られた時間の中で小さな願いや他者との絆を見出していく繊細なヒューマンドラマが胸を打つ、シリーズでも際立ってエモーショナルな一作だと感じます。"}, {"purchase_date": "2026/11/21", "purchase_date_sort": "2026-11-21", "mail_datetime": "2026/11/21 21:37:25", "mail_datetime_sort": "2026-11-21T21:37:25", "title": "アビゲイル (2024年)", "director": "マット・ベティネッリ＝オルピン、タイラー・ジレット", "cast": "メリッサ・バレラ、アリーシャ・ウィアー", "genre": "ホラー、スリラー", "price": 1500, "summary": "マット・ベティネッリ＝オルピン＆タイラー・ジレット監督、メリッサ・バレラ、ダン・スティーヴンスら出演の吸血鬼ホラー（https://filmarks.com/movies/114460）。5000万ドルの身代金目当てに大富豪の娘で12歳のバレリーナ・アビゲイルを誘拐し郊外の邸宅に監禁した犯罪グループが、彼女の正体が「踊る吸血鬼」であったことから逆に閉じ込められ、血みどろのサバイバルを強いられる。", "trivia": "2023年に急逝した俳優アンガス・クラウドの遺作の一つでもある。", "gemini_comment": "「誘拐した少女が実は最強の吸血鬼だった」という立場逆転のシンプルな設定を、豪快なスプラッター描写とブラックユーモア、そしてテンポの良い展開で極上のエンタメに昇華させています。バレエを舞いながら犯罪者たちを翻弄するアビゲイルのチャーミングさと恐ろしさのギャップが最高に楽しい、痛快なホラー映画だと感じます。"}, {"purchase_date": "2026/11/21", "purchase_date_sort": "2026-11-21", "mail_datetime": "2026/11/21 21:39:00", "mail_datetime_sort": "2026-11-21T21:39:00", "title": "サブスタンス (2024年)", "director": "コラリー・ファルジャ", "cast": "デミ・ムーア", "genre": "SF、ホラー、スリラー", "price": 2000, "summary": "コラリー・ファルジャ監督・脚本、デミ・ムーアとマーガレット・クアリー共演のSFボディホラー（https://press.moviewalker.jp/mv87369/）。50歳の誕生日を迎え、年齢を理由に番組を降板させられた元人気女優エリザベスが、闇の再生医療「サブスタンス」に手を出し、若さと美貌を備えた上位互換体「スー」を生み出したことから破滅へと突き進んでいく。第77回カンヌ国際映画祭脚本賞、第97回アカデミー賞メイクアップ＆ヘアスタイリング賞受賞。", "trivia": "当初ハーヴェイ役はレイ・リオッタが演じる予定だったが、撮影前に逝去したためデニス・クエイドが代役を務めることになった。", "gemini_comment": "美と若さへの執着やルッキズムを、容赦ないボディホラーと強烈なブラックユーモアで徹底的に風刺した怪作です。体当たりの熱演を見せるデミ・ムーアの存在感と、終盤に向けて歯止めが効かなくなっていく狂気の加速ぶりが圧巻で、観終わった後に強烈なインパクトを残す一作だと感じます。"}, {"purchase_date": "2026/11/21", "purchase_date_sort": "2026-11-21", "mail_datetime": "2026/11/21 21:57:56", "mail_datetime_sort": "2026-11-21T21:57:56", "title": "ロッキー (1976年)", "director": "ジョン・G・アヴィルドセン", "cast": "シルヴェスター・スタローン", "genre": "スポーツ、ドラマ", "price": 500, "summary": "ジョン・G・アヴィルドセン監督、シルヴェスター・スタローン脚本・主演によるアメリカ映画の金字塔（https://filmarks.com/movies/12830）。フィラデルフィアの場末で暮らす無名の三流ボクサー、ロッキー・バルボアが、無敗の世界ヘビー級王者アポロ・クリードの対戦相手に選ばれたことを機に、愛する女性エイドリアンやトレーナーのミッキーらに支えられながら人生を懸けた大勝負に挑む。第49回アカデミー賞作品賞・監督賞・編集賞受賞。", "trivia": "スタローンはモハメド・アリ対チャック・ウェプナー戦に感銘を受けわずか3日で脚本を執筆。メイク代節約のため負傷メイクを少しずつ剥がしながら最終ラウンドから第1ラウンドへ逆順に撮影した。", "gemini_comment": "勝ち負け以上に「最後までリングに立ち続け、自分の誇りを証明する」という純粋な闘志と、不器用ながらも心優しいロッキーとエイドリアンの人間ドラマが何度観ても胸を打ちます。ビル・コンティの名曲とともに駆け上がる美術館の階段や、魂を揺さぶるラストの叫びまで、時代を超えて輝き続ける不朽の名作だと感じます。"}, {"purchase_date": "2026/11/21", "purchase_date_sort": "2026-11-21", "mail_datetime": "2026/11/21 22:00:16", "mail_datetime_sort": "2026-11-21T22:00:16", "title": "イエロー・ローズ 希望の歌 (2019年)", "director": "ダイアン・パラガス", "cast": "エヴァ・ノブルザダ", "genre": "音楽、ドラマ、青春", "price": 800, "summary": "ダイアン・パラガス監督、エヴァ・ノブルザダ主演の音楽青春ドラマ（https://eiga.com/movie/94941/）。アメリカで暮らすフィリピン人の少女ローズは、母が強制送還されたことをきっかけに孤独や厳しい現実に直面しながらも、愛するカントリーミュージックのシンガーになる夢を追い続け、音楽を通じて出会う人々の善意に支えられ成長していく。", "trivia": "", "gemini_comment": "移民問題という厳しい現実を背景にしながらも、音楽への純粋な情熱と人々の温かな善意が心地よく描かれた作品です。ブロードウェイで活躍するエヴァ・ノブルザダの透明感あふれる歌声と瑞々しい演技が心にまっすぐ届き、静かな希望を与えてくれる音楽ドラマだと感じます。"}]</script>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            let selectedGenre = '';
+
+            function hideLoading() {
+                const overlay = document.getElementById('loadingOverlay');
+                if (overlay && !overlay.classList.contains('fade-out')) {
+                    overlay.classList.add('fade-out');
+                    setTimeout(function () {
+                        overlay.style.display = 'none';
+                    }, 460);
+                }
+            }
+
+            function escapeHtml(value) {
+                if (value === null || value === undefined) return '';
+                return String(value)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            function formatPrice(value) {
+                if (value === null || value === undefined || value === '') return '－';
+                const num = Number(value);
+                if (Number.isNaN(num)) return String(value);
+                return '￥' + num.toLocaleString('ja-JP');
+            }
+
+            function orDash(value) {
+                if (value === null || value === undefined) return '－';
+                const str = String(value).trim();
+                return str === '' ? '－' : str;
+            }
+
+            function splitGenres(genreText) {
+                if (!genreText) return [];
+                return String(genreText)
+                    .split('、')
+                    .map(function (g) { return g.trim(); })
+                    .filter(function (g) { return g !== ''; });
+            }
+
+            function populateTable(data) {
+                const tbody = document.getElementById('moviesBody');
+                tbody.innerHTML = '';
+
+                data.forEach(function (row) {
+                    const tr = document.createElement('tr');
+                    tr._rowData = row;
+
+                    const purchaseOrder = row.purchase_date_sort || row.purchase_date || '';
+                    const mailOrder = row.mail_datetime_sort || row.mail_datetime || '';
+                    const priceOrder = (row.price !== null && row.price !== undefined && row.price !== '') ? String(row.price) : '0';
+                    const priceText = (row.price !== null && row.price !== undefined && row.price !== '') ? formatPrice(row.price) : '';
+
+                    tr.innerHTML =
+                        '<td class="col-nowrap" data-order="' + escapeHtml(purchaseOrder) + '">' + escapeHtml(row.purchase_date) + '</td>' +
+                        '<td class="col-nowrap" data-order="' + escapeHtml(mailOrder) + '">' + escapeHtml(row.mail_datetime) + '</td>' +
+                        '<td class="movie-title col-wrap-md" title="クリックして詳細カードを表示">' + escapeHtml(row.title) + '</td>' +
+                        '<td class="col-wrap-sm">' + escapeHtml(row.director) + '</td>' +
+                        '<td class="col-wrap-md">' + escapeHtml(row.cast) + '</td>' +
+                        '<td class="col-wrap-sm">' + escapeHtml(row.genre) + '</td>' +
+                        '<td class="col-nowrap col-price" data-order="' + escapeHtml(priceOrder) + '">' + escapeHtml(priceText) + '</td>' +
+                        '<td class="col-wrap">' + escapeHtml(row.summary) + '</td>' +
+                        '<td class="col-wrap">' + escapeHtml(row.trivia) + '</td>' +
+                        '<td class="col-wrap">' + escapeHtml(row.gemini_comment) + '</td>';
+
+                    tbody.appendChild(tr);
+                });
+            }
+
+            function buildGenreFilter(data) {
+                const genreSet = new Set();
+                data.forEach(function (row) {
+                    splitGenres(row.genre).forEach(function (g) {
+                        genreSet.add(g);
+                    });
+                });
+
+                const select = document.getElementById('genreFilter');
+                while (select.options.length > 1) {
+                    select.remove(1);
+                }
+
+                Array.from(genreSet)
+                    .sort(function (a, b) { return a.localeCompare(b, 'ja'); })
+                    .forEach(function (g) {
+                        const opt = document.createElement('option');
+                        opt.value = g;
+                        opt.textContent = g;
+                        select.appendChild(opt);
+                    });
+            }
+
+            let moviesData = [];
+            try {
+                const rawJson = document.getElementById('moviesData').textContent;
+                moviesData = JSON.parse(rawJson);
+                document.getElementById('btnAllMovies').textContent = '全映画 (' + moviesData.length + ')';
+                populateTable(moviesData);
+                buildGenreFilter(moviesData);
+            } catch (err) {
+                console.error('Failed to parse embedded movies data:', err);
+                const titleEl = document.querySelector('.loading-title');
+                const subEl = document.querySelector('.loading-subtitle');
+                if (titleEl && subEl) {
+                    titleEl.textContent = 'データの読み込みに失敗しました';
+                    titleEl.style.color = '#dc2626';
+                    subEl.textContent = '埋め込みデータの形式を確認してください。';
+                }
+                return;
+            }
+
+            $.fn.dataTable.ext.search.push(function (settings, data, dataIndex, rowData, counter) {
+                if (settings.nTable.id !== 'moviesTable') return true;
+                if (!selectedGenre) return true;
+                const tr = settings.aoData[dataIndex] ? settings.aoData[dataIndex].nTr : null;
+                const genreStr = tr && tr._rowData ? tr._rowData.genre : data[5];
+                return splitGenres(genreStr).includes(selectedGenre);
+            });
+
+            const table = $('#moviesTable').DataTable({
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/ja.json'
+                },
+                lengthMenu: [[25, 50, 100, -1], [25, 50, 100, '全件']],
+                pageLength: -1,
+                scrollX: true,
+                scrollY: '78vh',
+                scrollCollapse: true,
+                autoWidth: false,
+                order: [[0, 'asc'], [1, 'asc']],
+                columnDefs: [
+                    { targets: [0], width: '100px' },
+                    { targets: [1], width: '155px' },
+                    { targets: [2], width: '250px' },
+                    { targets: [3], width: '170px' },
+                    { targets: [4], width: '250px' },
+                    { targets: [5], width: '180px' },
+                    { targets: [6], width: '100px', type: 'num' },
+                    { targets: [7], width: '360px' },
+                    { targets: [8], width: '320px' },
+                    { targets: [9], width: '380px' }
+                ],
+                initComplete: function () {
+                    hideLoading();
+                }
+            });
+
+            // Failsafe in case external language JSON stalls or is blocked on file:///
+            setTimeout(hideLoading, 1800);
+
+            const btnAllMovies = document.getElementById('btnAllMovies');
+            const genreFilterSelect = document.getElementById('genreFilter');
+
+            function resetFilters() {
+                selectedGenre = '';
+                genreFilterSelect.value = '';
+                genreFilterSelect.classList.remove('active');
+                btnAllMovies.classList.add('active');
+                table.draw();
+            }
+
+            btnAllMovies.addEventListener('click', resetFilters);
+
+            genreFilterSelect.addEventListener('change', function () {
+                selectedGenre = this.value;
+                if (selectedGenre) {
+                    btnAllMovies.classList.remove('active');
+                    genreFilterSelect.classList.add('active');
+                } else {
+                    btnAllMovies.classList.add('active');
+                    genreFilterSelect.classList.remove('active');
+                }
+                table.draw();
+            });
+
+            // Column Visibility Modal Logic
+            const colVisModal = document.getElementById('colVisModal');
+            const colVisList = document.getElementById('colVisList');
+            const btnShowColVis = document.getElementById('btnShowColVis');
+            const btnCancelColVis = document.getElementById('btnCancelColVis');
+            const btnApplyColVis = document.getElementById('btnApplyColVis');
+
+            function closeColVisModal() {
+                colVisModal.classList.remove('active');
+            }
+
+            btnShowColVis.addEventListener('click', function () {
+                colVisList.innerHTML = '';
+
+                table.columns().every(function () {
+                    const col = this;
+                    const idx = col.index();
+                    const title = $(col.header()).text().trim();
+                    const isVisible = col.visible();
+
+                    const label = document.createElement('label');
+                    label.className = 'checkbox-item';
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = String(idx);
+                    checkbox.checked = isVisible;
+
+                    const span = document.createElement('span');
+                    span.textContent = title;
+
+                    label.appendChild(checkbox);
+                    label.appendChild(span);
+                    colVisList.appendChild(label);
+                });
+
+                colVisModal.classList.add('active');
+            });
+
+            btnCancelColVis.addEventListener('click', closeColVisModal);
+            colVisModal.addEventListener('click', function (e) {
+                if (e.target === colVisModal) closeColVisModal();
+            });
+
+            btnApplyColVis.addEventListener('click', function () {
+                const checkboxes = colVisList.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(function (cb) {
+                    const idx = parseInt(cb.value, 10);
+                    table.column(idx).visible(cb.checked, false);
+                });
+
+                table.columns.adjust().draw(false);
+                closeColVisModal();
+            });
+
+            // Detail Card Modal Logic
+            const detailModal = document.getElementById('detailCardModal');
+            let currentCardFilteredIndex = -1;
+
+            function getFilteredRowNodes() {
+                return table.rows({ search: 'applied', order: 'applied' }).nodes().toArray();
+            }
+
+            function showCardAtIndex(idx) {
+                const visibleNodes = getFilteredRowNodes();
+                if (visibleNodes.length === 0) return;
+
+                if (idx < 0) idx = visibleNodes.length - 1;
+                if (idx >= visibleNodes.length) idx = 0;
+
+                currentCardFilteredIndex = idx;
+                const rowNode = visibleNodes[idx];
+                const rowData = rowNode && rowNode._rowData ? rowNode._rowData : null;
+                if (!rowData) return;
+
+                $('#cardTitle').text(orDash(rowData.title));
+                const subParts = [];
+                if (rowData.director && String(rowData.director).trim() !== '') {
+                    subParts.push('監督: ' + String(rowData.director).trim());
+                }
+                if (rowData.genre && String(rowData.genre).trim() !== '') {
+                    subParts.push(String(rowData.genre).trim());
+                }
+                $('#cardSubTitles').text(subParts.length > 0 ? subParts.join(' / ') : '－');
+
+                $('#cardPurchaseDate').text(orDash(rowData.purchase_date));
+                $('#cardMailDatetime').text(orDash(rowData.mail_datetime));
+                $('#cardDirector').text(orDash(rowData.director));
+                $('#cardCast').text(orDash(rowData.cast));
+                $('#cardGenre').text(orDash(rowData.genre));
+                $('#cardPrice').text(formatPrice(rowData.price));
+                $('#cardSummary').text(orDash(rowData.summary));
+                $('#cardTrivia').text(orDash(rowData.trivia));
+                $('#cardGeminiComment').text(orDash(rowData.gemini_comment));
+
+                $('#cardCounter').text((idx + 1) + ' / ' + visibleNodes.length);
+                detailModal.classList.add('active');
+            }
+
+            function closeDetailModal() {
+                detailModal.classList.remove('active');
+            }
+
+            $('#moviesTable tbody').on('click', 'tr', function (e) {
+                if ($(e.target).closest('a').length > 0) return;
+                const visibleNodes = getFilteredRowNodes();
+                const idx = visibleNodes.indexOf(this);
+                if (idx !== -1) {
+                    showCardAtIndex(idx);
+                }
+            });
+
+            $('#btnPrevCard').on('click', function () {
+                showCardAtIndex(currentCardFilteredIndex - 1);
+            });
+
+            $('#btnNextCard').on('click', function () {
+                showCardAtIndex(currentCardFilteredIndex + 1);
+            });
+
+            $('#btnCloseCard, #btnCloseCardX').on('click', closeDetailModal);
+            detailModal.addEventListener('click', function (e) {
+                if (e.target === detailModal) closeDetailModal();
+            });
+
+            $(document).on('keydown', function (e) {
+                if (colVisModal.classList.contains('active') && e.key === 'Escape') {
+                    closeColVisModal();
+                    return;
+                }
+                if (!detailModal.classList.contains('active')) return;
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    showCardAtIndex(currentCardFilteredIndex - 1);
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    showCardAtIndex(currentCardFilteredIndex + 1);
+                } else if (e.key === 'Escape') {
+                    closeDetailModal();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
