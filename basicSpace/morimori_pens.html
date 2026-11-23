@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>もりもり所有ペン一覧</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=Outfit:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+    <style>
+        :root {
+            --green-900: #14532d;
+            --green-800: #166534;
+            --green-700: #15803d;
+            --emerald-600: #059669;
+            --emerald-500: #10b981;
+            --emerald-400: #34d399;
+            --mint-100: #dcfce7;
+            --mint-50: #f2fbf6;
+            --bg-gradient: linear-gradient(135deg, #f4fbf7 0%, #ebf9f1 50%, #e4f5ec 100%);
+            --glass-bg: rgba(255, 255, 255, 0.86);
+            --glass-border: rgba(16, 185, 129, 0.24);
+            --text-main: #0f2e1f;
+            --text-body: #1e293b;
+            --text-muted: #475569;
+            --text-subtle: #64748b;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', 'Inter', 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Meiryo', sans-serif;
+            background-color: #eef9f2;
+            background-image:
+                radial-gradient(circle at 8% 12%, rgba(16, 185, 129, 0.16) 0%, transparent 42%),
+                radial-gradient(circle at 92% 88%, rgba(52, 211, 153, 0.18) 0%, transparent 44%),
+                radial-gradient(circle at 50% 0%, rgba(167, 243, 208, 0.25) 0%, transparent 50%),
+                var(--bg-gradient);
+            background-attachment: fixed;
+            margin: 0;
+            padding: 10px 14px 20px;
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        /* Compact Top Bar (Glowing Title + Control Buttons) */
+        .top-bar {
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px 14px;
+            max-width: 1520px;
+        }
+
+        @keyframes titleShimmer {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 220% 50%; }
+        }
+
+        @keyframes titleGlowPulse {
+            0%, 100% {
+                filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.36)) drop-shadow(0 0 14px rgba(52, 211, 153, 0.24));
+            }
+            50% {
+                filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.68)) drop-shadow(0 0 22px rgba(6, 182, 212, 0.48));
+            }
+        }
+
+        h1 {
+            font-size: clamp(1.1rem, 2vw, 1.32rem);
+            font-weight: 700;
+            margin: 0;
+            padding: 2px 4px;
+            line-height: 1.2;
+            white-space: nowrap;
+            letter-spacing: 0.03em;
+            background: linear-gradient(
+                110deg,
+                #14532d 0%,
+                #15803d 25%,
+                #10b981 42%,
+                #a7f3d0 50%,
+                #06b6d4 58%,
+                #15803d 75%,
+                #14532d 100%
+            );
+            background-size: 220% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleShimmer 4.2s linear infinite, titleGlowPulse 2.8s ease-in-out infinite;
+        }
+
+        /* Filter & Control Bar */
+        .filter-buttons {
+            margin: 0;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 7px 16px;
+            border: 1px solid rgba(16, 185, 129, 0.32);
+            border-radius: 30px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.88);
+            color: var(--green-900);
+            transition: all 0.25s ease;
+            font-weight: 600;
+            font-size: 0.84rem;
+            font-family: inherit;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 2px 8px rgba(20, 83, 45, 0.06);
+        }
+
+        .filter-btn:hover {
+            background: #ffffff;
+            border-color: var(--emerald-500);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.18);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #15803d 0%, #10b981 100%);
+            border-color: #059669;
+            color: #ffffff;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+        }
+
+        .filter-select {
+            padding: 7px 32px 7px 14px;
+            border: 1px solid rgba(16, 185, 129, 0.38);
+            border-radius: 30px;
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.92);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2315803d' d='M2.2 4.2L6 8l3.8-3.8-.9-.9L6 6.2 3.1 3.3z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            color: var(--green-900);
+            transition: all 0.25s ease;
+            font-weight: 600;
+            font-size: 0.84rem;
+            font-family: inherit;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 2px 8px rgba(20, 83, 45, 0.06);
+            appearance: none;
+            -webkit-appearance: none;
+            outline: none;
+            max-width: 240px;
+        }
+
+        .filter-select:hover,
+        .filter-select:focus {
+            background-color: #ffffff;
+            border-color: var(--emerald-500);
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.18);
+        }
+
+        .filter-select.active {
+            background-color: #ecfdf5;
+            border-color: var(--emerald-600);
+            color: #065f46;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.24);
+        }
+
+        .filter-btn-colvis {
+            border-color: rgba(21, 128, 61, 0.4);
+            color: var(--green-800);
+            background: rgba(255, 255, 255, 0.92);
+        }
+
+        /* Glassmorphism Container */
+        .table-container {
+            position: relative;
+            width: 100%;
+            max-width: 1520px;
+            margin: 0 auto;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 16px 14px;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 18px 45px rgba(20, 83, 45, 0.09);
+        }
+
+        /* DataTable Styling Overrides (Respect scrollX dynamic calculation) */
+        table.dataTable {
+            border-collapse: separate !important;
+            border-spacing: 0 5px !important;
+            width: max-content !important;
+            min-width: 100%;
+            margin: 0 !important;
+            background: transparent !important;
+        }
+
+        table.dataTable thead th {
+            background: linear-gradient(180deg, #166534 0%, #14532d 100%) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.16) !important;
+            padding: 11px 10px !important;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            border-bottom: 2px solid var(--emerald-500) !important;
+            white-space: nowrap;
+        }
+
+        .dataTables_scrollHead {
+            background: #14532d !important;
+            border-radius: 10px 10px 0 0;
+            overflow: hidden !important;
+        }
+
+        .dataTables_scrollBody {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .dataTables_scroll {
+            width: 100%;
+        }
+
+        table.dataTable tbody tr {
+            background-color: #ffffff !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            cursor: pointer;
+        }
+
+        table.dataTable tbody tr:nth-child(even) {
+            background-color: var(--mint-50) !important;
+        }
+
+        table.dataTable tbody tr:hover {
+            background-color: #e3f8ec !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.16);
+        }
+
+        table.dataTable tbody td {
+            border-top: 1px solid rgba(16, 185, 129, 0.14) !important;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.14) !important;
+            border-left: 1px solid rgba(16, 185, 129, 0.08) !important;
+            border-right: 1px solid rgba(16, 185, 129, 0.08) !important;
+            padding: 9px 10px !important;
+            vertical-align: middle;
+            color: var(--text-body);
+            font-size: 0.86rem;
+            line-height: 1.5;
+        }
+
+        table.dataTable tbody tr td:first-child {
+            border-left: 1px solid rgba(16, 185, 129, 0.18) !important;
+            border-radius: 10px 0 0 10px;
+        }
+
+        table.dataTable tbody tr td:last-child {
+            border-right: 1px solid rgba(16, 185, 129, 0.18) !important;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .col-wrap {
+            white-space: pre-wrap !important;
+            word-break: break-word;
+            min-width: 280px;
+        }
+
+        .col-wrap-md {
+            white-space: pre-wrap !important;
+            word-break: break-word;
+            min-width: 190px;
+        }
+
+        .col-wrap-sm {
+            white-space: pre-wrap !important;
+            word-break: break-word;
+            min-width: 130px;
+        }
+
+        .col-nowrap {
+            white-space: nowrap;
+        }
+
+        .col-num {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .col-price {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+            color: var(--green-800) !important;
+        }
+
+        .pen-name {
+            font-weight: 700;
+            color: var(--green-900) !important;
+            font-size: 0.92rem;
+        }
+
+        .article-link {
+            display: inline-block;
+            color: var(--emerald-600);
+            font-weight: 600;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(5, 150, 105, 0.35);
+            transition: color 0.18s ease, border-color 0.18s ease;
+        }
+
+        .article-link:hover {
+            color: var(--green-900);
+            border-bottom-color: var(--green-900);
+        }
+
+        /* DataTables Controls (Light Green Theme) */
+        .dataTables_wrapper .dataTables_filter {
+            margin-bottom: 10px;
+        }
+
+        .dataTables_wrapper .dataTables_filter input {
+            background: #ffffff !important;
+            border: 1px solid rgba(16, 185, 129, 0.35) !important;
+            border-radius: 30px !important;
+            color: var(--text-main) !important;
+            padding: 6px 14px !important;
+            font-size: 0.85rem !important;
+            outline: none !important;
+            transition: all 0.25s;
+            margin-left: 6px;
+        }
+
+        .dataTables_wrapper .dataTables_filter input:focus {
+            border-color: var(--emerald-500) !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18) !important;
+        }
+
+        .dataTables_wrapper .dataTables_filter label,
+        .dataTables_wrapper .dataTables_length label {
+            color: var(--text-muted) !important;
+            font-size: 0.84rem !important;
+            font-weight: 500;
+        }
+
+        .dataTables_wrapper .dataTables_length {
+            margin-bottom: 10px;
+        }
+
+        .dataTables_wrapper .dataTables_length select {
+            background: #ffffff !important;
+            border: 1px solid rgba(16, 185, 129, 0.35) !important;
+            border-radius: 8px !important;
+            color: var(--text-main) !important;
+            padding: 4px 8px !important;
+            font-size: 0.84rem !important;
+            outline: none;
+        }
+
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            color: var(--text-muted) !important;
+            font-size: 0.82rem !important;
+            margin-top: 10px;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            color: var(--green-800) !important;
+            border-radius: 6px !important;
+            padding: 4px 10px !important;
+            font-size: 0.82rem !important;
+            border: 1px solid transparent !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.disabled) {
+            background: #dcfce7 !important;
+            color: var(--green-900) !important;
+            border-color: #86efac !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+            background: linear-gradient(135deg, #15803d 0%, #10b981 100%) !important;
+            border: none !important;
+            color: #ffffff !important;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 9px;
+            height: 9px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #e8f7ef;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(16, 185, 129, 0.4);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(5, 150, 105, 0.65);
+        }
+
+        /* Modal Base Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 46, 31, 0.42);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            padding: 12px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 16px;
+            padding: 22px;
+            width: 100%;
+            max-width: 460px;
+            max-height: 82vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 24px 55px rgba(20, 83, 45, 0.22);
+            transform: translateY(-16px);
+            transition: transform 0.25s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            margin-bottom: 14px;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.18);
+            padding-bottom: 10px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.15rem;
+            color: var(--green-900);
+            text-align: center;
+        }
+
+        .modal-body {
+            overflow-y: auto;
+            flex-grow: 1;
+            margin-bottom: 16px;
+            padding-right: 4px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 10px;
+            transition: background 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .checkbox-item:hover {
+            background: #f0fdf4;
+            border-color: rgba(16, 185, 129, 0.25);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--emerald-600);
+        }
+
+        .checkbox-item span {
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            user-select: none;
+            flex-grow: 1;
+            font-weight: 500;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            border-top: 1px solid rgba(16, 185, 129, 0.18);
+            padding-top: 14px;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            font-size: 0.88rem;
+        }
+
+        .btn-cancel {
+            background: #ffffff;
+            color: var(--text-muted);
+            border: 1px solid rgba(100, 116, 139, 0.35);
+        }
+
+        .btn-cancel:hover {
+            background: #f1f5f9;
+            color: var(--text-main);
+        }
+
+        .btn-apply {
+            background: linear-gradient(135deg, #15803d 0%, #10b981 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.32);
+        }
+
+        .btn-apply:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
+        }
+
+        /* Detail Card Modal */
+        .card-modal-content {
+            background: linear-gradient(155deg, #ffffff 0%, #f3fbf7 100%);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            border-radius: 18px;
+            padding: 22px;
+            width: 100%;
+            max-width: 780px;
+            max-height: 88vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 24px 60px rgba(20, 83, 45, 0.22);
+            transform: scale(0.95);
+            transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .modal-overlay.active .card-modal-content {
+            transform: scale(1);
+        }
+
+        .card-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+            padding-bottom: 14px;
+            margin-bottom: 16px;
+        }
+
+        .card-title-group {
+            flex-grow: 1;
+            padding-right: 12px;
+        }
+
+        .card-title-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+        }
+
+        .card-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            background: #dcfce7;
+            color: var(--green-900);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+        }
+
+        .card-title {
+            margin: 0;
+            font-size: 1.32rem;
+            color: var(--green-900);
+            font-weight: 700;
+            line-height: 1.35;
+        }
+
+        .card-sub-titles {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .close-icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-subtle);
+            font-size: 1.6rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 2px 8px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .close-icon-btn:hover {
+            color: var(--green-900);
+            background: rgba(16, 185, 129, 0.14);
+        }
+
+        .card-section-title {
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: var(--green-800);
+            margin: 14px 0 8px;
+            padding: 4px 10px;
+            border-left: 4px solid var(--emerald-500);
+            background: rgba(16, 185, 129, 0.08);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .card-section-title:first-child {
+            margin-top: 0;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px 14px;
+            margin-bottom: 8px;
+        }
+
+        .card-item {
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid rgba(16, 185, 129, 0.18);
+            border-radius: 11px;
+            padding: 9px 12px;
+        }
+
+        .card-item-full {
+            grid-column: 1 / -1;
+        }
+
+        .card-item-label {
+            font-size: 0.72rem;
+            letter-spacing: 0.04em;
+            color: var(--emerald-600);
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        .card-item-value {
+            font-size: 0.92rem;
+            color: var(--text-main);
+            word-break: break-word;
+            white-space: pre-wrap;
+            line-height: 1.55;
+        }
+
+        .card-nav-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            border-top: 1px solid rgba(16, 185, 129, 0.2);
+            padding-top: 14px;
+            margin-top: 12px;
+        }
+
+        .card-nav-center {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-nav {
+            background: #ecfdf5;
+            border: 1px solid rgba(16, 185, 129, 0.45);
+            color: var(--green-800);
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.84rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-nav:hover:not(:disabled) {
+            background: var(--emerald-500);
+            border-color: var(--emerald-600);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-nav:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .card-counter {
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Loading Overlay Styles (Light Green Theme) */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(240, 253, 244, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 0.45s ease, visibility 0.45s ease;
+            padding: 16px;
+        }
+
+        .loading-overlay.fade-out {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loading-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            border-radius: 20px;
+            padding: 34px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 20px 50px rgba(20, 83, 45, 0.14);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .spinner-container {
+            position: relative;
+            width: 64px;
+            height: 64px;
+            margin-bottom: 20px;
+        }
+
+        .green-spinner {
+            width: 100%;
+            height: 100%;
+            border: 4px solid rgba(16, 185, 129, 0.18);
+            border-top: 4px solid #15803d;
+            border-right: 4px solid #10b981;
+            border-radius: 50%;
+            animation: greenSpin 0.95s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+        }
+
+        .spinner-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 36px;
+            height: 36px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.45) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: greenPulse 1.4s ease-in-out infinite alternate;
+        }
+
+        @keyframes greenSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes greenPulse {
+            0% { opacity: 0.35; transform: translate(-50%, -50%) scale(0.8); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1.25); }
+        }
+
+        .loading-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--green-900);
+            margin-bottom: 6px;
+        }
+
+        .loading-subtitle {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-bottom: 18px;
+        }
+
+        .loading-bar {
+            width: 100%;
+            height: 6px;
+            background: #dcfce7;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loading-bar-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 40%;
+            background: linear-gradient(90deg, #15803d, #10b981, #34d399);
+            border-radius: 10px;
+            animation: loadingMove 1.4s ease-in-out infinite;
+        }
+
+        @keyframes loadingMove {
+            0% { left: -40%; width: 40%; }
+            50% { width: 60%; }
+            100% { left: 100%; width: 40%; }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 640px) {
+            body {
+                padding: 12px 8px 20px;
+            }
+
+            .table-container {
+                padding: 12px 8px;
+                border-radius: 12px;
+            }
+
+            .filter-select {
+                max-width: 100%;
+            }
+
+            .dataTables_wrapper .dataTables_length,
+            .dataTables_wrapper .dataTables_filter {
+                float: none !important;
+                text-align: left !important;
+                width: 100%;
+            }
+
+            .dataTables_wrapper .dataTables_filter input {
+                width: calc(100% - 60px);
+                max-width: 260px;
+            }
+        }
+
+        @media (max-width: 550px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-modal-content {
+                padding: 16px;
+            }
+
+            .btn-nav {
+                padding: 7px 12px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-card">
+            <div class="spinner-container">
+                <div class="green-spinner"></div>
+                <div class="spinner-glow"></div>
+            </div>
+            <div class="loading-title">ペンデータを読み込み中です</div>
+            <div class="loading-subtitle">少しお待ちください...</div>
+            <div class="loading-bar">
+                <div class="loading-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="top-bar">
+        <h1>もりもり所有ペン一覧</h1>
+        <div class="filter-buttons">
+            <button type="button" class="filter-btn active" id="btnAllPens" data-filter="all">全ペン (0)</button>
+            <select id="countryFilter" class="filter-select" aria-label="国名絞り込み">
+                <option value="">国名絞り込み：すべて</option>
+            </select>
+            <select id="makerFilter" class="filter-select" aria-label="メーカー絞り込み">
+                <option value="">メーカー絞り込み：すべて</option>
+            </select>
+            <select id="typeFilter" class="filter-select" aria-label="種別絞り込み">
+                <option value="">種別絞り込み：すべて</option>
+            </select>
+            <button type="button" class="filter-btn filter-btn-colvis" id="btnShowColVis">表示項目選択</button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table id="pensTable" class="display" style="width:100%">
+            <thead>
+                <tr>
+                    <th>全No.</th>
+                    <th>国No.</th>
+                    <th>国名</th>
+                    <th>メーカー</th>
+                    <th>名前</th>
+                    <th>感想の記事</th>
+                    <th>種別</th>
+                    <th>主色</th>
+                    <th>主素材</th>
+                    <th>スタイル</th>
+                    <th>軸太</th>
+                    <th>購入年</th>
+                    <th>定価 (芯込) (購入時)</th>
+                    <th>芯の太さ</th>
+                    <th>繰り出し方式</th>
+                    <th>スリーブ収納機能</th>
+                    <th>機能切替</th>
+                    <th>ペン先</th>
+                    <th>ペン先材質</th>
+                    <th>替えインク</th>
+                    <th>ボールペン繰り出し</th>
+                    <th>インク色</th>
+                    <th>インク種類</th>
+                    <th>特徴</th>
+                </tr>
+            </thead>
+            <tbody id="pensBody"></tbody>
+        </table>
+    </div>
+
+    <!-- Detail Card Modal -->
+    <div class="modal-overlay" id="detailCardModal" role="dialog" aria-modal="true" aria-labelledby="cardTitle">
+        <div class="card-modal-content" id="detailCardContent">
+            <div class="card-header-bar">
+                <div class="card-title-group">
+                    <div class="card-title-row">
+                        <span class="card-badge" id="cardOverallBadge">全No.-</span>
+                        <h2 class="card-title" id="cardTitle">ペン名</h2>
+                    </div>
+                    <p class="card-sub-titles" id="cardSubTitles">メーカー / 国名 / 種別</p>
+                </div>
+                <button type="button" class="close-icon-btn" id="btnCloseCardX" title="閉じる" aria-label="閉じる">&times;</button>
+            </div>
+
+            <div class="modal-body" style="margin-bottom:0;">
+                <div class="card-section-title">基本情報</div>
+                <div class="card-grid">
+                    <div class="card-item">
+                        <div class="card-item-label">全No.</div>
+                        <div class="card-item-value" id="cardOverallNo">－</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">国No.</div>
+                        <div class="card-item-value" id="cardCountryNo">－</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">国名</div>
+                        <div class="card-item-value" id="cardCountry">－</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">メーカー</div>
+                        <div class="card-item-value" id="cardMaker">－</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">種別</div>
+                        <div class="card-item-value" id="cardType">－</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">主色</div>
+                        <div class="card-item-value" id="cardMainColor">－</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">主素材</div>
+                        <div class="card-item-value" id="cardMainMaterial">－</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">スタイル</div>
+                        <div class="card-item-value" id="cardStyle">－</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">軸太</div>
+                        <div class="card-item-value" id="cardShaftWidth">－</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">購入年</div>
+                        <div class="card-item-value" id="cardPurchaseYear">－</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">定価 (芯込) (購入時)</div>
+                        <div class="card-item-value" id="cardPrice">－</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">感想の記事</div>
+                        <div class="card-item-value" id="cardArticleUrl">－</div>
+                    </div>
+                    <div class="card-item card-item-full">
+                        <div class="card-item-label">特徴</div>
+                        <div class="card-item-value" id="cardFeatures">－</div>
+                    </div>
+                </div>
+
+                <div class="card-section-title">シャープペン機能</div>
+                <div class="card-grid">
+                    <div class="card-item">
+                        <div class="card-item-label">芯の太さ</div>
+                        <div class="card-item-value" id="cardLeadSize">－</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">繰り出し方式</div>
+                        <div class="card-item-value" id="cardLeadMechanism">－</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">スリーブ収納機能</div>
+                        <div class="card-item-value" id="cardSleeveStorage">－</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">機能切替</div>
+                        <div class="card-item-value" id="cardFunctionSwitch">－</div>
+                    </div>
+                </div>
+
+                <div class="card-section-title">ボールペン/万年筆機能</div>
+                <div class="card-grid">
+                    <div class="card-item">
+                        <div class="card-item-label">ペン先</div>
+                        <div class="card-item-value" id="cardTipSize">－</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">ペン先材質</div>
+                        <div class="card-item-value" id="cardTipMaterial">－</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">替えインク</div>
+                        <div class="card-item-value" id="cardRefill">－</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">ボールペン繰り出し</div>
+                        <div class="card-item-value" id="cardBallpointMechanism">－</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">インク色</div>
+                        <div class="card-item-value" id="cardInkColor">－</div>
+                    </div>
+                    <div class="card-item">
+                        <div class="card-item-label">インク種類</div>
+                        <div class="card-item-value" id="cardInkType">－</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-nav-footer">
+                <button type="button" class="btn-nav" id="btnPrevCard">
+                    <span>&larr;</span> 前のペン
+                </button>
+                <div class="card-nav-center">
+                    <span class="card-counter" id="cardCounter">0 / 0</span>
+                    <button type="button" class="btn btn-cancel" id="btnCloseCard">閉じる</button>
+                </div>
+                <button type="button" class="btn-nav" id="btnNextCard">
+                    次のペン <span>&rarr;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Column Visibility Modal -->
+    <div class="modal-overlay" id="colVisModal" role="dialog" aria-modal="true" aria-labelledby="colVisTitle">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="colVisTitle">表示項目の選択</h2>
+            </div>
+            <div class="modal-body" id="colVisList"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel" id="btnCancelColVis">キャンセル</button>
+                <button type="button" class="btn btn-apply" id="btnApplyColVis">適用</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Embedded Pens Data -->
+    <script id="pensData" type="application/json">[{"overall_no": 1, "country_no": 1, "country": "USA", "maker": "オートポイント", "name": "名称不詳(0.5mm)ネイビー", "article_url": "http://morimorigameblogg.blogspot.jp/2014/05/05mm.html", "type": "シャープペンシル", "main_color": "ネイビー", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2014, "price": "?", "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "名称不明"}, {"overall_no": 2, "country_no": 2, "country": "USA", "maker": "クロス", "name": "オートクロスペン・ブラウン", "article_url": "http://morimorigameblogg.blogspot.jp/2013/05/cross.html", "type": "ボールペン", "main_color": "シルバー+ブラウン(革)", "main_material": "金属+本革", "style": "普通筆記", "shaft_width": "太軸", "purchase_year": 2013, "price": 6825, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "細字(F)", "tip_material": "卑金属", "refill": "クロス・ボールペンリフィル(＃8518-1)", "ballpoint_mechanism": "ペン尻回転", "ink_color": "黒", "ink_type": "油性", "features": "金属彫刻+フルグレインレザー本革巻き"}, {"overall_no": 3, "country_no": 3, "country": "USA", "maker": "クロス", "name": "オートクロスペン・ブラック", "article_url": "http://morimorigameblogg.blogspot.jp/2013/07/blog-post_2279.html", "type": "ボールペン", "main_color": "シルバー+ブラック(革)", "main_material": "金属+本革", "style": "普通筆記", "shaft_width": "太軸", "purchase_year": 2013, "price": 6825, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "細字(F)", "tip_material": "卑金属", "refill": "クロス・ボールペンリフィル(＃8518-1)", "ballpoint_mechanism": "ペン尻回転", "ink_color": "黒", "ink_type": "油性", "features": "金属彫刻+フルグレインレザー本革巻き"}, {"overall_no": 4, "country_no": 4, "country": "USA", "maker": "クロス", "name": "カレイ・ピュアクローム", "article_url": "http://morimorigameblogg.blogspot.jp/2013/04/blog-post_7.html", "type": "ボールペン", "main_color": "シルバー", "main_material": "金属", "style": "普通筆記", "shaft_width": "太軸", "purchase_year": 2013, "price": 5250, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "中字(M)", "tip_material": "卑金属", "refill": "クロス・ボールペンリフィル", "ballpoint_mechanism": "軸回転", "ink_color": "黒", "ink_type": "油性", "features": "真鍮軸+クローム・コーティング"}, {"overall_no": 5, "country_no": 5, "country": "USA", "maker": "クロス", "name": "ドライバー・チャコール", "article_url": "http://morimorigameblogg.blogspot.jp/2014/01/blog-post.html", "type": "ボールペン", "main_color": "シルバー+チャコール", "main_material": "金属", "style": "普通筆記", "shaft_width": "太軸", "purchase_year": 2013, "price": 4200, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "細字(F)", "tip_material": "卑金属", "refill": "クロス・ボールペンリフィル(＃8518-1)", "ballpoint_mechanism": "ペン尻回転", "ink_color": "黒", "ink_type": "油性", "features": "クレーターグリップ+アルミニウム軸+アルマイト染色+真鍮軸口金+クローム・コーティング"}, {"overall_no": 6, "country_no": 6, "country": "USA", "maker": "クロス", "name": "ドライバー・ロイヤルブルー", "article_url": "http://morimorigameblogg.blogspot.jp/2013/07/blog-post_4641.html", "type": "ボールペン", "main_color": "シルバー+メタリックブルー", "main_material": "金属", "style": "普通筆記", "shaft_width": "太軸", "purchase_year": 2013, "price": 4200, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "細字(F)", "tip_material": "卑金属", "refill": "クロス・ボールペンリフィル(＃8518-1)", "ballpoint_mechanism": "ペン尻回転", "ink_color": "黒", "ink_type": "油性", "features": "クレーターグリップ+アルミニウム軸+アルマイト染色+真鍮軸口金+クローム・コーティング"}, {"overall_no": 7, "country_no": 7, "country": "USA", "maker": "シェーファー", "name": "センチネル・プラスチックグリーン・ペンシル", "article_url": "http://morimorigameblogg.blogspot.jp/2013/08/blog-post.html", "type": "シャープペンシル", "main_color": "シルバー+グリーン", "main_material": "樹脂+金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "0.7mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "金属軸+樹脂軸"}, {"overall_no": 8, "country_no": 8, "country": "USA", "maker": "シェーファー", "name": "インテンシティ・ウルトラマリンストライプ", "article_url": "http://morimorigameblogg.blogspot.jp/2013/08/blog-post_14.html", "type": "ボールペン", "main_color": "シルバー+ブルー(縞)", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 5250, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "細字(F)", "tip_material": "卑金属", "refill": "シェーファー共通リフィル", "ballpoint_mechanism": "軸回転", "ink_color": "黒", "ink_type": "油性", "features": "全真鍮本体+ストライプ柄"}, {"overall_no": 9, "country_no": 9, "country": "USA", "maker": "シェーファー", "name": "インテンシティ・バイオレットストライプ", "article_url": "http://morimorigameblogg.blogspot.jp/2013/08/blog-post_6965.html", "type": "ボールペン", "main_color": "シルバー+バイオレット(縞)", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 5250, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "細字(F)", "tip_material": "卑金属", "refill": "シェーファー共通リフィル", "ballpoint_mechanism": "軸回転", "ink_color": "黒", "ink_type": "油性", "features": "全真鍮本体+ストライプ柄"}, {"overall_no": 10, "country_no": 10, "country": "USA", "maker": "シェーファー", "name": "センチネル・プラスチックグリーン・ボールペン", "article_url": "http://morimorigameblogg.blogspot.jp/2013/01/blog-post_6.html", "type": "ボールペン", "main_color": "シルバー+グリーン", "main_material": "樹脂+金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "中字(M)", "tip_material": "卑金属", "refill": "シェーファー・ブラック・M（#99235）", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "油性", "features": "金属軸+樹脂軸"}, {"overall_no": 11, "country_no": 11, "country": "USA", "maker": "フランクリン・コヴィー", "name": "レキシントン万年筆・ツートーン", "article_url": "http://morimorigameblogg.blogspot.jp/2012/11/1_17.html", "type": "万年筆", "main_color": "シルバー+ゴールド", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 2625, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "中字(M)", "tip_material": "卑金属", "refill": "ヨーロッパ規格カートリッジ", "ballpoint_mechanism": "-", "ink_color": "自由", "ink_type": "万年筆インク", "features": "クローム+イミテーションゴールドプレート仕上+クロス社製造+MなのにFより細い"}, {"overall_no": 12, "country_no": 1, "country": "イギリス", "maker": "パーカー", "name": "ジョッター", "article_url": "http://morimorigameblogg.blogspot.jp/2012/09/jotter.html", "type": "シャープペンシル", "main_color": "シルバー+ワインレッド", "main_material": "樹脂+金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": "不明", "price": 1050, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "樹脂軸とヘアライン加工金属の2分割素材軸"}, {"overall_no": 13, "country_no": 2, "country": "イギリス", "maker": "パーカー", "name": "ジョッター・フライター・ペンシル", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/blog-post.html", "type": "シャープペンシル", "main_color": "シルバー", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 1575, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "ヘアライン加工金属軸+フランス製"}, {"overall_no": 14, "country_no": 3, "country": "イギリス", "maker": "パーカー", "name": "アーバン・プレミアム・マットブラックBT", "article_url": "http://morimorigameblogg.blogspot.jp/2013/05/bt.html", "type": "普通", "main_color": "ブラック", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 5250, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "クインクフローボールペン芯（ブラック/M）", "ballpoint_mechanism": "軸回転", "ink_color": "黒", "ink_type": "油性", "features": "グロッシーブラックIP仕上げ+ブラスラッカーマット仕上げ軸+チーゼル彫刻"}, {"overall_no": 15, "country_no": 4, "country": "イギリス", "maker": "パーカー", "name": "ジョッター・ジェイドグリーン", "article_url": "http://morimorigameblogg.blogspot.jp/2013/10/blog-post.html", "type": "ボールペン", "main_color": "シルバー+ゴールド", "main_material": "樹脂+金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "パーカータイプ", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "油性", "features": "樹脂軸とヘアライン加工金属の2分割素材軸+1/4回転ノック"}, {"overall_no": 16, "country_no": 5, "country": "イギリス", "maker": "パーカー", "name": "ジョッター・フライターGT", "article_url": "http://morimorigameblogg.blogspot.jp/2013/01/23gt.html", "type": "ボールペン", "main_color": "シルバー+ゴールド", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 1575, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "パーカータイプ", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "油性", "features": "ステンレス・スチール・ヘアライン仕上げ軸+23金ゴールドプレート+1/4回転ノック"}, {"overall_no": 17, "country_no": 6, "country": "イギリス", "maker": "パーカー", "name": "ディズニーランド・ボールペン", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/blog-post_1997.html", "type": "ボールペン", "main_color": "ライトオレンジ+柄", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": "不明", "price": "不明", "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "パーカータイプ", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "油性", "features": "黄色樹脂軸+格子パターン樹脂グリップ+ディズニーランド柄"}, {"overall_no": 18, "country_no": 7, "country": "イギリス", "maker": "パーカー", "name": "IM GT万年筆", "article_url": "http://morimorigameblogg.blogspot.jp/2012/10/parker-im-gt.html", "type": "万年筆", "main_color": "シルバー+ゴールド", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 4200, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "細字(F)", "tip_material": "卑金属", "refill": "パーカー専用カートリッジ", "ballpoint_mechanism": "-", "ink_color": "自由", "ink_type": "万年筆インク", "features": "ヘアラインシルバー+ゴールドプレート仕上げ"}, {"overall_no": 19, "country_no": 1, "country": "イタリア", "maker": "ウィルソン", "name": "ウィルソン4色ボールペン・ゴールド", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/4ciao.html", "type": "多色ボールペン", "main_color": "ゴールド", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 630, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "1.0mm", "tip_material": "卑金属", "refill": "4C-0.7芯", "ballpoint_mechanism": "レバー", "ink_color": "赤+黒+青+緑", "ink_type": "油性", "features": "イミテーションゴールド仕上げ金属軸・八角軸"}, {"overall_no": 20, "country_no": 2, "country": "イタリア", "maker": "ウィルソン", "name": "ウィルソン4色ボールペン・シルバー", "article_url": "http://morimorigameblogg.blogspot.jp/2013/10/4.html", "type": "多色ボールペン", "main_color": "シルバー", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 630, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "1.0mm", "tip_material": "卑金属", "refill": "4C-0.7芯", "ballpoint_mechanism": "レバー", "ink_color": "赤+黒+青+緑", "ink_type": "油性", "features": "クローム仕上げ金属軸・八角軸"}, {"overall_no": 21, "country_no": 3, "country": "イタリア", "maker": "カンポマルツィオ", "name": "LADY・オレンジ", "article_url": "http://morimorigameblogg.blogspot.jp/2014/05/lady.html", "type": "ボールペン", "main_color": "クリアーオレンジ+柄", "main_material": "セルロイド", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2014, "price": 3780, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "中字(M)", "tip_material": "卑金属", "refill": "4C芯", "ballpoint_mechanism": "回転", "ink_color": "黒", "ink_type": "油性", "features": "セルロイド製クリアーマーブル軸+ゴールドトリム"}, {"overall_no": 22, "country_no": 4, "country": "イタリア", "maker": "ボルギーニ", "name": "ボルギーニ・スリムボールペン・グリーン", "article_url": "http://morimorigameblogg.blogspot.jp/2014/04/blog-post.html", "type": "ボールペン", "main_color": "グリーン+ゴールド", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2014, "price": 945, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "中字(M)", "tip_material": "卑金属", "refill": "パーカータイプ", "ballpoint_mechanism": "軸ノック", "ink_color": "黒", "ink_type": "油性", "features": "光沢グリーン軸+イミテーションゴールドトリム"}, {"overall_no": 23, "country_no": 5, "country": "イタリア", "maker": "ボルギーニ", "name": "ボルギーニ・スリムボールペン・シルバー", "article_url": "http://morimorigameblogg.blogspot.jp/2013/09/blog-post_22.html", "type": "ボールペン", "main_color": "シルバー+ゴールド", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 945, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "中字(M)", "tip_material": "卑金属", "refill": "パーカータイプ", "ballpoint_mechanism": "軸ノック", "ink_color": "黒", "ink_type": "油性", "features": "ヘアラインシルバー+イミテーションゴールドトリム"}, {"overall_no": 24, "country_no": 6, "country": "イタリア", "maker": "ボルギーニ", "name": "ボルギーニ・スリムボールペン・レッド", "article_url": "http://morimorigameblogg.blogspot.jp/2013/10/blog-post_19.html", "type": "ボールペン", "main_color": "ワインレッド+ゴールド", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 945, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "中字(M)", "tip_material": "卑金属", "refill": "パーカータイプ", "ballpoint_mechanism": "軸ノック", "ink_color": "黒", "ink_type": "油性", "features": "光沢ワインレッド軸+イミテーションゴールドトリム"}, {"overall_no": 25, "country_no": 1, "country": "スイス", "maker": "カランダッシュ", "name": "エクリドール・シェブロン・シルバー&ロジウムプレート・ペンシル", "article_url": "", "type": "シャープペンシル", "main_color": "シルバー", "main_material": "金属+Agプレート+Pdコート", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 15750, "lead_size": "0.7mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "シルバー(Ag)プレート+ロジウム(Rh)コーティング+シェブロン彫刻"}, {"overall_no": 26, "country_no": 2, "country": "スイス", "maker": "カランダッシュ", "name": "カランダッシュ849コレクション・ペンシル・シルバー(844)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/03/849.html", "type": "シャープペンシル", "main_color": "シルバー", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 2940, "lead_size": "0.7mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "金属軸+ラッカーコーティング"}, {"overall_no": 27, "country_no": 3, "country": "スイス", "maker": "カランダッシュ", "name": "フロスティ・ペンシル・ブラック", "article_url": "http://morimorigameblogg.blogspot.jp/2013/03/blog-post_20.html", "type": "シャープペンシル", "main_color": "ブラック", "main_material": "半透明樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 1545, "lead_size": "0.7mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "太径六角軸"}, {"overall_no": 28, "country_no": 4, "country": "スイス", "maker": "カランダッシュ", "name": "フロスティ・ペンシル・ホワイト", "article_url": "http://morimorigameblogg.blogspot.jp/2013/04/07mm.html", "type": "シャープペンシル", "main_color": "ホワイト", "main_material": "半透明樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 1545, "lead_size": "0.7mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "太径六角軸"}, {"overall_no": 29, "country_no": 5, "country": "スイス", "maker": "カランダッシュ", "name": "カランダッシュ826・ブラック", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/826.html", "type": "ボールペン", "main_color": "ホワイト+黒ワンポイント", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 525, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "中字(M)", "tip_material": "卑金属", "refill": "8322-000 (単体販売なし?)", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "油性", "features": "樹脂軸+静音ノック設計"}, {"overall_no": 30, "country_no": 6, "country": "スイス", "maker": "カランダッシュ", "name": "カランダッシュ826・ブルー", "article_url": "http://morimorigameblogg.blogspot.jp/2014/01/826.html", "type": "ボールペン", "main_color": "ホワイト+青ワンポイント", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2014, "price": 525, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "中字(M)", "tip_material": "卑金属", "refill": "8322-000 (単体販売なし?)", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "油性", "features": "樹脂軸+静音ノック設計"}, {"overall_no": 31, "country_no": 7, "country": "スイス", "maker": "カランダッシュ", "name": "カランダッシュ849コレクション・シルバー", "article_url": "http://morimorigameblogg.blogspot.jp/2013/01/849.html", "type": "ボールペン", "main_color": "シルバー", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 2940, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "中字(M)", "tip_material": "卑金属", "refill": "GOLIATH(ゴリアット)", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "油性", "features": "金属軸+ラッカーコーティング+ゴリアットリフィル"}, {"overall_no": 32, "country_no": 1, "country": "スウェーデン", "maker": "バログラフ", "name": "エポカPマット・マットブルー", "article_url": "http://morimorigameblogg.blogspot.jp/2014/05/p.html", "type": "ボールペン", "main_color": "ネイビー", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2014, "price": 735, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "中字(M)", "tip_material": "卑金属", "refill": "パーカータイプ", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "油性", "features": "樹脂軸に木肌加工"}, {"overall_no": 33, "country_no": 1, "country": "スペイン", "maker": "ミラン", "name": "MILAN CAPSULE eraser&pencil 1.3mm・イエロー", "article_url": "http://morimorigameblogg.blogspot.jp/2014/06/milan-capsule-eraser-13mm.html", "type": "シャープペンシル", "main_color": "イエロー", "main_material": "樹脂+軟質素材", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2014, "price": 432, "lead_size": "1.3mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "透明樹脂ドームデザイン+大型スライド繰り出し式消しゴム"}, {"overall_no": 34, "country_no": 2, "country": "スペイン", "maker": "ミラン", "name": "MILAN CAPSULE eraser&pencil 1.3mm・オレンジ", "article_url": "http://morimorigameblogg.blogspot.jp/2014/06/milan-capsule-13mm.html", "type": "シャープペンシル", "main_color": "オレンジ", "main_material": "樹脂+軟質素材", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2014, "price": 432, "lead_size": "1.3mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "透明樹脂ドームデザイン+大型スライド繰り出し式消しゴム"}, {"overall_no": 35, "country_no": 3, "country": "スペイン", "maker": "ミラン", "name": "MILAN PL1 touch 0.9mm・グリーン", "article_url": "http://morimorigameblogg.blogspot.jp/2014/06/milan-pl1-touch-09mm.html", "type": "シャープペンシル", "main_color": "グリーン・ブルー・イエロー", "main_material": "樹脂+軟質素材", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2014, "price": 281, "lead_size": "0.9mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "消しゴム繰り出し+3色デザイン"}, {"overall_no": 36, "country_no": 4, "country": "スペイン", "maker": "ミラン", "name": "MILAN PL1 touch 0.9mm・ブルー", "article_url": "http://morimorigameblogg.blogspot.jp/2014/06/milan-pl1-touch-09mm_21.html", "type": "シャープペンシル", "main_color": "ブルー・ピンク・グリーン", "main_material": "樹脂+軟質素材", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2014, "price": 281, "lead_size": "0.9mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "消しゴム繰り出し+3色デザイン"}, {"overall_no": 37, "country_no": 5, "country": "スペイン", "maker": "ミラン", "name": "MILAN GEL touch(ミラン・ジェルタッチ)グリーン", "article_url": "http://morimorigameblogg.blogspot.jp/2014/01/milan-gel-touch.html", "type": "ボールペン", "main_color": "グレー+緑ワンポイント", "main_material": "樹脂+ラバーコート", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2014, "price": 189, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "中字(M)", "tip_material": "卑金属", "refill": "型番府省の日本製ジエル替芯", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "緑", "ink_type": "水性ジェル", "features": "オールラバー軸"}, {"overall_no": 38, "country_no": 1, "country": "台湾", "maker": "台湾", "name": "台湾ボールペン・ハイビスカス柄", "article_url": "http://morimorigameblogg.blogspot.jp/2014/06/blog-post_8.html", "type": "ボールペン", "main_color": "彫刻+柄", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2014, "price": "不明", "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "細字(F)", "tip_material": "卑金属", "refill": "クロス社タイプ", "ballpoint_mechanism": "軸回転", "ink_color": "黒", "ink_type": "油性", "features": "ハイビスカス柄+螺旋彫刻"}, {"overall_no": 39, "country_no": 2, "country": "台湾", "maker": "台湾", "name": "台湾ボールペン・ウェーブ彫刻", "article_url": "http://morimorigameblogg.blogspot.jp/2014/06/2.html", "type": "ボールペン", "main_color": "彫刻+バイオレット", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2014, "price": "不明", "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "細字(F)", "tip_material": "卑金属", "refill": "クロス社タイプ", "ballpoint_mechanism": "軸回転", "ink_color": "黒", "ink_type": "油性", "features": "ウェーブ彫刻+花の彫像付きクリップ"}, {"overall_no": 40, "country_no": 1, "country": "ドイツ", "maker": "ステッドラー", "name": "ステッドラー771", "article_url": "http://morimorigameblogg.blogspot.jp/2012/11/77113mm.html", "type": "シャープペンシル", "main_color": "イエロー", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 1050, "lead_size": "1.3mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "極太三角軸+鉛筆調こくまろ筆記体験+日本製"}, {"overall_no": 41, "country_no": 2, "country": "ドイツ", "maker": "ステッドラー", "name": "ステッドラー925-05", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/925-05925-65-05.html", "type": "シャープペンシル", "main_color": "ガンメタリック", "main_material": "樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": 2012, "price": 525, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "樹脂軸+スリット式ラバーグリップ+硬度表示窓"}, {"overall_no": 42, "country_no": 3, "country": "ドイツ", "maker": "ステッドラー", "name": "ステッドラー925-25-03", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/925-25-03.html", "type": "シャープペンシル", "main_color": "シルバー", "main_material": "金属", "style": "製図用", "shaft_width": "普通", "purchase_year": 2012, "price": 1260, "lead_size": "0.3mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "アルミボデイ+スリット&ローレット複合グリップ"}, {"overall_no": 43, "country_no": 4, "country": "ドイツ", "maker": "ステッドラー", "name": "ステッドラー925-35-05", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/925-35-05.html", "type": "シャープペンシル", "main_color": "ナイトブルー", "main_material": "金属", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 1260, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "アルミボデイ+スリット&ローレット複合グリップ+ナイトブルー色"}, {"overall_no": 44, "country_no": 5, "country": "ドイツ", "maker": "ステッドラー", "name": "ステッドラー925-65-05", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/925-05925-65-05.html", "type": "シャープペンシル", "main_color": "ガンメタリック", "main_material": "樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": 2012, "price": 367, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "樹脂軸一体型スリット式グリップ*硬度表示窓"}, {"overall_no": 45, "country_no": 6, "country": "ドイツ", "maker": "ステッドラー", "name": "ステッドラー925-65-05カラーコレクション・スカイブルー", "article_url": "http://morimorigameblogg.blogspot.jp/2014/03/925-65-05.html", "type": "シャープペンシル", "main_color": "ホワイト", "main_material": "樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": 2014, "price": 367, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "樹脂軸一体型スリット式グリップ*スカイブルー色+硬度表示窓"}, {"overall_no": 46, "country_no": 7, "country": "ドイツ", "maker": "ステッドラー", "name": "ステッドラー925-65-05カラーコレクション・マシュマロホワイト", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/925-65-05.html", "type": "シャープペンシル", "main_color": "ホワイト", "main_material": "樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 367, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "樹脂軸一体型スリット式グリップ*ホワイト色+硬度表示窓"}, {"overall_no": 47, "country_no": 8, "country": "ドイツ", "maker": "ステッドラー", "name": "ステッドラー925-85-05 (REG)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/01/reg.html", "type": "シャープペンシル", "main_color": "シルバー", "main_material": "金属", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 1260, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "芯繰り出し量調整レギュレーター機能+マット加工金属軸+低刺激型金属ローレット"}, {"overall_no": 48, "country_no": 9, "country": "ドイツ", "maker": "ステッドラー", "name": "ステッドラーNoris763 0.5mm", "article_url": "http://morimorigameblogg.blogspot.jp/2013/07/763.html", "type": "シャープペンシル", "main_color": "イエロー+ブラック", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 157, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "ツートン樹脂軸+三角軸+ペン先収納式"}, {"overall_no": 49, "country_no": 10, "country": "ドイツ", "maker": "ステッドラー", "name": "ステッドラーTradition763 0.5mm", "article_url": "http://morimorigameblogg.blogspot.jp/2013/07/763_20.html", "type": "シャープペンシル", "main_color": "レッド+ブラック", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 157, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "ツートン樹脂軸+三角軸+ペン先収納式"}, {"overall_no": 50, "country_no": 11, "country": "ドイツ", "maker": "ステッドラー", "name": "ステッドラーtriplus 776・グレー", "article_url": "http://morimorigameblogg.blogspot.jp/2013/03/2triplus-776.html", "type": "シャープペンシル", "main_color": "グレー", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 315, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "樹脂ペン先+三角軸+軟質素材コーティング軸"}, {"overall_no": 51, "country_no": 12, "country": "ドイツ", "maker": "ステッドラー", "name": "ステッドラーtriplus 776・ブルー", "article_url": "http://morimorigameblogg.blogspot.jp/2013/03/triplus-776.html", "type": "シャープペンシル", "main_color": "ブルー", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 315, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "樹脂ペン先+三角軸+軟質素材コーティング軸"}, {"overall_no": 52, "country_no": 13, "country": "ドイツ", "maker": "ステッドラー", "name": "ステッドラーtriplus micro(トリプラス・マイクロ)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/triplus-micro05mm.html", "type": "シャープペンシル", "main_color": "グレーメタリック", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 578, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "金属ペン先+三角軸+回転式繰り出し消しゴム"}, {"overall_no": 53, "country_no": 14, "country": "ドイツ", "maker": "スワンスタビロ", "name": "スタビロCOM4ball・ブラック", "article_url": "http://morimorigameblogg.blogspot.jp/2013/01/com4-ball.html", "type": "ボールペン", "main_color": "グレー+ブラック", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "太軸", "purchase_year": 2013, "price": 315, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.5mm", "tip_material": "卑金属", "refill": "パーカータイプ", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "水性", "features": "軟質素材コーティング三角軸グリップ"}, {"overall_no": 54, "country_no": 15, "country": "ドイツ", "maker": "ファーバーカステル", "name": "FE3000・グリーン(0.5mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/03/fe3000.html", "type": "シャープペンシル", "main_color": "ダークグリーン", "main_material": "樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 420, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "砲弾型フォルムの六角軸"}, {"overall_no": 55, "country_no": 16, "country": "ドイツ", "maker": "ファーバーカステル", "name": "FE3010・クリアレッド(0.7mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/03/fe3010-07mm.html", "type": "シャープペンシル", "main_color": "クリアレッド", "main_material": "透明樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 420, "lead_size": "0.7mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "砲弾型フォルムの六角軸"}, {"overall_no": 56, "country_no": 17, "country": "ドイツ", "maker": "ファーバーカステル", "name": "エモーション・ウッド&メタル・ライトメープル・ペンシル", "article_url": "http://morimorigameblogg.blogspot.jp/2013/01/14mm.html", "type": "シャープペンシル", "main_color": "ホワイト", "main_material": "金属+木材(楓)", "style": "普通筆記", "shaft_width": "太軸", "purchase_year": 2012, "price": 6300, "lead_size": "1.4mm", "lead_mechanism": "ペン尻回転", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "非光沢加工金属+白メープル(楓)材+極太芯"}, {"overall_no": 57, "country_no": 18, "country": "ドイツ", "maker": "ファーバーカステル", "name": "エモーション・メープル・ペンシル", "article_url": "http://morimorigameblogg.blogspot.jp/2013/03/14mm.html", "type": "シャープペンシル", "main_color": "オレンジ", "main_material": "樹脂+木材", "style": "普通筆記", "shaft_width": "太軸", "purchase_year": 2013, "price": 4725, "lead_size": "1.4mm", "lead_mechanism": "ペン尻回転", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "メープル(楓)材+極太芯"}, {"overall_no": 58, "country_no": 19, "country": "ドイツ", "maker": "ファーバーカステル", "name": "グリップ2011・ペンシル・シルバー", "article_url": "http://morimorigameblogg.blogspot.jp/2012/11/2011.html", "type": "シャープペンシル", "main_color": "シルバー", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 2100, "lead_size": "0.7mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "三角軸+ドット配列ラバー滑り止めグリップ"}, {"overall_no": 59, "country_no": 20, "country": "ドイツ", "maker": "ファーバーカステル", "name": "エモーション・ウッド&メタル・梨の木ダークブラウン", "article_url": "http://morimorigameblogg.blogspot.jp/2014/01/blog-post_11.html", "type": "ボールペン", "main_color": "シルバー+ダークブラウン", "main_material": "金属+梨の木", "style": "普通筆記", "shaft_width": "太軸", "purchase_year": 2013, "price": 6300, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "太字(M)", "tip_material": "卑金属", "refill": "FC-BP-refilｌ(パーカータイプ可)", "ballpoint_mechanism": "ペン尻回転", "ink_color": "黒", "ink_type": "油性", "features": "梨の木軸+クロームコートメタルパーツ"}, {"overall_no": 60, "country_no": 21, "country": "ドイツ", "maker": "ファーバーカステル", "name": "エモーション・プレシャスレジン・ブラックウィーブ", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/blog-post_21.html", "type": "ボールペン", "main_color": "シルバー+ブラック", "main_material": "金属+プレシャスレジン", "style": "普通筆記", "shaft_width": "太軸", "purchase_year": 2012, "price": 9975, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "太字(M)", "tip_material": "卑金属", "refill": "FC-BP-refilｌ(パーカータイプ可)", "ballpoint_mechanism": "ペン尻回転", "ink_color": "黒", "ink_type": "油性", "features": "プレシャスレジン+レーザー彫刻+クロームコートメタルパーツ"}, {"overall_no": 61, "country_no": 22, "country": "ドイツ", "maker": "ファーバーカステル", "name": "グリップ2011・ボールペン・シルバー", "article_url": "http://morimorigameblogg.blogspot.jp/2014/01/2011.html", "type": "ボールペン", "main_color": "シルバー", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2014, "price": 2100, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "太字(M)", "tip_material": "卑金属", "refill": "FC-BP-refilｌ(パーカータイプ可)", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "油性", "features": "三角軸+ドット配列ラバー滑り止めグリップ"}, {"overall_no": 62, "country_no": 23, "country": "ドイツ", "maker": "モンブラン", "name": "Sライン・シルバーライン", "article_url": "http://morimorigameblogg.blogspot.jp/2012/10/blog-post_7.html", "type": "万年筆", "main_color": "シルバー", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": "不明", "price": "不明", "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "中字(M)", "tip_material": "卑金属", "refill": "モンブラン専用カートリッジ", "ballpoint_mechanism": "-", "ink_color": "自由", "ink_type": "万年筆インク", "features": "スリム金属ボディ+母よりの受け継ぎ"}, {"overall_no": 63, "country_no": 24, "country": "ドイツ", "maker": "ラミー", "name": "サファリ・ペンシル・ホワイト", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/blog-post_6259.html", "type": "シャープペンシル", "main_color": "ホワイト", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 2625, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "ワイヤークリップ+2011年限定ホワイト色+異形樹脂グリップ"}, {"overall_no": 64, "country_no": 25, "country": "ドイツ", "maker": "ラミー", "name": "スクリブル・パラジュームコート・L185Aペンシル", "article_url": "http://morimorigameblogg.blogspot.jp/2012/11/blog-post.html", "type": "シャープペンシル", "main_color": "ブラック", "main_material": "樹脂・金属+(Pd)パラジウムコート", "style": "普通筆記", "shaft_width": "太軸", "purchase_year": 2012, "price": 6300, "lead_size": "0.7mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "異形砲弾型フォルム+メタル部パラジウム(Pd)コート"}, {"overall_no": 65, "country_no": 26, "country": "ドイツ", "maker": "ラミー", "name": "ラミー2000・ペンシル", "article_url": "http://morimorigameblogg.blogspot.jp/2013/03/2000.html", "type": "シャープペンシル", "main_color": "ブラック+シルバー", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 9450, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "ステンレス無垢クリップ+木肌加工樹脂"}, {"overall_no": 66, "country_no": 27, "country": "ドイツ", "maker": "ラミー", "name": "ロゴ・ステンレスヘアライン・L106ペンシル", "article_url": "http://morimorigameblogg.blogspot.jp/2013/09/blog-post_5.html", "type": "シャープペンシル", "main_color": "シルバー", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 2625, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "ステンレスヘアライン加工軸"}, {"overall_no": 67, "country_no": 28, "country": "ドイツ", "maker": "ラミー", "name": "ラミー2000・4色ボールペン", "article_url": "http://morimorigameblogg.blogspot.jp/2013/08/20004.html", "type": "多色ボールペン", "main_color": "ブラック+シルバー", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 10500, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "ラミーLM21\n(4C芯使用可能)", "ballpoint_mechanism": "振り子式", "ink_color": "赤+黒+青+緑", "ink_type": "油性", "features": "ステンレス無垢クリップ+木肌加工樹脂"}, {"overall_no": 68, "country_no": 29, "country": "ドイツ", "maker": "ラミー", "name": "エナジー2・ブラック", "article_url": "http://morimorigameblogg.blogspot.jp/2013/01/2.html", "type": "ボールペン", "main_color": "シルバー", "main_material": "金属", "style": "普通筆記", "shaft_width": "太軸", "purchase_year": 2013, "price": 2310, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "中字(M)", "tip_material": "卑金属", "refill": "ラミーM16", "ballpoint_mechanism": "クリップノック", "ink_color": "黒", "ink_type": "油性", "features": "マット加工ステンレススチール・ストレート軸+ショート樹脂クリップ"}, {"overall_no": 69, "country_no": 30, "country": "ドイツ", "maker": "ラミー", "name": "スクリブル・パラジュームコート・L285ボールペン", "article_url": "http://morimorigameblogg.blogspot.jp/2013/09/blog-post_7.html", "type": "ボールペン", "main_color": "ブラック", "main_material": "樹脂・金属+(Pd)パラジウムコート", "style": "普通筆記", "shaft_width": "太軸", "purchase_year": 2013, "price": 6300, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "中字(M)", "tip_material": "卑金属", "refill": "ラミーLM22", "ballpoint_mechanism": "クリップノック", "ink_color": "黒", "ink_type": "油性", "features": "異形砲弾型フォルム+メタル部パラジウム(Pd)コート"}, {"overall_no": 70, "country_no": 31, "country": "ドイツ", "maker": "ラミー", "name": "スピリット・L263・パラジュームコート・ボールペン", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/l263.html", "type": "ボールペン", "main_color": "シルバー", "main_material": "金属+(Pd)はパラジウムコート", "style": "普通筆記", "shaft_width": "スリム", "purchase_year": 2012, "price": 7875, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "ラミーLM21", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "油性", "features": "1枚ステンレスプレート造形の超極細軸+パラジウム(Pd)コート"}, {"overall_no": 71, "country_no": 32, "country": "ドイツ", "maker": "ラミー", "name": "ノト・ブラックシルバー", "article_url": "http://morimorigameblogg.blogspot.jp/2013/09/blog-post_14.html", "type": "ボールペン", "main_color": "ブラック+シルバー", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 1890, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "中字(M)", "tip_material": "卑金属", "refill": "ラミーLM22", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "油性", "features": "三角軸+軸一体化クリップデザイン+深澤直人氏デザイン"}, {"overall_no": 72, "country_no": 33, "country": "ドイツ", "maker": "ロットリング", "name": "ロットリング300 (0.35mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/300-035mm.html", "type": "シャープペンシル", "main_color": "ブラック", "main_material": "樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": 2012, "price": 525, "lead_size": "0.3mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "樹脂軸の六角軸+一体型樹脂ローレットットグリップ+黒色マット塗装仕上げ+0.35mm表記"}, {"overall_no": 73, "country_no": 34, "country": "ドイツ", "maker": "ロットリング", "name": "ロットリング300 (0.5mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/01/30005mm.html", "type": "シャープペンシル", "main_color": "ブラック", "main_material": "樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 525, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "樹脂軸の六角軸+一体型樹脂ローレットットグリップ+黒色マット塗装仕上げ"}, {"overall_no": 74, "country_no": 35, "country": "ドイツ", "maker": "ロットリング", "name": "ロットリング300 (0.7mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/30007mm.html", "type": "シャープペンシル", "main_color": "ブラック", "main_material": "樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 525, "lead_size": "0.7mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "樹脂軸の六角軸+一体型樹脂ローレットットグリップ+黒色マット塗装仕上げ"}, {"overall_no": 75, "country_no": 36, "country": "ドイツ", "maker": "ロットリング", "name": "ロットリング500(0.5mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2014/03/500-05mm.html", "type": "シャープペンシル", "main_color": "ブラック", "main_material": "金属", "style": "製図用", "shaft_width": "普通", "purchase_year": 2014, "price": 1050, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "樹脂軸の六角軸+丸型金属ローレットットグリップ+黒色マット塗装仕上げ"}, {"overall_no": 76, "country_no": 37, "country": "ドイツ", "maker": "ロットリング", "name": "ロットリング500(0.7mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/500_13.html", "type": "シャープペンシル", "main_color": "ブラック", "main_material": "金属", "style": "製図用", "shaft_width": "普通", "purchase_year": 2012, "price": 1050, "lead_size": "0.7mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "樹脂軸の六角軸+丸型金属ローレットットグリップ+黒色マット塗装仕上げ"}, {"overall_no": 77, "country_no": 38, "country": "ドイツ", "maker": "ロットリング", "name": "ロットリング600・シルバー", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/600.html", "type": "シャープペンシル", "main_color": "シルバー", "main_material": "金属", "style": "製図用", "shaft_width": "普通", "purchase_year": 2012, "price": 2100, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "全金属の六角軸+丸型ローレット軸"}, {"overall_no": 78, "country_no": 39, "country": "ドイツ", "maker": "ロットリング", "name": "ロットリング600・ブラック", "article_url": "http://morimorigameblogg.blogspot.jp/2013/03/60007mm.html", "type": "シャープペンシル", "main_color": "ブラック", "main_material": "金属", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 2100, "lead_size": "0.7mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "全金属の六角軸+丸型ローレット軸"}, {"overall_no": 79, "country_no": 40, "country": "ドイツ", "maker": "ロットリング", "name": "ロットリング800・シルバー", "article_url": "http://morimorigameblogg.blogspot.jp/2013/08/800.html", "type": "シャープペンシル", "main_color": "シルバー", "main_material": "金属", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 5250, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "全金属の六角軸+丸型ローレット軸+リード・スリーブ格納機能"}, {"overall_no": 80, "country_no": 1, "country": "日本", "maker": "AS IF TOY", "name": "Varacil(バラシル)・ブラックホワイト", "article_url": "http://morimorigameblogg.blogspot.jp/2013/09/varacil.html", "type": "シャープペンシル", "main_color": "ホワイト+ブラック", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 945, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "自作組み立て式軸"}, {"overall_no": 81, "country_no": 2, "country": "日本", "maker": "OHTO", "name": "革巻きボールペンLBR-10ET", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/ohtolbr-10et.html", "type": "ボールペン", "main_color": "シルバー+オレンジ", "main_material": "金属+アクリル製ラインストーン", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 1050, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm(筆記線0.35mm)", "tip_material": "卑金属", "refill": "R-4C7NP", "ballpoint_mechanism": "回転連動", "ink_color": "黒", "ink_type": "油性", "features": "オレンジ色革巻き+ラインストーン+ニードルポイント"}, {"overall_no": 82, "country_no": 3, "country": "日本", "maker": "伊藤園", "name": "お茶犬文具コレクション・シャープペンシル・グリーン", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/blog-post_3534.html", "type": "シャープペンシル", "main_color": "グリーン", "main_material": "樹脂", "style": "携帯用", "shaft_width": "スリム", "purchase_year": "不明", "price": "非売品", "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "おーいお茶のおまけ+グリーン色ベース軸にお茶犬柄"}, {"overall_no": 83, "country_no": 4, "country": "日本", "maker": "伊藤園", "name": "お茶犬文具コレクション・シャープペンシル・ブラック", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/blog-post_3534.html", "type": "シャープペンシル", "main_color": "ブラック", "main_material": "樹脂", "style": "携帯用", "shaft_width": "スリム", "purchase_year": "不明", "price": "非売品", "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "おーいお茶のおまけ+黒色ベース軸にお茶犬柄"}, {"overall_no": 84, "country_no": 5, "country": "日本", "maker": "コクヨ", "name": "鉛筆シャープ・ダークグリーン1.3mm", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/13mm.html", "type": "シャープペンシル", "main_color": "ダークグリーン", "main_material": "樹脂+エラストマー・コート", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 189, "lead_size": "1.3mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "エラストマー樹脂コーティング+三角軸"}, {"overall_no": 85, "country_no": 6, "country": "日本", "maker": "コクヨ", "name": "鉛筆シャープ・ダークブルー0.9mm", "article_url": "http://morimorigameblogg.blogspot.jp/2013/01/309mm.html", "type": "シャープペンシル", "main_color": "ブルー", "main_material": "樹脂+エラストマー・コート", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 189, "lead_size": "0.9mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "エラストマー樹脂コーティング+三角軸"}, {"overall_no": 86, "country_no": 7, "country": "日本", "maker": "コクヨ", "name": "鉛筆シャープ・ワインレッド0.9mm", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/09mm.html", "type": "シャープペンシル", "main_color": "ワインレッド", "main_material": "樹脂+エラストマー・コート", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 189, "lead_size": "0.9mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "エラストマー樹脂コーティング+三角軸"}, {"overall_no": 87, "country_no": 8, "country": "日本", "maker": "コクヨ", "name": "キャンパスジュニアペンシル0.9mmピンク", "article_url": "http://morimorigameblogg.blogspot.jp/2013/03/09mm09mm.html", "type": "シャープペンシル", "main_color": "ピンク", "main_material": "樹脂+エラストマー・コート", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 157, "lead_size": "0.9mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "エラストマー樹脂コーティング+六角軸"}, {"overall_no": 88, "country_no": 9, "country": "日本", "maker": "コクヨ", "name": "キャンパスジュニアペンシル0.9mmブルー", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/100_16.html", "type": "シャープペンシル", "main_color": "ブルー", "main_material": "樹脂+エラストマー・コート", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 157, "lead_size": "0.9mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "エラストマー樹脂コーティング+六角軸"}, {"overall_no": 89, "country_no": 10, "country": "日本", "maker": "コクヨ", "name": "キャンパスジュニアペンシル1.3mm", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/100_16.html", "type": "シャープペンシル", "main_color": "ライトブルー", "main_material": "樹脂+エラストマー・コート", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 157, "lead_size": "1.3mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "エラストマー樹脂コーティング+六角軸"}, {"overall_no": 90, "country_no": 11, "country": "日本", "maker": "コクヨ", "name": "コロレー・シャープペンシル・バイオレット(F-VPS103V-1P)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/03/100.html", "type": "シャープペンシル", "main_color": "透明+ブルー", "main_material": "透明樹脂+半透明エラストマー樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 105, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "残芯3mm使用可能+繰り出し式六角形カラー(バイオレット)消しゴム+半透明エラストマー樹脂グリップ"}, {"overall_no": 91, "country_no": 12, "country": "日本", "maker": "コクヨ", "name": "コロレー・シャープペンシル・ブルー(F-VPS103B-1P)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/03/100f-vps103b-1p.html", "type": "シャープペンシル", "main_color": "透明+ブルー", "main_material": "透明樹脂+半透明エラストマー樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 105, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "残芯3mm使用可能+繰り出し式六角形カラー(ブルー)消しゴム+半透明エラストマー樹脂グリップ"}, {"overall_no": 92, "country_no": 13, "country": "日本", "maker": "サクラクレパス", "name": "クーピーデザイン・シャープペンシル", "article_url": "http://morimorigameblogg.blogspot.jp/2013/05/40.html", "type": "シャープペンシル", "main_color": "クーピー柄", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 525, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "クーピーペンシル柄"}, {"overall_no": 93, "country_no": 14, "country": "日本", "maker": "セーラー万年筆", "name": "プロカラー300・四季彩・ほしくず", "article_url": "http://morimorigameblogg.blogspot.jp/2014/03/300.html", "type": "ボールペン", "main_color": "ラメ+ブラック", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2014, "price": 3150, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "18-0300", "ballpoint_mechanism": "軸回転", "ink_color": "黒", "ink_type": "油性", "features": "万年筆スタイル+ラメ入り透明ブラックAS樹脂軸"}, {"overall_no": 94, "country_no": 15, "country": "日本", "maker": "セーラー万年筆", "name": "プロカラー300・レイクブルー", "article_url": "http://morimorigameblogg.blogspot.jp/2013/07/300.html", "type": "ボールペン", "main_color": "レイクブルー", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 3150, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "18-0300", "ballpoint_mechanism": "軸回転", "ink_color": "黒", "ink_type": "油性", "features": "万年筆スタイル+レイクブルーAS樹脂軸"}, {"overall_no": 95, "country_no": 16, "country": "日本", "maker": "セーラー万年筆", "name": "プロフィット4・レッド", "article_url": "http://morimorigameblogg.blogspot.jp/2014/03/4.html", "type": "多機能", "main_color": "クリアレッド", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2014, "price": 5250, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "18-0103", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "油性", "features": "高級クリアーレッド塗装"}, {"overall_no": 96, "country_no": 17, "country": "日本", "maker": "セーラー万年筆", "name": "優美蒔絵・うさぎ・レッド", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/com.html", "type": "多機能", "main_color": "メタリックレッド+柄", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 3150, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "18-0103", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "油性", "features": "レッドメタリック+クロームトーン仕上げ+月とうさぎ柄の蒔絵"}, {"overall_no": 97, "country_no": 18, "country": "日本", "maker": "セーラー万年筆", "name": "優美蒔絵・枝垂桜", "article_url": "http://morimorigameblogg.blogspot.jp/2013/08/blog-post_15.html", "type": "多機能", "main_color": "ブラック+柄", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 3150, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "18-0103", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "油性", "features": "ブラック軸+クロームトーン仕上げ+枝垂桜柄の蒔絵"}, {"overall_no": 98, "country_no": 19, "country": "日本", "maker": "セーラー万年筆", "name": "優美蒔絵・麻の葉", "article_url": "http://morimorigameblogg.blogspot.jp/2012/10/blog-post_27.html", "type": "多機能", "main_color": "メタリックブルー+柄", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 3150, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "18-0103", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "油性", "features": "ブルーメタリック+ゴールドカラー仕上げ+立体蒔絵"}, {"overall_no": 99, "country_no": 20, "country": "日本", "maker": "ゼブラ", "name": "アルベス・ピールト・シャープペン・ブラック", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/blog-post_14.html", "type": "シャープペンシル", "main_color": "ブラック", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 105, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "砲弾型フォルム+フィンランド・デザイン"}, {"overall_no": 100, "country_no": 21, "country": "日本", "maker": "ゼブラ", "name": "アルベス・ピールト・シャープペン・ホワイト", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/blog-post_7588.html", "type": "シャープペンシル", "main_color": "ホワイト", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 105, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "砲弾型フォルム+フィンランド・デザイン"}, {"overall_no": 101, "country_no": 22, "country": "日本", "maker": "ゼブラ", "name": "サッコ300(SACCO 300)", "article_url": "http://morimorigameblogg.blogspot.jp/2012/10/300sacco-300.html", "type": "シャープペンシル", "main_color": "ブラック", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": "不明", "price": 300, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "新素材マティロ+異形砲弾型+現在非売"}, {"overall_no": 102, "country_no": 23, "country": "日本", "maker": "ゼブラ", "name": "テクト2way(ツゥーウェイ)・シルバー(0.3mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/03mm-2way03mmain-stein2b.html", "type": "シャープペンシル", "main_color": "シルバー", "main_material": "樹脂+金属", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "0.3mm", "lead_mechanism": "ペン尻ノック+シェイク方式", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "フリシャ機能(ON/OFF付き)+マットクローム加工金属グリップ(ラバー状リング)"}, {"overall_no": 103, "country_no": 24, "country": "日本", "maker": "ゼブラ", "name": "テクト2way(ツゥーウェイ)・レッド(0.5mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/tect-2way-05mm.html", "type": "シャープペンシル", "main_color": "シルバー+レッド", "main_material": "樹脂+金属", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック+シェイク方式", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "フリシャ機能(ON/OFF付き)+マットクローム加工金属グリップ(ラバー状リング)"}, {"overall_no": 104, "country_no": 25, "country": "日本", "maker": "ゼブラ", "name": "テクト2way(ツゥーウェイ)ライト・ホワイト(0.3mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/2way.html", "type": "シャープペンシル", "main_color": "ホワイト", "main_material": "樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 630, "lead_size": "0.3mm", "lead_mechanism": "ペン尻ノック+シェイク方式", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "フリシャ機能(ON/OFF付き)+ラバー状リング付き樹脂グリップ"}, {"overall_no": 105, "country_no": 26, "country": "日本", "maker": "ゼブラ", "name": "テクト2way(ツゥーウェイ)ライト・ホワイト(0.5mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/2way.html", "type": "シャープペンシル", "main_color": "ホワイト", "main_material": "樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 630, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック+シェイク方式", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "フリシャ機能(ON/OFF付き)+ラバー状リング付き樹脂グリップ"}, {"overall_no": 106, "country_no": 27, "country": "日本", "maker": "ゼブラ", "name": "テクト2way(ツーウェイ)・オレンジ(0.3mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/03/2way-2way-0.html", "type": "シャープペンシル", "main_color": "シルバー+オレンジ", "main_material": "樹脂+金属", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "0.3mm", "lead_mechanism": "ペン尻ノック+シェイク方式", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "フリシャ機能(ON/OFF付き)+マットクローム加工金属グリップ(ラバー状リング)"}, {"overall_no": 107, "country_no": 28, "country": "日本", "maker": "ゼブラ", "name": "テクト2way(ツーウェイ)・シルバー(0.5mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/07/205mm.html", "type": "シャープペンシル", "main_color": "シルバー", "main_material": "樹脂+金属", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック+シェイク方式", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "フリシャ機能(ON/OFF付き)+マットクローム加工金属グリップ(ラバー状リング)"}, {"overall_no": 108, "country_no": 29, "country": "日本", "maker": "ゼブラ", "name": "テクト2way(ツーウェイ)・ブラック(0.5mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/sf2way05mm.html", "type": "シャープペンシル", "main_color": "シルバー+ブラック", "main_material": "樹脂+金属", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック+シェイク方式", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "フリシャ機能(ON/OFF付き)+マットクローム加工金属グリップ(ラバー状リング)"}, {"overall_no": 109, "country_no": 30, "country": "日本", "maker": "ゼブラ", "name": "テクト2way(ツーウェイ)・ブルー(0.7mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/07mm2way.html", "type": "シャープペンシル", "main_color": "シルバー+ブルー", "main_material": "樹脂+金属", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "0.7mm", "lead_mechanism": "ペン尻ノック+シェイク方式", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "フリシャ機能(ON/OFF付き)+マットクローム加工金属グリップ(ラバー状リング)"}, {"overall_no": 110, "country_no": 31, "country": "日本", "maker": "ゼブラ", "name": "楽天イーグルスタプリクリップ", "article_url": "http://morimorigameblogg.blogspot.jp/2012/10/5.html", "type": "シャープペンシル", "main_color": "ホワイト+ブルー+柄", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 315, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "イーグルス印刷+ラバーグリップ"}, {"overall_no": 111, "country_no": 32, "country": "日本", "maker": "ゼブラ", "name": "シャーボ+1・銀色", "article_url": "http://morimorigameblogg.blogspot.jp/2012/11/1.html", "type": "多機能", "main_color": "ベージュメタリック", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 2100, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "4C-0.7芯", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "油性", "features": "スリム軸にフル機能+バインダークリップ+天冠に軟質素材ドーム"}, {"overall_no": 112, "country_no": 33, "country": "日本", "maker": "ゼブラ", "name": "シャーボX・(数量限定)千鳥柄・エレガントネイビー", "article_url": "http://morimorigameblogg.blogspot.jp/2013/08/x.html", "type": "多機能", "main_color": "メタリックネイビー＋柄", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 3801, "lead_size": "交換可能0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "交換可能1.0mm", "tip_material": "卑金属", "refill": "4C-1.0-N芯", "ballpoint_mechanism": "回転連動", "ink_color": "ブルーブラック+セピア", "ink_type": "油性", "features": "シャープメカ・リフィル自由交換可能+千鳥柄メタリックネイビー仕上げ"}, {"overall_no": 113, "country_no": 34, "country": "日本", "maker": "ゼブラ", "name": "シャーボX・F-line・サンドゴールド", "article_url": "http://morimorigameblogg.blogspot.jp/2013/08/xf-line_18.html", "type": "多機能", "main_color": "ゴールド", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 3801, "lead_size": "交換可能0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "交換可能0.4mm、\n0.7mm", "tip_material": "卑金属", "refill": "JSB-0.4芯、4C-0.7-N芯", "ballpoint_mechanism": "回転連動", "ink_color": "ブルーブラック+蛍光ピンク", "ink_type": "ジェル、油性", "features": "シャープメカ・リフィル自由交換可能+マットゴールド塗装仕上"}, {"overall_no": 114, "country_no": 35, "country": "日本", "maker": "ゼブラ", "name": "シャーボX・F-line・スパークリングホワイト", "article_url": "http://morimorigameblogg.blogspot.jp/2013/08/xf-line.html", "type": "多機能", "main_color": "パールホワイト", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 3801, "lead_size": "交換可能0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "交換可能0.4mm", "tip_material": "卑金属", "refill": "JSB-0.4芯", "ballpoint_mechanism": "回転連動", "ink_color": "ブルーブラック+ボルドー", "ink_type": "ジェル", "features": "シャープメカ・リフィル自由交換可能+パールホワイト仕上げ"}, {"overall_no": 115, "country_no": 36, "country": "日本", "maker": "ゼブラ", "name": "シャーボX・カーボンチタニウムグレー", "article_url": "http://morimorigameblogg.blogspot.jp/2014/01/x.html", "type": "多機能", "main_color": "チタンカーボン", "main_material": "金属+ドライカーボン材", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 9051, "lead_size": "交換可能0.7mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "交換可能0.7mm", "tip_material": "卑金属", "refill": "4C-0.7-N芯", "ballpoint_mechanism": "回転連動", "ink_color": "エマルジョン黒+エマルジョン赤", "ink_type": "油性", "features": "シャープメカ・リフィル自由交換可能+チタンカラー+ドライカーボン材"}, {"overall_no": 116, "country_no": 37, "country": "日本", "maker": "ゼブラ", "name": "シャーボX・レザーキャメル", "article_url": "http://morimorigameblogg.blogspot.jp/2013/03/x.html", "type": "多機能", "main_color": "シルバー+キャメル", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 5817, "lead_size": "交換可能0.7mmか0.3mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "交換可能0.7mm", "tip_material": "卑金属", "refill": "4C-0.7芯、4C-0.7-N芯", "ballpoint_mechanism": "回転連動", "ink_color": "ボルドー+黒", "ink_type": "油性", "features": "シャープメカ・リフィル自由交換可能+革調(レザー・キャメル仕上げ軸+エラストマー樹脂天冠部"}, {"overall_no": 117, "country_no": 38, "country": "日本", "maker": "ゼブラ", "name": "シャーボX・レザーブラック", "article_url": "http://morimorigameblogg.blogspot.jp/2013/07/x.html", "type": "多機能", "main_color": "シルバー+ブラック", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 5901, "lead_size": "交換可能0.7mmか0.3mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "交換可能0.7mm", "tip_material": "卑金属", "refill": "4C-0.7芯、4C-0.7-N芯", "ballpoint_mechanism": "回転連動", "ink_color": "ボルドー+ブルーブラック", "ink_type": "油性", "features": "シャープメカ・リフィル自由交換可能+革調(レザー・ブラック仕上げ軸+エラストマー樹脂天冠部"}, {"overall_no": 118, "country_no": 39, "country": "日本", "maker": "ゼブラ", "name": "シャーボXプレミアム・ブロンズオーカー", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/x.html", "type": "多機能", "main_color": "ピンクゴールド+ブロンズ", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 11151, "lead_size": "交換可能0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "交換可能0.7mm", "tip_material": "卑金属", "refill": "4C-0.7芯、4C-0.7-N芯", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒+ブルーブラック", "ink_type": "油性", "features": "シャープメカ・リフィル自由交換可能+ピンクゴールド・ヘアラインブロンズ仕上げ軸"}, {"overall_no": 119, "country_no": 40, "country": "日本", "maker": "ゼブラ", "name": "SL-F1ミニ", "article_url": "http://morimorigameblogg.blogspot.jp/2012/10/sl-f1.html", "type": "ボールペン", "main_color": "ライトブルー", "main_material": "金属", "style": "携帯用・可変", "shaft_width": "スリム", "purchase_year": 2012, "price": 315, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "4C-07芯", "ballpoint_mechanism": "本体伸縮", "ink_color": "黒", "ink_type": "油性", "features": "収納時8.3cm・筆記時10.7cmの携帯スリム・ミニ伸縮構造"}, {"overall_no": 120, "country_no": 41, "country": "日本", "maker": "ゼブラ", "name": "アルベス・ピールト・ボールペン(赤)・ホワイト", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/blog-post_14.html", "type": "ボールペン", "main_color": "ホワイト", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 105, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "4C-07芯", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "赤", "ink_type": "油性", "features": "砲弾型フォルム+フィンランド・デザイン"}, {"overall_no": 121, "country_no": 42, "country": "日本", "maker": "ゼブラ", "name": "アルベス・ピールト・ボールペン(黒)・ブラック", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/blog-post_14.html", "type": "ボールペン", "main_color": "ブラック", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 105, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "4C-07芯", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "油性", "features": "砲弾型フォルム+フィンランド・デザイン"}, {"overall_no": 122, "country_no": 43, "country": "日本", "maker": "ゼブラ", "name": "フォルティアef・グリーン", "article_url": "http://morimorigameblogg.blogspot.jp/2014/02/ef.html", "type": "ボールペン", "main_color": "グリーン", "main_material": "金属+樹脂", "style": "携帯用", "shaft_width": "スリム", "purchase_year": 2014, "price": 210, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "4C-07芯", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "油性", "features": "カラークリア仕上げ"}, {"overall_no": 123, "country_no": 44, "country": "日本", "maker": "ゼブラ", "name": "フォルティアef・ワイン", "article_url": "http://morimorigameblogg.blogspot.jp/2014/02/ef_2.html", "type": "ボールペン", "main_color": "ワインレッド", "main_material": "金属+樹脂", "style": "携帯用", "shaft_width": "スリム", "purchase_year": 2014, "price": 210, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "4C-07芯", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "油性", "features": "カラークリア仕上げ"}, {"overall_no": 124, "country_no": 45, "country": "日本", "maker": "ゼブラ", "name": "プリズミー(prismee)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/prismee.html", "type": "ボールペン", "main_color": "クリアー", "main_material": "透明樹脂(プリズム状加工)", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 105, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "K-0.7芯", "ballpoint_mechanism": "ペン尻ノック(戻しは軸ボタン)", "ink_color": "黒", "ink_type": "油性", "features": "プリズム状加工の透明八角軸"}, {"overall_no": 125, "country_no": 46, "country": "日本", "maker": "デルフォニックス", "name": "DELFONICS木軸シャープペン・グリーン", "article_url": "http://morimorigameblogg.blogspot.jp/2013/01/delfonics.html", "type": "シャープペンシル", "main_color": "グリーン", "main_material": "木材", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 420, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "六角鉛筆軸"}, {"overall_no": 126, "country_no": 47, "country": "日本", "maker": "デルフォニックス", "name": "DELFONICS木軸シャープペン・ミニ・ナチュラル", "article_url": "http://morimorigameblogg.blogspot.jp/2012/11/delfonics.html", "type": "シャープペンシル", "main_color": "フレッシュ", "main_material": "木材", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 399, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "六角鉛筆軸"}, {"overall_no": 127, "country_no": 48, "country": "日本", "maker": "デルフォニックス", "name": "DELFONICS木軸シャープペン・ミニ・ホワイト", "article_url": "http://morimorigameblogg.blogspot.jp/2012/10/delfonics.html", "type": "シャープペンシル", "main_color": "ホワイト", "main_material": "木材", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 399, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "六角鉛筆軸"}, {"overall_no": 128, "country_no": 49, "country": "日本", "maker": "トンボ", "name": "MONO graph(モノグラフ)", "article_url": "http://morimorigameblogg.blogspot.jp/2014/05/monomono-graph-05mm.html", "type": "シャープペンシル", "main_color": "柄", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2014, "price": 378, "lead_size": "0.5mm", "lead_mechanism": "シェイク+クリップノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "消しゴムMONOデザイン+シェイク(クリップノック)+MONO消しゴム繰り出し"}, {"overall_no": 129, "country_no": 50, "country": "日本", "maker": "トンボ", "name": "MONOシャープ", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/mono20.html", "type": "シャープペンシル", "main_color": "ダークグレー", "main_material": "樹脂+ラバーコート", "style": "普通筆記", "shaft_width": "普通", "purchase_year": "不明", "price": 100, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "生産終了品+フルラバーコート軸"}, {"overall_no": 130, "country_no": 51, "country": "日本", "maker": "トンボ", "name": "デザインコレクションZOOM707・ブロンズゴールド", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/zoom-707.html", "type": "シャープペンシル", "main_color": "ブロンズ", "main_material": "金属", "style": "普通筆記", "shaft_width": "スリム", "purchase_year": 2012, "price": 2100, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "極細軸+軟質樹脂グリップ+限定ブロンズゴールド仕上げ"}, {"overall_no": 131, "country_no": 52, "country": "日本", "maker": "トンボ", "name": "デザインコレクションZOOM707デラックス", "article_url": "http://morimorigameblogg.blogspot.jp/2013/01/blog-post_12.html", "type": "シャープペンシル", "main_color": "シルバー+ブラック", "main_material": "金属", "style": "普通筆記", "shaft_width": "スリム", "purchase_year": 2012, "price": 2625, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "極細軸+軟質樹脂グリップ+Cr(クローム)コーティング軸"}, {"overall_no": 132, "country_no": 53, "country": "日本", "maker": "トンボ", "name": "デザインコレクションZOOM717・ブルー", "article_url": "http://morimorigameblogg.blogspot.jp/2013/01/blog-post.html", "type": "シャープペンシル", "main_color": "シルバー+ブルー", "main_material": "金属", "style": "普通筆記", "shaft_width": "スリム", "purchase_year": 2012, "price": 2100, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "極細軸+軟質樹脂グリップ+マットクローム仕上げ"}, {"overall_no": 133, "country_no": 54, "country": "日本", "maker": "トンボ", "name": "エアプレス・エプロ・ピンク", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/blog-post_15.html", "type": "ボールペン", "main_color": "ピンク", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 399, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "BR-SF33", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "油性+加圧式", "features": "通常油性芯+本体加圧システム+エプロン用大型樹脂クリップ"}, {"overall_no": 134, "country_no": 55, "country": "日本", "maker": "トンボ", "name": "エアプレス・透明", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/blog-post_867.html", "type": "ボールペン", "main_color": "クリアー", "main_material": "透明樹脂", "style": "普通筆記", "shaft_width": "太軸", "purchase_year": 2013, "price": 630, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "BR-SF33", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "油性+加圧式", "features": "通常油性芯+本体加圧システム+透明軸+強力ワイヤークリップ"}, {"overall_no": 135, "country_no": 56, "country": "日本", "maker": "トンボ", "name": "エアプレス・フルブラック", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/blog-post_11.html", "type": "ボールペン", "main_color": "ブラック", "main_material": "樹脂+エラストマー・コート", "style": "普通筆記", "shaft_width": "太軸", "purchase_year": 2012, "price": 630, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "BR-SF33", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "油性+加圧式", "features": "通常油性芯+本体加圧システム+カラースプリング+強力ワイヤークリップ"}, {"overall_no": 136, "country_no": 57, "country": "日本", "maker": "ナカノ", "name": "8色ボールペン(ネコ)", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/1008.html", "type": "多色ボールペン", "main_color": "ホワイト+ピンク+柄", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "太軸", "purchase_year": 2012, "price": 105, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "なし", "ballpoint_mechanism": "レバー", "ink_color": "赤+黒+青+緑+黄+橙+紫+桃", "ink_type": "油性", "features": "100円ショップの8色ボールペン"}, {"overall_no": 137, "country_no": 58, "country": "日本", "maker": "パイロット", "name": "S20(エストゥエンティ)・ダークブラウン(0.5mm)HPS-2SK-DBN5", "article_url": "http://morimorigameblogg.blogspot.jp/2013/01/s20.html", "type": "シャープペンシル", "main_color": "ダークブラウン", "main_material": "金属+木材", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 2100, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "含浸カバ材軸+4mmリードスリーブ"}, {"overall_no": 138, "country_no": 59, "country": "日本", "maker": "パイロット", "name": "S3(エススリー)・透明ブラック(0.5mm)HPS-30R-TB5", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/s3.html", "type": "シャープペンシル", "main_color": "クリアーブラック", "main_material": "透明樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 315, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "クリアブラック樹脂軸+4mmリードスリーブ+回転防止突起"}, {"overall_no": 139, "country_no": 60, "country": "日本", "maker": "パイロット", "name": "S3(エススリー)・透明ライトブルー(0.3mm)HPS-30R-TLB3", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/s3_9.html", "type": "シャープペンシル", "main_color": "クリアーライトブルー", "main_material": "透明樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 315, "lead_size": "0.3mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "クリアライトブルー樹脂軸+4mmリードスリーブ+回転防止突起"}, {"overall_no": 140, "country_no": 61, "country": "日本", "maker": "パイロット", "name": "S3(エススリー)・透明ライトブルー(0.5mm)HPS-30R-TLB5", "article_url": "http://morimorigameblogg.blogspot.jp/2013/07/s3-05mm.html", "type": "シャープペンシル", "main_color": "クリアーライトブルー", "main_material": "透明樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 315, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "クリアライトブルー樹脂軸+4mmリードスリーブ+回転防止突起"}, {"overall_no": 141, "country_no": 62, "country": "日本", "maker": "パイロット", "name": "S3(エススリー)・ノンカラー(0.5mm)HPS-30R-NC5", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/s3_9.html", "type": "シャープペンシル", "main_color": "クリアー", "main_material": "透明樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 315, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "クリア樹脂軸+4mmリードスリーブ+回転防止突起"}, {"overall_no": 142, "country_no": 63, "country": "日本", "maker": "パイロット", "name": "S3(エススリー)・ブラック(0.5mm)HPS-30R-B5", "article_url": "http://morimorigameblogg.blogspot.jp/2013/03/s3.html", "type": "シャープペンシル", "main_color": "ブラック", "main_material": "樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 315, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "ブラック樹脂軸+4mmリードスリーブ+回転防止突起"}, {"overall_no": 143, "country_no": 64, "country": "日本", "maker": "パイロット", "name": "コクーン・シャープペンシル・チタン", "article_url": "http://morimorigameblogg.blogspot.jp/2013/04/blog-post_8312.html", "type": "シャープペンシル", "main_color": "チタン", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 1575, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "真鍮軸+チタン調仕上げ+太砲弾型フォルム"}, {"overall_no": 144, "country_no": 65, "country": "日本", "maker": "パイロット", "name": "スリープラスワン・エグゼクト・BKHE-5SR-BGY", "article_url": "http://morimorigameblogg.blogspot.jp/2013/08/bkhe-5sr-bgy.html", "type": "多機能", "main_color": "シルバー+柄", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 5250, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "BRF-8F", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒+青", "ink_type": "油性", "features": "マーブル柄+ゴールドトリム"}, {"overall_no": 145, "country_no": 66, "country": "日本", "maker": "パイロット", "name": "スリープラスワン・エグゼクト・ブラック＆ブルー", "article_url": "http://morimorigameblogg.blogspot.jp/2014/05/blog-post_9.html", "type": "多機能", "main_color": "メタリックブルー+柄", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2014, "price": 5250, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "BRF-8F", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒+青", "ink_type": "油性", "features": "メタリックブルーマーブル柄+ゴールドトリム"}, {"overall_no": 146, "country_no": 67, "country": "日本", "maker": "パイロット", "name": "コクーン・ボールペン・メタリックグレー", "article_url": "http://morimorigameblogg.blogspot.jp/2013/04/blog-post_20.html", "type": "ボールペン", "main_color": "メタリックグレー", "main_material": "金属", "style": "普通筆記", "shaft_width": "太軸", "purchase_year": 2013, "price": 1575, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "BRFN-10F-B", "ballpoint_mechanism": "軸回転", "ink_color": "黒", "ink_type": "油性", "features": "真鍮軸+メタリックグレー仕上げ+太砲弾型フォルム"}, {"overall_no": 147, "country_no": 68, "country": "日本", "maker": "パイロット", "name": "むすび丸パティント・ボールペン", "article_url": "http://morimorigameblogg.blogspot.jp/2013/04/blog-post_18.html", "type": "ボールペン", "main_color": "クリアー", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 210, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "BPRF-6F", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "油性", "features": "クリップでパッチン方式+むすび丸イラストクリップ"}, {"overall_no": 148, "country_no": 69, "country": "日本", "maker": "パイロット", "name": "エボルト・グレー", "article_url": "http://morimorigameblogg.blogspot.jp/2012/10/blog-post_3817.html", "type": "多機能", "main_color": "メタリックグレー", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 1050, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "-", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "油性", "features": "アルミ製ペン軸にガンメタル(グレー)のアルマイト仕上げ"}, {"overall_no": 149, "country_no": 70, "country": "日本", "maker": "パイロット", "name": "ペチット1・ブラック", "article_url": "http://morimorigameblogg.blogspot.jp/2012/11/2001.html", "type": "万年筆", "main_color": "クリアー", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 210, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "細字(M)", "tip_material": "卑金属", "refill": "ペチット専用カートリッジ", "ballpoint_mechanism": "-", "ink_color": "自由(黒が付属)", "ink_type": "ペチット共通水性インク", "features": "イリジウム製ペンポイント付きステンレスペン先+210円でもインク交換式(黒)"}, {"overall_no": 150, "country_no": 71, "country": "日本", "maker": "パイロット", "name": "ペチット1・ブルーブラック", "article_url": "http://morimorigameblogg.blogspot.jp/2012/11/1petit1.html", "type": "万年筆", "main_color": "クリアー", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 210, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "細字(M)", "tip_material": "卑金属", "refill": "ペチット専用カートリッジ", "ballpoint_mechanism": "-", "ink_color": "自由(紺が付属)", "ink_type": "ペチット共通水性インク", "features": "イリジウム製ペンポイント付きステンレスペン先+210円でもインク交換式(紺)"}, {"overall_no": 151, "country_no": 72, "country": "日本", "maker": "パイロット", "name": "ペチット1・レッド", "article_url": "http://morimorigameblogg.blogspot.jp/2012/11/1_18.html", "type": "万年筆", "main_color": "クリアー", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 210, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "細字(M)", "tip_material": "卑金属", "refill": "ペチット専用カートリッジ", "ballpoint_mechanism": "-", "ink_color": "自由(赤が付属)", "ink_type": "ペチット共通水性インク", "features": "イリジウム製ペンポイント付きステンレスペン先+210円でもインク交換式(赤)"}, {"overall_no": 152, "country_no": 73, "country": "日本", "maker": "プラチナ万年筆", "name": "早川式繰出鉛筆", "article_url": "", "type": "シャープペンシル", "main_color": "シルバー", "main_material": "金属+Agコート+Ag無垢", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 10500, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ツイスト", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "(Ag)銀コーティング+天冠に純銀(シルバー925)リングパーツ+エンジンタン彫刻+限定生産品"}, {"overall_no": 153, "country_no": 74, "country": "日本", "maker": "プラチナ万年筆", "name": "MWB-2500Rシルバー", "article_url": "http://morimorigameblogg.blogspot.jp/2012/11/12r3mwb-2500r.html", "type": "多機能", "main_color": "シルバー", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 2625, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "BSP-100S", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "油性", "features": "スリム多機能+真鍮製12角形のペン軸"}, {"overall_no": 154, "country_no": 75, "country": "日本", "maker": "プラチナ万年筆", "name": "MWB-2500Rブラック", "article_url": "http://morimorigameblogg.blogspot.jp/2013/06/12double-action-r3mwb-2500r.html", "type": "多機能", "main_color": "メタリックブラック", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 2625, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "BSP-100S", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "油性", "features": "スリム多機能+真鍮製12角形のペン軸"}, {"overall_no": 155, "country_no": 76, "country": "日本", "maker": "プラチナ万年筆", "name": "MWB-2500Rブルー", "article_url": "http://morimorigameblogg.blogspot.jp/2014/02/12r3mwb-2500r.html", "type": "多機能", "main_color": "メタリックブルー", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2014, "price": 2625, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "BSP-100S", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "油性", "features": "スリム多機能+真鍮製12角形のペン軸"}, {"overall_no": 156, "country_no": 77, "country": "日本", "maker": "プラチナ万年筆", "name": "MWB－5000RM・近代蒔絵(ツル)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/08/mwb5000rm.html", "type": "多機能", "main_color": "ブラック+柄", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 5250, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "BSP-100S", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "油性", "features": "ゴールドトリム+本金の蒔絵"}, {"overall_no": 157, "country_no": 78, "country": "日本", "maker": "プラチナ万年筆", "name": "MWBA-5000クリアセル・グリーン", "article_url": "http://morimorigameblogg.blogspot.jp/2013/03/mwba-5000.html", "type": "多機能", "main_color": "グリーン+柄", "main_material": "金属+樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 5250, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "BSP-100S", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "油性", "features": "真鍮+アクリル・モザイク模様加工軸"}, {"overall_no": 158, "country_no": 79, "country": "日本", "maker": "プラチナ万年筆", "name": "MWBL-5000Tバスケットパターン型押し本革巻き", "article_url": "http://morimorigameblogg.blogspot.jp/2013/04/mwbl-5000t.html", "type": "多機能", "main_color": "ブラック", "main_material": "金属+ヌメ革タンニンなめし素材", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 5250, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "BSP-100S", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "油性", "features": "真鍮+ヌメ革タンニンなめし素材+バスケットパターン型押し+クローム加工金属部分"}, {"overall_no": 159, "country_no": 80, "country": "日本", "maker": "プラチナ万年筆", "name": "ダブル3アクションMWB-1000Cブルー", "article_url": "http://morimorigameblogg.blogspot.jp/2012/11/3mwb1000c.html", "type": "多機能", "main_color": "シルバー+ブルー", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 1050, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "BSP-100S", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "油性", "features": "アルミ製ペン軸にアルマイト染色加工+球体ワンポイント付きクリップ"}, {"overall_no": 160, "country_no": 81, "country": "日本", "maker": "プラチナ万年筆", "name": "ダブルアクション・アール", "article_url": "http://morimorigameblogg.blogspot.jp/2013/07/1002.html", "type": "多機能", "main_color": "グレー", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 210, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "BSP-60F-(F0.7)", "ballpoint_mechanism": "回転連動", "ink_color": "黒", "ink_type": "油性", "features": "2機能+バネによる回転サポート"}, {"overall_no": 161, "country_no": 82, "country": "日本", "maker": "プラチナ万年筆", "name": "ダブルアクションR3スリムMWBS-2000グリーンマーブル", "article_url": "http://morimorigameblogg.blogspot.jp/2013/08/3mwbs-2000.html", "type": "多機能", "main_color": "グリーン+柄", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 2100, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "BSP-100S", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "油性", "features": "マーブル柄塗装+ゴールドトリム"}, {"overall_no": 162, "country_no": 83, "country": "日本", "maker": "プラチナ万年筆", "name": "ダブルアクションR3スリムMWBS-2000ブラックマーブル", "article_url": "http://morimorigameblogg.blogspot.jp/2013/08/r3mwbs-2000.html", "type": "多機能", "main_color": "ブラック+柄", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 2100, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "BSP-100S", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "油性", "features": "マーブル柄塗装+ゴールドトリム"}, {"overall_no": 163, "country_no": 84, "country": "日本", "maker": "プラチナ万年筆", "name": "ポケット", "article_url": "http://morimorigameblogg.blogspot.jp/2012/10/blog-post_7069.html", "type": "万年筆", "main_color": "シルバー+ピンク", "main_material": "樹脂+金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": "不明", "price": "不明", "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "細字", "tip_material": "18金ゴールド", "refill": "プラチナ専用カートリッジ", "ballpoint_mechanism": "-", "ink_color": "自由", "ink_type": "万年筆インク", "features": "母からの受け継ぎ+ポケットのオリジナル版につき、復刻版には無い18金ペン先"}, {"overall_no": 164, "country_no": 85, "country": "日本", "maker": "ぺんてる", "name": "オレンズ(ORENZ)ブラック(0.2mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2014/05/02mmorenz.html", "type": "シャープペンシル", "main_color": "ブラック", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2014, "price": 540, "lead_size": "0.2mm", "lead_mechanism": "自動繰り出し", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "0.2mm超極細+芯自動繰り出し"}, {"overall_no": 165, "country_no": 86, "country": "日本", "maker": "ぺんてる", "name": "グラフ1000 CS メタリックブルー (0.5mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/1000cs05mm.html", "type": "シャープペンシル", "main_color": "シルバー+ブルー", "main_material": "樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "メタリックブルー塗装軸+金属グリップ+ラバーと金属の複合素材グリップ"}, {"overall_no": 166, "country_no": 87, "country": "日本", "maker": "ぺんてる", "name": "グラフ1000 FOR PRO (0.5mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/1000-for-pro05mm.html", "type": "シャープペンシル", "main_color": "ブラック", "main_material": "樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "マットブラック加工ノーズコーン+金属グリップ+ラバーと金属の複合素材グリップ"}, {"overall_no": 167, "country_no": 88, "country": "日本", "maker": "ぺんてる", "name": "グラフ1000 FOR PRO (0.7mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/1000-for-pro07mm.html", "type": "シャープペンシル", "main_color": "ブラック", "main_material": "樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "0.7mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "マットブラック加工ノーズコーン+金属グリップ+ラバーと金属の複合素材グリップ"}, {"overall_no": 168, "country_no": 89, "country": "日本", "maker": "ぺんてる", "name": "グラフ600(黒色軸)", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/600_15.html", "type": "シャープペンシル", "main_color": "シルバー+ブラック", "main_material": "樹脂+金属", "style": "製図用", "shaft_width": "普通", "purchase_year": 2012, "price": 630, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "樹脂軸+マット加工金属グリップ+マット加工クリップ"}, {"overall_no": 169, "country_no": 90, "country": "日本", "maker": "ぺんてる", "name": "グラフギア1000 (0.4mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/07/04mm1000-04mm.html", "type": "シャープペンシル", "main_color": "シルバー+グリーン", "main_material": "金属", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "0.7mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "リードスリーブ収納機能+ラバー・ローレットハイブリッドグリップ+ワンポイントカラー緑+硬度表示窓"}, {"overall_no": 170, "country_no": 91, "country": "日本", "maker": "ぺんてる", "name": "グラフギア1000 (0.5mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/07/1000-05mm.html", "type": "シャープペンシル", "main_color": "シルバー+ブラック", "main_material": "金属", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "0.7mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "リードスリーブ収納機能+ラバー・ローレットハイブリッドグリップ+ワンポイントカラー黒+硬度表示窓"}, {"overall_no": 171, "country_no": 92, "country": "日本", "maker": "ぺんてる", "name": "グラフギア1000 (0.7mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2012/11/1000-07mm.html", "type": "シャープペンシル", "main_color": "シルバー+ブルー", "main_material": "金属", "style": "製図用", "shaft_width": "普通", "purchase_year": 2012, "price": 1050, "lead_size": "0.7mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "リードスリーブ収納機能+ラバー・ローレットハイブリッドグリップ+ワンポイントカラー青+硬度表示窓"}, {"overall_no": 172, "country_no": 93, "country": "日本", "maker": "ぺんてる", "name": "グラフギア500 (0.3mm)", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/500.html", "type": "シャープペンシル", "main_color": "シルバー", "main_material": "樹脂+金属", "style": "製図用", "shaft_width": "普通", "purchase_year": 2012, "price": 525, "lead_size": "0.3mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "再生ABS軸+金属ローレット+硬度表示窓"}, {"overall_no": 173, "country_no": 94, "country": "日本", "maker": "ぺんてる", "name": "グラフペンシル", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/40.html", "type": "シャープペンシル", "main_color": "ダークグリーン", "main_material": "樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 860, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "ロングペン尻部分+変速八角軸+現行ぺんてるグラフシリーズ最古"}, {"overall_no": 174, "country_no": 95, "country": "日本", "maker": "ぺんてる", "name": "グラフレット300", "article_url": "http://morimorigameblogg.blogspot.jp/2014/01/300.html", "type": "シャープペンシル", "main_color": "ブラック", "main_material": "樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": "不明", "price": 300, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "樹脂リングタイプのグリップ"}, {"overall_no": 175, "country_no": 96, "country": "日本", "maker": "ぺんてる", "name": "シュタイン・シャープペンシル・メタリックグリーン", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/blog-post_2.html", "type": "シャープペンシル", "main_color": "グリーン", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 315, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "金属カバー被せ式グリップ"}, {"overall_no": 176, "country_no": 97, "country": "日本", "maker": "ぺんてる", "name": "スマッシュ・シャープ(Q1005)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/blog-post_1747.html", "type": "シャープペンシル", "main_color": "ブラック", "main_material": "樹脂", "style": "製図用", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "多ラバー配列グリップ+蛇腹付きラバーノック"}, {"overall_no": 177, "country_no": 98, "country": "日本", "maker": "ぺんてる", "name": "ランスロット2シリーズ・シャープペンシル・ネイビー", "article_url": "http://morimorigameblogg.blogspot.jp/2013/03/2.html", "type": "シャープペンシル", "main_color": "ネイビー", "main_material": "金属+樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 2100, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "セルフリカバリー特殊樹脂+マーブル柄"}, {"overall_no": 178, "country_no": 99, "country": "日本", "maker": "ぺんてる", "name": "ランスロット3シリーズ・シャープペンシル・シルバー", "article_url": "http://morimorigameblogg.blogspot.jp/2013/05/3.html", "type": "シャープペンシル", "main_color": "シルバー", "main_material": "金属+樹脂+傷修復コーティング", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 3150, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "セルフリカバリー特殊樹脂+ソード・シェイプ"}, {"overall_no": 179, "country_no": 100, "country": "日本", "maker": "ぺんてる", "name": "ランスロット3シリーズ・シャープペンシル・ネイビー", "article_url": "http://morimorigameblogg.blogspot.jp/2013/04/3.html", "type": "シャープペンシル", "main_color": "ネイビー", "main_material": "金属+樹脂+傷修復コーティング", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 3150, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "セルフリカバリー特殊樹脂+ソード・シェイプ"}, {"overall_no": 180, "country_no": 101, "country": "日本", "maker": "ぺんてる", "name": "ランスロット5シリーズ・シャープペンシル・シルバーリーフ・ブラック", "article_url": "http://morimorigameblogg.blogspot.jp/2012/10/5.html", "type": "シャープペンシル", "main_color": "ブラック+柄", "main_material": "金属+樹脂+傷修復コーティング", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 5250, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "セルフリカバリー特殊樹脂+マーブル柄"}, {"overall_no": 181, "country_no": 102, "country": "日本", "maker": "ぺんてる", "name": "ビクーニャEX・ブルー", "article_url": "http://morimorigameblogg.blogspot.jp/2014/02/ex.html", "type": "多機能", "main_color": "ネイビーブルー", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2014, "price": 1050, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "XKBXES7", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "油性", "features": "ビクーニャ・インク+レイヤード構造"}, {"overall_no": 182, "country_no": 103, "country": "日本", "maker": "ぺんてる", "name": "ランスロット2シリーズ複合筆記具・シルバー", "article_url": "http://morimorigameblogg.blogspot.jp/2013/06/2.html", "type": "多機能", "main_color": "シルバー", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 2625, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "KFS7(4C-0.7芯OK)", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "油性", "features": "スリム軸にフル機能+ランスロット・デザイン"}, {"overall_no": 183, "country_no": 104, "country": "日本", "maker": "ぺんてる", "name": "ランスロット2シリーズ複合筆記具・ブラック", "article_url": "http://morimorigameblogg.blogspot.jp/2013/07/2_26.html", "type": "多機能", "main_color": "シルバー+ブラック", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 2625, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "KFS7(4C-0.7芯OK)", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "油性", "features": "スリム軸にフル機能+ランスロット・デザイン"}, {"overall_no": 184, "country_no": 105, "country": "日本", "maker": "ぺんてる", "name": "ランスロット2シリーズ複合筆記具・ライトブルー", "article_url": "http://morimorigameblogg.blogspot.jp/2012/11/2.html", "type": "多機能", "main_color": "シルバー+ライトブルー", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 2625, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "KFS7(4C-0.7芯OK)", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "油性", "features": "スリム軸にフル機能+ランスロット・デザイン"}, {"overall_no": 185, "country_no": 106, "country": "日本", "maker": "ぺんてる", "name": "ランスロット5シリーズ・油性ボールペン・ブラック", "article_url": "http://morimorigameblogg.blogspot.jp/2013/08/5.html", "type": "ボールペン", "main_color": "ブラック+ゴールド", "main_material": "金属", "style": "普通筆記", "shaft_width": "太軸", "purchase_year": 2013, "price": 5250, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "KFL8-A", "ballpoint_mechanism": "軸回転", "ink_color": "黒", "ink_type": "油性", "features": "高品位回転メカニズム+ゴールドトリム"}, {"overall_no": 186, "country_no": 107, "country": "日本", "maker": "三菱鉛筆", "name": "SHIFT(シフト)0.5mm", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/shift-05mm.html", "type": "シャープペンシル", "main_color": "シルバー+ブルー", "main_material": "樹脂+金属", "style": "製図用", "shaft_width": "普通", "purchase_year": 2012, "price": 1050, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "シルバーカラー+メタリックブルーワンポイント+金属ローレットグリップ+本体シフト機構"}, {"overall_no": 187, "country_no": 108, "country": "日本", "maker": "三菱鉛筆", "name": "クルトガ・シルバー", "article_url": "http://morimorigameblogg.blogspot.jp/2013/03/05mm.html", "type": "シャープペンシル", "main_color": "シルバー", "main_material": "透明樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 472, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "クルトガ・エンジン"}, {"overall_no": 188, "country_no": 109, "country": "日本", "maker": "三菱鉛筆", "name": "クルトガ・ローレットモデル・ガンメタリック", "article_url": "http://morimorigameblogg.blogspot.jp/2013/01/blog-post_9258.html", "type": "シャープペンシル", "main_color": "ガンメタリック", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "クルトガ・エンジン+ローレットグリップ"}, {"overall_no": 189, "country_no": 110, "country": "日本", "maker": "三菱鉛筆", "name": "クルトガ・ローレットモデル・シルバー", "article_url": "http://morimorigameblogg.blogspot.jp/2012/10/blog-post_3977.html", "type": "シャープペンシル", "main_color": "シルバー", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 1050, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "クルトガ・エンジン+ローレットグリップ"}, {"overall_no": 190, "country_no": 111, "country": "日本", "maker": "三菱鉛筆", "name": "ピュアモルト・オークウッド・プレミアム・エディションM5-2005", "article_url": "http://morimorigameblogg.blogspot.jp/2012/10/blog-post_13.html", "type": "シャープペンシル", "main_color": "ダークブラウン", "main_material": "木材", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 2100, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "オフブラック仕上げオーク材"}, {"overall_no": 191, "country_no": 112, "country": "日本", "maker": "三菱鉛筆", "name": "ピュアモルト・オークウッド・プレミアム・エディションM5-5015", "article_url": "http://morimorigameblogg.blogspot.jp/2012/11/m5-5015.html", "type": "シャープペンシル", "main_color": "ダークブラウン", "main_material": "木材", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 5250, "lead_size": "0.5mm", "lead_mechanism": "ノック", "sleeve_storage": "なし(キャップ防護式)", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "オフブラック仕上げオーク材+ノック機構付きのメタルキャップ"}, {"overall_no": 192, "country_no": 113, "country": "日本", "maker": "三菱鉛筆", "name": "ピュアモルトM5-1015・ダークブラウン", "article_url": "http://morimorigameblogg.blogspot.jp/2013/01/m5-1015.html", "type": "シャープペンシル", "main_color": "ダークブラウン", "main_material": "木材", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "オーク材+半光沢仕上げメタルパーツ"}, {"overall_no": 193, "country_no": 114, "country": "日本", "maker": "三菱鉛筆", "name": "ピュアモルトM5-1025・ダークブラウン", "article_url": "http://morimorigameblogg.blogspot.jp/2013/03/m5-1025.html", "type": "シャープペンシル", "main_color": "ブラウン", "main_material": "木材", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "オーク材+半光沢仕上げメタルパーツ"}, {"overall_no": 194, "country_no": 115, "country": "日本", "maker": "三菱鉛筆", "name": "ピュアモルトM5-1025・ナチュラル", "article_url": "http://morimorigameblogg.blogspot.jp/2012/10/blog-post_14.html", "type": "シャープペンシル", "main_color": "ブラウン", "main_material": "木材", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 1050, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "オーク材+半光沢仕上げメタルパーツ"}, {"overall_no": 195, "country_no": 116, "country": "日本", "maker": "三菱鉛筆", "name": "エクシード・多機能ペン・MSE-1000EX・ブラック", "article_url": "http://morimorigameblogg.blogspot.jp/2013/07/exceedmse-1000ex.html", "type": "多機能", "main_color": "ブラック+ゴールド", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": "不明", "price": 1050, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "S-7L", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "油性", "features": "ベーシック多機能"}, {"overall_no": 196, "country_no": 117, "country": "日本", "maker": "三菱鉛筆", "name": "ジェットストリームFシリーズ極細・クールボーダー(MSXE3-701-05)", "article_url": "http://morimorigameblogg.blogspot.jp/2012/12/f.html", "type": "多機能", "main_color": "ブラック+柄", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 735, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.5mm", "tip_material": "卑金属", "refill": "SXR-80-05", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "ジェットストリーム", "features": "0.5mmジェットストリーム+ペン尻軟質ドーム+ブラックカラー(ラメ入り)軸ベースにボーダー柄"}, {"overall_no": 197, "country_no": 118, "country": "日本", "maker": "三菱鉛筆", "name": "ジェットストリームFシリーズ極細・スィートドット(MSXE3-701-05)", "article_url": "http://morimorigameblogg.blogspot.jp/2012/11/f_23.html", "type": "多機能", "main_color": "ブラック+柄", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 735, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.5mm", "tip_material": "卑金属", "refill": "SXR-80-05", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "ジェットストリーム", "features": "0.5mmジェットストリーム+ペン尻軟質ドーム+ブラック(ラメ入り)カラー軸ベースにドット柄"}, {"overall_no": 198, "country_no": 119, "country": "日本", "maker": "三菱鉛筆", "name": "ジェットストリームFシリーズ極細・ピンクボーダー(MSXE3-701-05)", "article_url": "http://morimorigameblogg.blogspot.jp/2012/11/f.html", "type": "多機能", "main_color": "ピンク+柄", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 735, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.5mm", "tip_material": "卑金属", "refill": "SXR-80-05", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "ジェットストリーム", "features": "0.5mmジェットストリーム+ペン尻軟質ドーム+ピンク(ラメ入り)軸ベースにボーダー柄"}, {"overall_no": 199, "country_no": 120, "country": "日本", "maker": "三菱鉛筆", "name": "ジェットストリームFシリーズ極細・ルミナスブラック(MSXE3-701-05)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/07/f.html", "type": "多機能", "main_color": "ブラック", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 735, "lead_size": "0.5mm", "lead_mechanism": "軸ノック", "sleeve_storage": "あり", "function_switch": "回転", "tip_size": "0.5mm", "tip_material": "卑金属", "refill": "SXR-80-05", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "ジェットストリーム", "features": "0.5mmジェットストリーム+ペン尻軟質ドーム+ブラックカラー(ラメ入り)軸"}, {"overall_no": 200, "country_no": 121, "country": "日本", "maker": "三菱鉛筆", "name": "ピュアモルト・オークウッド・プレミアム・エディション・ジェットストリームインサイド4&1  (MSXE5-2005-07)", "article_url": "http://morimorigameblogg.blogspot.jp/2012/10/41.html", "type": "多機能", "main_color": "ブラック+ダークブラウン", "main_material": "木材+樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 2100, "lead_size": "0.5mm", "lead_mechanism": "クリップノック", "sleeve_storage": "あり", "function_switch": "レバー", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "SXR-80-07", "ballpoint_mechanism": "レバー連動", "ink_color": "赤+黒+青+緑", "ink_type": "ジェットストリーム", "features": "オフブラック仕上げオーク材+ラバーコーティング樹脂軸+4色ジェットストリーム"}, {"overall_no": 201, "country_no": 122, "country": "日本", "maker": "三菱鉛筆", "name": "ピュアモルト・オークウッド・プレミアム・エディション多機能ペン(MSE-3005)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/08/mse-3005.html", "type": "多機能", "main_color": "ブラック+ダークブラウン", "main_material": "木材+樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 3150, "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "あり", "function_switch": "振り子式", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "SE-7", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "赤+黒", "ink_type": "油性", "features": "オフブラック仕上げオーク材+振り子式芯繰り出し(戻しはクリップ設置のボタン押下式)"}, {"overall_no": 202, "country_no": 123, "country": "日本", "maker": "三菱鉛筆", "name": "ピュアモルト・ジェットストリームインサイド2&1・ダークブラウン (MSXE3-1005-07-22)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/01/21.html", "type": "多機能", "main_color": "メタリックブラウン+ダークブラウン", "main_material": "木材+樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "0.5mm", "lead_mechanism": "クリップノック", "sleeve_storage": "あり", "function_switch": "レバー", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "SXR-80-07", "ballpoint_mechanism": "レバー連動", "ink_color": "赤+黒", "ink_type": "ジェットストリーム", "features": "オーク材+クリアコート樹脂軸+2色ジェットストリーム"}, {"overall_no": 203, "country_no": 124, "country": "日本", "maker": "三菱鉛筆", "name": "ピュアモルト・ジェットストリームインサイド2&1・ナチュラル (MSXE3-1005-07-70)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/07/2.html", "type": "多機能", "main_color": "メタリックベージュ+ナチュラル", "main_material": "木材+樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "0.5mm", "lead_mechanism": "クリップノック", "sleeve_storage": "あり", "function_switch": "レバー", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "SXR-80-07", "ballpoint_mechanism": "レバー連動", "ink_color": "赤+黒", "ink_type": "ジェットストリーム", "features": "オーク材+クリアコート樹脂軸+2色ジェットストリーム"}, {"overall_no": 204, "country_no": 125, "country": "日本", "maker": "三菱鉛筆", "name": "ピュアモルト・ジェットストリームインサイド2&1・メタリックブラウン (MSXE3-1005-07-M21)", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/2.html", "type": "多機能", "main_color": "メタリックベージュ+ブラウン", "main_material": "木材+樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "0.5mm", "lead_mechanism": "クリップノック", "sleeve_storage": "あり", "function_switch": "レバー", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "SXR-80-07", "ballpoint_mechanism": "レバー連動", "ink_color": "赤+黒", "ink_type": "ジェットストリーム", "features": "オーク材+クリアコート樹脂軸+2色ジェットストリーム"}, {"overall_no": 205, "country_no": 126, "country": "日本", "maker": "三菱鉛筆", "name": "エクシード・2色ボールペン・1003EX・ブラック", "article_url": "http://morimorigameblogg.blogspot.jp/2013/07/exceed1003ex2.html", "type": "多色ボールペン", "main_color": "ブラック", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": "不明", "price": 1050, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "SE-7", "ballpoint_mechanism": "回転連動", "ink_color": "赤+黒", "ink_type": "油性", "features": "スリム+ブラスラッカー仕上げブラック軸+2色ボールペン"}, {"overall_no": 206, "country_no": 127, "country": "日本", "maker": "三菱鉛筆", "name": "ジェットストリームSXN-150-07赤", "article_url": "http://morimorigameblogg.blogspot.jp/2013/02/sxn-150-07.html", "type": "ボールペン", "main_color": "ブラック", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 157, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "SXR-7", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "赤", "ink_type": "ジェットストリーム", "features": "クリアパーツノック+ラバーグリップ"}, {"overall_no": 207, "country_no": 128, "country": "日本", "maker": "三菱鉛筆", "name": "ジェットストリームSXN-150-07黒", "article_url": "http://morimorigameblogg.blogspot.jp/2013/01/sxn-150-07100.html", "type": "ボールペン", "main_color": "ブラック", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 157, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "SXR-7", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "ジェットストリーム", "features": "クリアパーツノック+ラバーグリップ"}, {"overall_no": 208, "country_no": 129, "country": "日本", "maker": "三菱鉛筆", "name": "ジェットストリームSXN-150-07水色", "article_url": "http://morimorigameblogg.blogspot.jp/2013/10/150sxn-150.html", "type": "ボールペン", "main_color": "透明ブルー", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 157, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "SXR-7", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "ジェットストリーム", "features": "クリアパーツノック+ラバーグリップ"}, {"overall_no": 209, "country_no": 130, "country": "日本", "maker": "三菱鉛筆", "name": "ピュアモルトSS-1025・ダークブラウン", "article_url": "http://morimorigameblogg.blogspot.jp/2013/08/ss1025.html", "type": "ボールペン", "main_color": "ブラウン", "main_material": "木材", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 1050, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "S-7L", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "油性", "features": "オーク材+半光沢仕上げメタルパーツ"}, {"overall_no": 210, "country_no": 131, "country": "日本", "maker": "三菱鉛筆", "name": "名木めぐり・白樺(北海道)ボールペン", "article_url": "http://morimorigameblogg.blogspot.jp/2013/08/blog-post_11.html", "type": "ボールペン", "main_color": "白樺ホワイト", "main_material": "木材", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 2100, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "0.7mm", "tip_material": "卑金属", "refill": "S-7L", "ballpoint_mechanism": "ペン尻ノック", "ink_color": "黒", "ink_type": "油性", "features": "北海道の白樺材軸プレミアム仕上げ"}, {"overall_no": 211, "country_no": 132, "country": "日本", "maker": "滝研", "name": "トロのカチカチ占いシャープペン", "article_url": "http://morimorigameblogg.blogspot.jp/2013/07/blog-post_28.html", "type": "シャープペンシル", "main_color": "ホワイト+柄", "main_material": "樹脂", "style": "普通筆記", "shaft_width": "普通", "purchase_year": "不明", "price": "非売品", "lead_size": "0.5mm", "lead_mechanism": "ペン尻ノック", "sleeve_storage": "なし", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "ノックで占い表示+しっかりMade in Japan"}, {"overall_no": 212, "country_no": 1, "country": "フランス", "maker": "ウォーターマン", "name": "ハーモニー・ブラックCT", "article_url": "http://morimorigameblogg.blogspot.jp/2014/01/ct.html", "type": "シャープペンシル", "main_color": "ブラック", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 8925, "lead_size": "0.5mm", "lead_mechanism": "ツイスト", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "ウェーブ模様リング+艶黒ボディ"}, {"overall_no": 213, "country_no": 2, "country": "フランス", "maker": "ウォーターマン", "name": "ハーモニー・ブルーグレイCT", "article_url": "http://morimorigameblogg.blogspot.jp/2013/08/ct.html", "type": "シャープペンシル", "main_color": "シルバー+柄", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 8925, "lead_size": "0.5mm", "lead_mechanism": "ツイスト", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "ウェーブ模様リング+チェック調柄ボディ"}, {"overall_no": 214, "country_no": 3, "country": "フランス", "maker": "ウォーターマン", "name": "メトロポリタン・シィメリィ・グレーCT", "article_url": "http://morimorigameblogg.blogspot.jp/2013/03/blog-post_3862.html", "type": "シャープペンシル", "main_color": "メタリックグレー+シルバー", "main_material": "金属", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 5775, "lead_size": "0.5mm", "lead_mechanism": "ツイスト", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "シィメリーラッカー加工+ニッケルパラジウムコーティングクリップ・トリム"}, {"overall_no": 215, "country_no": 4, "country": "フランス", "maker": "ウォーターマン", "name": "メトロポリタン・スターライトGT", "article_url": "http://morimorigameblogg.blogspot.jp/2012/10/gt.html", "type": "シャープペンシル", "main_color": "シルバー+ゴールド", "main_material": "金属+Pdコート", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2012, "price": 5775, "lead_size": "0.5mm", "lead_mechanism": "ツイスト", "sleeve_storage": "あり", "function_switch": "-", "tip_size": "-", "tip_material": "-", "refill": "-", "ballpoint_mechanism": "-", "ink_color": "-", "ink_type": "-", "features": "パラジウム(Pd)・コーティング+ゴールドプレート仕上げ"}, {"overall_no": 216, "country_no": 5, "country": "フランス", "maker": "ウォーターマン", "name": "パースペクティブ・デコレーションブルーCT", "article_url": "http://morimorigameblogg.blogspot.jp/2014/01/ct_12.html", "type": "ボールペン", "main_color": "スカイブルー", "main_material": "金属+(NiPd)ニッケルパラジウムコート", "style": "普通筆記", "shaft_width": "普通", "purchase_year": 2013, "price": 15750, "lead_size": "-", "lead_mechanism": "-", "sleeve_storage": "-", "function_switch": "-", "tip_size": "中字", "tip_material": "卑金属", "refill": "S2-271", "ballpoint_mechanism": "軸回転", "ink_color": "黒", "ink_type": "油性", "features": "真鍮+(NiPd)ニッケルパラジウム仕上げ+ラッカーコート+透視図型彫刻"}]</script>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            let selectedCountry = '';
+            let selectedMaker = '';
+            let selectedType = '';
+
+            function hideLoading() {
+                const overlay = document.getElementById('loadingOverlay');
+                if (overlay && !overlay.classList.contains('fade-out')) {
+                    overlay.classList.add('fade-out');
+                    setTimeout(function () {
+                        overlay.style.display = 'none';
+                    }, 460);
+                }
+            }
+
+            function escapeHtml(value) {
+                if (value === null || value === undefined) return '';
+                return String(value)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            function orDash(value) {
+                if (value === null || value === undefined) return '－';
+                const str = String(value);
+                return str.trim() === '' ? '－' : str;
+            }
+
+            function formatPrice(value) {
+                if (value === null || value === undefined || value === '') return '－';
+                if (typeof value === 'number' && Number.isFinite(value)) {
+                    return '￥' + value.toLocaleString('ja-JP');
+                }
+                const str = String(value).trim();
+                if (str === '') return '－';
+                if (/^-?\d+(\.\d+)?$/.test(str)) {
+                    return '￥' + Number(str).toLocaleString('ja-JP');
+                }
+                return str;
+            }
+
+            function isSafeHttpUrl(value) {
+                if (!value || typeof value !== 'string') return false;
+                const trimmed = value.trim();
+                if (!trimmed) return false;
+                try {
+                    const parsed = new URL(trimmed);
+                    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            function createArticleLink(url) {
+                if (!isSafeHttpUrl(url)) {
+                    return document.createTextNode('－');
+                }
+                const a = document.createElement('a');
+                a.href = url.trim();
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.className = 'article-link';
+                a.textContent = 'ブログ記事を開く';
+                return a;
+            }
+
+            function createArticleCellHtml(url) {
+                if (!isSafeHttpUrl(url)) return '－';
+                return '<a href="' + escapeHtml(url.trim()) + '" target="_blank" rel="noopener noreferrer" class="article-link">ブログ記事を開く</a>';
+            }
+
+            function numericSortKey(value, fallback) {
+                if (typeof value === 'number' && Number.isFinite(value)) return String(value);
+                const str = String(value || '').trim();
+                if (/^-?\d+(\.\d+)?$/.test(str)) return str;
+                return String(fallback);
+            }
+
+            function populateTable(data) {
+                const tbody = document.getElementById('pensBody');
+                tbody.innerHTML = '';
+
+                data.forEach(function (row) {
+                    const tr = document.createElement('tr');
+                    tr._rowData = row;
+
+                    const overallOrder = numericSortKey(row.overall_no, 999999999);
+                    const countryOrder = numericSortKey(row.country_no, 999999999);
+                    const yearOrder = numericSortKey(row.purchase_year, 999999999);
+                    const priceOrder = numericSortKey(row.price, 999999999);
+                    const priceText = (row.price !== null && row.price !== undefined && row.price !== '') ? formatPrice(row.price) : '';
+
+                    tr.innerHTML =
+                        '<td class="col-nowrap col-num" data-order="' + escapeHtml(overallOrder) + '">' + escapeHtml(row.overall_no) + '</td>' +
+                        '<td class="col-nowrap col-num" data-order="' + escapeHtml(countryOrder) + '">' + escapeHtml(row.country_no) + '</td>' +
+                        '<td class="col-nowrap">' + escapeHtml(row.country) + '</td>' +
+                        '<td class="col-wrap-sm">' + escapeHtml(row.maker) + '</td>' +
+                        '<td class="pen-name col-wrap-md" title="クリックして詳細カードを表示">' + escapeHtml(row.name) + '</td>' +
+                        '<td class="col-nowrap">' + createArticleCellHtml(row.article_url) + '</td>' +
+                        '<td class="col-nowrap">' + escapeHtml(row.type) + '</td>' +
+                        '<td class="col-wrap-sm">' + escapeHtml(row.main_color) + '</td>' +
+                        '<td class="col-wrap-md">' + escapeHtml(row.main_material) + '</td>' +
+                        '<td class="col-nowrap">' + escapeHtml(row.style) + '</td>' +
+                        '<td class="col-nowrap">' + escapeHtml(row.shaft_width) + '</td>' +
+                        '<td class="col-nowrap col-num" data-order="' + escapeHtml(yearOrder) + '">' + escapeHtml(row.purchase_year) + '</td>' +
+                        '<td class="col-nowrap col-price" data-order="' + escapeHtml(priceOrder) + '">' + escapeHtml(priceText) + '</td>' +
+                        '<td class="col-nowrap">' + escapeHtml(row.lead_size) + '</td>' +
+                        '<td class="col-wrap-sm">' + escapeHtml(row.lead_mechanism) + '</td>' +
+                        '<td class="col-wrap-sm">' + escapeHtml(row.sleeve_storage) + '</td>' +
+                        '<td class="col-nowrap">' + escapeHtml(row.function_switch) + '</td>' +
+                        '<td class="col-wrap-sm">' + escapeHtml(row.tip_size) + '</td>' +
+                        '<td class="col-nowrap">' + escapeHtml(row.tip_material) + '</td>' +
+                        '<td class="col-wrap-md">' + escapeHtml(row.refill) + '</td>' +
+                        '<td class="col-wrap-sm">' + escapeHtml(row.ballpoint_mechanism) + '</td>' +
+                        '<td class="col-wrap-sm">' + escapeHtml(row.ink_color) + '</td>' +
+                        '<td class="col-wrap-sm">' + escapeHtml(row.ink_type) + '</td>' +
+                        '<td class="col-wrap">' + escapeHtml(row.features) + '</td>';
+
+                    tbody.appendChild(tr);
+                });
+            }
+
+            function populateSelectOptions(selectId, values) {
+                const select = document.getElementById(selectId);
+                while (select.options.length > 1) {
+                    select.remove(1);
+                }
+                Array.from(values)
+                    .sort(function (a, b) { return a.localeCompare(b, 'ja'); })
+                    .forEach(function (val) {
+                        const opt = document.createElement('option');
+                        opt.value = val;
+                        opt.textContent = val;
+                        select.appendChild(opt);
+                    });
+            }
+
+            function buildCountryFilter(data) {
+                const set = new Set();
+                data.forEach(function (row) {
+                    const v = String(row.country || '').trim();
+                    if (v) set.add(v);
+                });
+                populateSelectOptions('countryFilter', set);
+            }
+
+            function buildMakerFilter(data) {
+                const set = new Set();
+                data.forEach(function (row) {
+                    const v = String(row.maker || '').trim();
+                    if (v) set.add(v);
+                });
+                populateSelectOptions('makerFilter', set);
+            }
+
+            function buildTypeFilter(data) {
+                const set = new Set();
+                data.forEach(function (row) {
+                    const v = String(row.type || '').trim();
+                    if (v) set.add(v);
+                });
+                populateSelectOptions('typeFilter', set);
+            }
+
+            let pensData = [];
+            try {
+                const rawJson = document.getElementById('pensData').textContent;
+                pensData = JSON.parse(rawJson);
+                document.getElementById('btnAllPens').textContent = '全ペン (' + pensData.length + ')';
+                populateTable(pensData);
+                buildCountryFilter(pensData);
+                buildMakerFilter(pensData);
+                buildTypeFilter(pensData);
+            } catch (err) {
+                console.error('Failed to parse embedded pens data:', err);
+                const titleEl = document.querySelector('.loading-title');
+                const subEl = document.querySelector('.loading-subtitle');
+                if (titleEl && subEl) {
+                    titleEl.textContent = 'データの読み込みに失敗しました';
+                    titleEl.style.color = '#dc2626';
+                    subEl.textContent = '埋め込みデータの形式を確認してください。';
+                }
+                return;
+            }
+
+            $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                if (settings.nTable.id !== 'pensTable') return true;
+                const tr = settings.aoData[dataIndex] ? settings.aoData[dataIndex].nTr : null;
+                const rowObj = tr && tr._rowData ? tr._rowData : null;
+                const country = rowObj ? String(rowObj.country || '').trim() : String(data[2] || '').trim();
+                const maker = rowObj ? String(rowObj.maker || '').trim() : String(data[3] || '').trim();
+                const type = rowObj ? String(rowObj.type || '').trim() : String(data[6] || '').trim();
+
+                if (selectedCountry && country !== selectedCountry) return false;
+                if (selectedMaker && maker !== selectedMaker) return false;
+                if (selectedType && type !== selectedType) return false;
+                return true;
+            });
+
+            const table = $('#pensTable').DataTable({
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/ja.json'
+                },
+                lengthMenu: [[25, 50, 100, -1], [25, 50, 100, '全件']],
+                pageLength: -1,
+                scrollX: true,
+                scrollY: '78vh',
+                scrollCollapse: true,
+                autoWidth: false,
+                order: [[0, 'asc']],
+                columnDefs: [
+                    { targets: [0], width: '70px', type: 'num' },
+                    { targets: [1], width: '70px', type: 'num' },
+                    { targets: [2], width: '100px' },
+                    { targets: [3], width: '150px' },
+                    { targets: [4], width: '300px' },
+                    { targets: [5], width: '120px' },
+                    { targets: [6], width: '150px' },
+                    { targets: [7], width: '180px' },
+                    { targets: [8], width: '220px' },
+                    { targets: [9], width: '120px' },
+                    { targets: [10], width: '90px' },
+                    { targets: [11], width: '90px', type: 'num' },
+                    { targets: [12], width: '130px', type: 'num' },
+                    { targets: [13], width: '120px' },
+                    { targets: [14], width: '190px' },
+                    { targets: [15], width: '150px' },
+                    { targets: [16], width: '110px' },
+                    { targets: [17], width: '150px' },
+                    { targets: [18], width: '130px' },
+                    { targets: [19], width: '220px' },
+                    { targets: [20], width: '180px' },
+                    { targets: [21], width: '180px' },
+                    { targets: [22], width: '160px' },
+                    { targets: [23], width: '420px' }
+                ],
+                initComplete: function () {
+                    hideLoading();
+                }
+            });
+
+            // Failsafe in case external language JSON stalls or is blocked on file:///
+            setTimeout(hideLoading, 1800);
+
+            const btnAllPens = document.getElementById('btnAllPens');
+            const countryFilterSelect = document.getElementById('countryFilter');
+            const makerFilterSelect = document.getElementById('makerFilter');
+            const typeFilterSelect = document.getElementById('typeFilter');
+
+            function updateFilterActiveStates() {
+                const hasAny = Boolean(selectedCountry || selectedMaker || selectedType);
+                btnAllPens.classList.toggle('active', !hasAny);
+                countryFilterSelect.classList.toggle('active', Boolean(selectedCountry));
+                makerFilterSelect.classList.toggle('active', Boolean(selectedMaker));
+                typeFilterSelect.classList.toggle('active', Boolean(selectedType));
+            }
+
+            function resetFilters() {
+                selectedCountry = '';
+                selectedMaker = '';
+                selectedType = '';
+                countryFilterSelect.value = '';
+                makerFilterSelect.value = '';
+                typeFilterSelect.value = '';
+                updateFilterActiveStates();
+                table.draw();
+            }
+
+            btnAllPens.addEventListener('click', resetFilters);
+
+            countryFilterSelect.addEventListener('change', function () {
+                selectedCountry = this.value;
+                updateFilterActiveStates();
+                table.draw();
+            });
+
+            makerFilterSelect.addEventListener('change', function () {
+                selectedMaker = this.value;
+                updateFilterActiveStates();
+                table.draw();
+            });
+
+            typeFilterSelect.addEventListener('change', function () {
+                selectedType = this.value;
+                updateFilterActiveStates();
+                table.draw();
+            });
+
+            // Column Visibility Modal Logic
+            const colVisModal = document.getElementById('colVisModal');
+            const colVisList = document.getElementById('colVisList');
+            const btnShowColVis = document.getElementById('btnShowColVis');
+            const btnCancelColVis = document.getElementById('btnCancelColVis');
+            const btnApplyColVis = document.getElementById('btnApplyColVis');
+
+            function closeColVisModal() {
+                colVisModal.classList.remove('active');
+            }
+
+            btnShowColVis.addEventListener('click', function () {
+                colVisList.innerHTML = '';
+
+                table.columns().every(function () {
+                    const col = this;
+                    const idx = col.index();
+                    const title = $(col.header()).text().trim();
+                    const isVisible = col.visible();
+
+                    const label = document.createElement('label');
+                    label.className = 'checkbox-item';
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = String(idx);
+                    checkbox.checked = isVisible;
+
+                    const span = document.createElement('span');
+                    span.textContent = title;
+
+                    label.appendChild(checkbox);
+                    label.appendChild(span);
+                    colVisList.appendChild(label);
+                });
+
+                colVisModal.classList.add('active');
+            });
+
+            btnCancelColVis.addEventListener('click', closeColVisModal);
+            colVisModal.addEventListener('click', function (e) {
+                if (e.target === colVisModal) closeColVisModal();
+            });
+
+            btnApplyColVis.addEventListener('click', function () {
+                const checkboxes = colVisList.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(function (cb) {
+                    const idx = parseInt(cb.value, 10);
+                    table.column(idx).visible(cb.checked, false);
+                });
+
+                table.columns.adjust().draw(false);
+                closeColVisModal();
+            });
+
+            // Detail Card Modal Logic
+            const detailModal = document.getElementById('detailCardModal');
+            let currentCardFilteredIndex = -1;
+
+            function getFilteredRowNodes() {
+                return table.rows({ search: 'applied', order: 'applied' }).nodes().toArray();
+            }
+
+            function showCardAtIndex(idx) {
+                const visibleNodes = getFilteredRowNodes();
+                if (visibleNodes.length === 0) return;
+
+                if (idx < 0) idx = visibleNodes.length - 1;
+                if (idx >= visibleNodes.length) idx = 0;
+
+                currentCardFilteredIndex = idx;
+                const rowNode = visibleNodes[idx];
+                const rowData = rowNode && rowNode._rowData ? rowNode._rowData : null;
+                if (!rowData) return;
+
+                $('#cardOverallBadge').text('全No.' + orDash(rowData.overall_no));
+                $('#cardTitle').text(orDash(rowData.name));
+
+                const subParts = [];
+                if (rowData.maker && String(rowData.maker).trim() !== '') {
+                    subParts.push(String(rowData.maker).trim());
+                }
+                if (rowData.country && String(rowData.country).trim() !== '') {
+                    subParts.push(String(rowData.country).trim());
+                }
+                if (rowData.type && String(rowData.type).trim() !== '') {
+                    subParts.push(String(rowData.type).trim());
+                }
+                $('#cardSubTitles').text(subParts.length > 0 ? subParts.join(' / ') : '－');
+
+                $('#cardOverallNo').text(orDash(rowData.overall_no));
+                $('#cardCountryNo').text(orDash(rowData.country_no));
+                $('#cardCountry').text(orDash(rowData.country));
+                $('#cardMaker').text(orDash(rowData.maker));
+                $('#cardType').text(orDash(rowData.type));
+                $('#cardMainColor').text(orDash(rowData.main_color));
+                $('#cardMainMaterial').text(orDash(rowData.main_material));
+                $('#cardStyle').text(orDash(rowData.style));
+                $('#cardShaftWidth').text(orDash(rowData.shaft_width));
+                $('#cardPurchaseYear').text(orDash(rowData.purchase_year));
+                $('#cardPrice').text(formatPrice(rowData.price));
+
+                const articleContainer = document.getElementById('cardArticleUrl');
+                articleContainer.innerHTML = '';
+                articleContainer.appendChild(createArticleLink(rowData.article_url));
+
+                $('#cardFeatures').text(orDash(rowData.features));
+                $('#cardLeadSize').text(orDash(rowData.lead_size));
+                $('#cardLeadMechanism').text(orDash(rowData.lead_mechanism));
+                $('#cardSleeveStorage').text(orDash(rowData.sleeve_storage));
+                $('#cardFunctionSwitch').text(orDash(rowData.function_switch));
+                $('#cardTipSize').text(orDash(rowData.tip_size));
+                $('#cardTipMaterial').text(orDash(rowData.tip_material));
+                $('#cardRefill').text(orDash(rowData.refill));
+                $('#cardBallpointMechanism').text(orDash(rowData.ballpoint_mechanism));
+                $('#cardInkColor').text(orDash(rowData.ink_color));
+                $('#cardInkType').text(orDash(rowData.ink_type));
+
+                $('#cardCounter').text((idx + 1) + ' / ' + visibleNodes.length);
+                detailModal.classList.add('active');
+            }
+
+            function closeDetailModal() {
+                detailModal.classList.remove('active');
+            }
+
+            $('#pensTable tbody').on('click', 'tr', function (e) {
+                if ($(e.target).closest('a').length > 0) return;
+                const visibleNodes = getFilteredRowNodes();
+                const idx = visibleNodes.indexOf(this);
+                if (idx !== -1) {
+                    showCardAtIndex(idx);
+                }
+            });
+
+            $('#btnPrevCard').on('click', function () {
+                showCardAtIndex(currentCardFilteredIndex - 1);
+            });
+
+            $('#btnNextCard').on('click', function () {
+                showCardAtIndex(currentCardFilteredIndex + 1);
+            });
+
+            $('#btnCloseCard, #btnCloseCardX').on('click', closeDetailModal);
+            detailModal.addEventListener('click', function (e) {
+                if (e.target === detailModal) closeDetailModal();
+            });
+
+            $(document).on('keydown', function (e) {
+                if (colVisModal.classList.contains('active') && e.key === 'Escape') {
+                    closeColVisModal();
+                    return;
+                }
+                if (!detailModal.classList.contains('active')) return;
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    showCardAtIndex(currentCardFilteredIndex - 1);
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    showCardAtIndex(currentCardFilteredIndex + 1);
+                } else if (e.key === 'Escape') {
+                    closeDetailModal();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
